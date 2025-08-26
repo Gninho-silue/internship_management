@@ -1,0 +1,31 @@
+# Odoo source (ne pas versionner)
+odoo-source/
+
+# Environnement Python
+odoo-venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Odoo files
+config/
+/*.pyc
+filestore/
+logs/
+*.log
+.odoo_history
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.sql
+*.dump

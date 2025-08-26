@@ -1,0 +1,370 @@
+2025-08-26 13:32:48,055 30344 INFO ? odoo: Odoo version 17.0 
+2025-08-26 13:32:48,055 30344 INFO ? odoo: Using configuration file at C:\Dev\odoo17-internship\config\odoo.conf 
+2025-08-26 13:32:48,055 30344 INFO ? odoo: addons paths: ['C:\\Dev\\odoo17-internship\\odoo-source\\odoo\\addons', 'c:\\dev\\odoo17-internship\\filestore\\addons\\17.0', 'c:\\dev\\odoo17-internship\\odoo-source\\addons', 'c:\\dev\\odoo17-internship\\custom-addons', 'c:\\dev\\odoo17-internship\\odoo-source\\odoo\\addons'] 
+2025-08-26 13:32:48,055 30344 INFO ? odoo: database: odoo17@localhost:5432 
+2025-08-26 13:32:48,759 30344 INFO ? odoo.addons.base.models.ir_actions_report: You need Wkhtmltopdf to print a pdf version of the reports. 
+2025-08-26 13:32:50,707 30344 INFO ? odoo.service.server: Watching addons folder C:\Dev\odoo17-internship\odoo-source\odoo\addons 
+2025-08-26 13:32:50,708 30344 INFO ? odoo.service.server: Watching addons folder c:\dev\odoo17-internship\filestore\addons\17.0 
+2025-08-26 13:32:50,708 30344 INFO ? odoo.service.server: Watching addons folder c:\dev\odoo17-internship\odoo-source\addons 
+2025-08-26 13:32:50,708 30344 INFO ? odoo.service.server: Watching addons folder c:\dev\odoo17-internship\custom-addons 
+2025-08-26 13:32:50,708 30344 INFO ? odoo.service.server: Watching addons folder c:\dev\odoo17-internship\odoo-source\odoo\addons 
+2025-08-26 13:32:50,710 30344 INFO ? odoo.service.server: AutoReload watcher running with watchdog 
+2025-08-26 13:32:50,745 30344 INFO ? odoo.service.server: HTTP service (werkzeug) running on LENOVO:8069 
+2025-08-26 13:43:11,472 30344 INFO ? odoo.service.server: Initiating shutdown 
+2025-08-26 13:43:11,472 30344 INFO ? odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2025-08-26 13:43:11,473 30344 INFO ? odoo.sql_db: ConnectionPool(used=0/count=0/max=64): Closed 2 connections  
+2025-08-26 13:50:10,129 35092 INFO ? odoo: Odoo version 17.0 
+2025-08-26 13:50:10,129 35092 INFO ? odoo: Using configuration file at C:\Dev\odoo17-internship\config\odoo.conf 
+2025-08-26 13:50:10,129 35092 INFO ? odoo: addons paths: ['C:\\Dev\\odoo17-internship\\odoo-source\\odoo\\addons', 'c:\\dev\\odoo17-internship\\filestore\\addons\\17.0', 'c:\\dev\\odoo17-internship\\odoo-source\\addons', 'c:\\dev\\odoo17-internship\\custom-addons', 'c:\\dev\\odoo17-internship\\odoo-source\\odoo\\addons'] 
+2025-08-26 13:50:10,129 35092 INFO ? odoo: database: odoo17@localhost:5432 
+2025-08-26 13:50:10,391 35092 INFO ? odoo.addons.base.models.ir_actions_report: You need Wkhtmltopdf to print a pdf version of the reports. 
+2025-08-26 13:50:10,865 35092 INFO ? odoo.service.server: HTTP service (werkzeug) running on LENOVO:8069 
+2025-08-26 13:54:49,395 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:54:49] "GET / HTTP/1.1" 303 - 1 0.036 0.128
+2025-08-26 13:54:49,567 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:54:49] "GET /web HTTP/1.1" 303 - 2 0.013 0.153
+2025-08-26 13:54:59,879 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:54:59] "GET /web/database/selector HTTP/1.1" 200 - 2 0.010 10.296
+2025-08-26 13:55:00,256 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/lib/bootstrap/dist/css/bootstrap.css HTTP/1.1" 200 - 1 0.007 0.315
+2025-08-26 13:55:00,256 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/src/libs/fontawesome/css/font-awesome.css HTTP/1.1" 200 - 1 0.009 0.314
+2025-08-26 13:55:00,280 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/lib/bootstrap/js/dist/dom/data.js HTTP/1.1" 200 - 1 0.008 0.336
+2025-08-26 13:55:00,596 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/lib/bootstrap/js/dist/dom/manipulator.js HTTP/1.1" 200 - 1 0.006 0.296
+2025-08-26 13:55:00,607 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/lib/bootstrap/js/dist/dom/selector-engine.js HTTP/1.1" 200 - 1 0.007 0.297
+2025-08-26 13:55:00,621 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/lib/bootstrap/js/dist/dom/event-handler.js HTTP/1.1" 200 - 1 0.008 0.344
+2025-08-26 13:55:00,970 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/img/logo2.png HTTP/1.1" 200 - 1 0.026 0.281
+2025-08-26 13:55:00,979 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/src/public/database_manager.js HTTP/1.1" 200 - 1 0.007 0.314
+2025-08-26 13:55:00,982 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:00] "GET /web/static/lib/bootstrap/js/dist/base-component.js HTTP/1.1" 200 - 1 0.009 0.351
+2025-08-26 13:55:01,016 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:01] "GET /web/static/lib/bootstrap/js/dist/modal.js HTTP/1.1" 200 - 1 0.009 0.382
+2025-08-26 13:55:01,393 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:01] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 1 0.004 0.072
+2025-08-26 13:55:01,630 35092 INFO ? werkzeug: 172.18.16.1 - - [26/Aug/2025 13:55:01] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 1 0.005 0.209
+2025-08-26 13:55:54,658 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:54] "GET / HTTP/1.1" 303 - 1 0.005 0.153
+2025-08-26 13:55:54,770 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:54] "GET /web HTTP/1.1" 303 - 2 0.008 0.099
+2025-08-26 13:55:55,808 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:55] "GET /web/database/selector HTTP/1.1" 200 - 2 0.011 1.024
+2025-08-26 13:55:56,610 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:56] "GET /web/static/lib/bootstrap/dist/css/bootstrap.css HTTP/1.1" 200 - 1 0.007 0.415
+2025-08-26 13:55:56,614 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:56] "GET /web/static/lib/bootstrap/js/dist/dom/data.js HTTP/1.1" 200 - 1 0.005 0.419
+2025-08-26 13:55:56,617 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:56] "GET /web/static/lib/bootstrap/js/dist/dom/selector-engine.js HTTP/1.1" 200 - 1 0.006 0.420
+2025-08-26 13:55:56,621 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:56] "GET /web/static/lib/bootstrap/js/dist/dom/manipulator.js HTTP/1.1" 200 - 1 0.006 0.422
+2025-08-26 13:55:56,621 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:56] "GET /web/static/lib/bootstrap/js/dist/dom/event-handler.js HTTP/1.1" 200 - 1 0.005 0.426
+2025-08-26 13:55:56,621 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:56] "GET /web/static/src/libs/fontawesome/css/font-awesome.css HTTP/1.1" 200 - 1 0.005 0.428
+2025-08-26 13:55:57,177 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:57] "GET /web/static/lib/bootstrap/js/dist/base-component.js HTTP/1.1" 200 - 1 0.006 0.227
+2025-08-26 13:55:57,180 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:57] "GET /web/static/lib/bootstrap/js/dist/modal.js HTTP/1.1" 200 - 1 0.005 0.228
+2025-08-26 13:55:57,181 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:57] "GET /web/static/src/public/database_manager.js HTTP/1.1" 200 - 1 0.005 0.190
+2025-08-26 13:55:57,183 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:57] "GET /web/static/img/logo2.png HTTP/1.1" 200 - 1 0.006 0.179
+2025-08-26 13:55:57,718 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:57] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 1 0.005 0.052
+2025-08-26 13:55:58,016 35092 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 13:55:58] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 1 0.004 0.081
+2025-08-26 13:58:45,016 35092 INFO ? odoo.service.server: Initiating shutdown 
+2025-08-26 13:58:45,016 35092 INFO ? odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2025-08-26 15:40:03,760 11312 INFO ? odoo: Odoo version 17.0 
+2025-08-26 15:40:03,761 11312 INFO ? odoo: Using configuration file at C:\Dev\odoo17-internship\config\odoo.conf 
+2025-08-26 15:40:03,761 11312 INFO ? odoo: addons paths: ['C:\\Dev\\odoo17-internship\\odoo-source\\odoo\\addons', 'c:\\dev\\odoo17-internship\\filestore\\addons\\17.0', 'c:\\dev\\odoo17-internship\\odoo-source\\addons', 'c:\\dev\\odoo17-internship\\custom-addons', 'c:\\dev\\odoo17-internship\\odoo-source\\odoo\\addons'] 
+2025-08-26 15:40:03,762 11312 INFO ? odoo: database: odoo17@localhost:5432 
+2025-08-26 15:40:04,107 11312 INFO ? odoo.addons.base.models.ir_actions_report: You need Wkhtmltopdf to print a pdf version of the reports. 
+2025-08-26 15:40:17,601 11312 INFO ? odoo.service.server: HTTP service (werkzeug) running on LENOVO:8069 
+2025-08-26 15:40:18,027 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:40:18] "GET / HTTP/1.1" 303 - 1 0.027 0.149
+2025-08-26 15:40:18,207 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:40:18] "GET /web HTTP/1.1" 303 - 2 0.010 0.137
+2025-08-26 15:40:22,448 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:40:22] "GET /web/database/selector HTTP/1.1" 200 - 2 0.018 4.218
+2025-08-26 15:44:48,439 11312 INFO None odoo.service.db: Create database `mydb`. 
+2025-08-26 15:44:51,099 11312 INFO None odoo.modules.loading: loading 1 modules... 
+2025-08-26 15:44:51,100 11312 INFO None odoo.modules.loading: Loading module base (1/1) 
+2025-08-26 15:44:51,154 11312 INFO None odoo.modules.registry: module base: creating or updating database tables 
+2025-08-26 15:44:51,899 11312 INFO None odoo.models: Prepare computation of ir.module.module.menus_by_module 
+2025-08-26 15:44:51,900 11312 INFO None odoo.models: Prepare computation of ir.module.module.reports_by_module 
+2025-08-26 15:44:51,900 11312 INFO None odoo.models: Prepare computation of ir.module.module.views_by_module 
+2025-08-26 15:44:52,095 11312 INFO None odoo.models: Prepare computation of res.partner.user_id 
+2025-08-26 15:44:52,095 11312 INFO None odoo.models: Prepare computation of res.partner.commercial_partner_id 
+2025-08-26 15:44:52,095 11312 INFO None odoo.models: Prepare computation of res.partner.complete_name 
+2025-08-26 15:44:52,095 11312 INFO None odoo.models: Prepare computation of res.partner.company_registry 
+2025-08-26 15:44:52,095 11312 INFO None odoo.models: Prepare computation of res.partner.commercial_company_name 
+2025-08-26 15:44:52,095 11312 INFO None odoo.models: Prepare computation of res.partner.partner_share 
+2025-08-26 15:44:52,169 11312 INFO None odoo.models: Prepare computation of res.currency.decimal_places 
+2025-08-26 15:44:52,220 11312 INFO None odoo.models: Prepare computation of res.company.uses_default_logo 
+2025-08-26 15:44:52,220 11312 INFO None odoo.models: Prepare computation of res.company.logo_web 
+2025-08-26 15:44:52,224 11312 INFO None odoo.models: Computing parent_path for table res_company... 
+2025-08-26 15:44:52,290 11312 INFO None odoo.models: Prepare computation of res.users.signature 
+2025-08-26 15:44:52,291 11312 INFO None odoo.models: Prepare computation of res.users.share 
+2025-08-26 15:44:55,598 11312 INFO None odoo.modules.loading: loading base/data/res_bank.xml 
+2025-08-26 15:44:55,661 11312 INFO None odoo.modules.loading: loading base/data/res.lang.csv 
+2025-08-26 15:44:55,723 11312 INFO None odoo.modules.loading: loading base/data/res_lang_data.xml 
+2025-08-26 15:44:55,808 11312 INFO None odoo.modules.loading: loading base/data/res_partner_data.xml 
+2025-08-26 15:44:55,912 11312 INFO None odoo.modules.loading: loading base/data/res_currency_data.xml 
+2025-08-26 15:44:56,752 11312 INFO None odoo.modules.loading: loading base/data/res_company_data.xml 
+2025-08-26 15:44:56,779 11312 INFO None odoo.modules.loading: loading base/data/res_users_data.xml 
+2025-08-26 15:44:58,600 11312 INFO None odoo.modules.loading: loading base/data/report_paperformat_data.xml 
+2025-08-26 15:44:58,672 11312 INFO None odoo.modules.loading: loading base/data/res_country_data.xml 
+2025-08-26 15:44:59,352 11312 INFO None odoo.modules.loading: loading base/data/ir_demo_data.xml 
+2025-08-26 15:44:59,393 11312 INFO None odoo.modules.loading: loading base/security/base_groups.xml 
+2025-08-26 15:44:59,766 11312 INFO None odoo.modules.loading: loading base/security/base_security.xml 
+2025-08-26 15:44:59,945 11312 INFO None odoo.modules.loading: loading base/views/base_menus.xml 
+2025-08-26 15:45:00,158 11312 INFO None odoo.modules.loading: loading base/views/decimal_precision_views.xml 
+2025-08-26 15:45:00,230 11312 INFO None odoo.modules.loading: loading base/views/res_config_views.xml 
+2025-08-26 15:45:00,258 11312 INFO None odoo.modules.loading: loading base/data/res.country.state.csv 
+2025-08-26 15:45:01,839 11312 INFO None odoo.modules.loading: loading base/views/ir_actions_views.xml 
+2025-08-26 15:45:02,262 11312 INFO None odoo.modules.loading: loading base/views/ir_asset_views.xml 
+2025-08-26 15:45:02,348 11312 INFO None odoo.modules.loading: loading base/views/ir_config_parameter_views.xml 
+2025-08-26 15:45:02,392 11312 INFO None odoo.modules.loading: loading base/views/ir_cron_views.xml 
+2025-08-26 15:45:02,575 11312 INFO None odoo.modules.loading: loading base/views/ir_cron_trigger_views.xml 
+2025-08-26 15:45:02,654 11312 INFO None odoo.modules.loading: loading base/views/ir_filters_views.xml 
+2025-08-26 15:45:02,705 11312 INFO None odoo.modules.loading: loading base/views/ir_mail_server_views.xml 
+2025-08-26 15:45:02,760 11312 INFO None odoo.modules.loading: loading base/views/ir_model_views.xml 
+2025-08-26 15:45:03,005 11312 INFO None odoo.modules.loading: loading base/views/ir_attachment_views.xml 
+2025-08-26 15:45:03,045 11312 INFO None odoo.modules.loading: loading base/views/ir_rule_views.xml 
+2025-08-26 15:45:03,100 11312 INFO None odoo.modules.loading: loading base/views/ir_sequence_views.xml 
+2025-08-26 15:45:03,145 11312 INFO None odoo.modules.loading: loading base/views/ir_ui_menu_views.xml 
+2025-08-26 15:45:03,191 11312 INFO None odoo.modules.loading: loading base/views/ir_ui_view_views.xml 
+2025-08-26 15:45:03,270 11312 INFO None odoo.modules.loading: loading base/views/ir_default_views.xml 
+2025-08-26 15:45:03,305 11312 INFO None odoo.modules.loading: loading base/data/ir_cron_data.xml 
+2025-08-26 15:45:03,329 11312 INFO None odoo.modules.loading: loading base/report/ir_model_report.xml 
+2025-08-26 15:45:03,346 11312 INFO None odoo.modules.loading: loading base/report/ir_model_templates.xml 
+2025-08-26 15:45:03,369 11312 INFO None odoo.modules.loading: loading base/views/ir_logging_views.xml 
+2025-08-26 15:45:03,419 11312 INFO None odoo.modules.loading: loading base/views/ir_qweb_widget_templates.xml 
+2025-08-26 15:45:03,461 11312 INFO None odoo.modules.loading: loading base/views/ir_module_views.xml 
+2025-08-26 15:45:03,567 11312 INFO None odoo.modules.loading: loading base/data/ir_module_category_data.xml 
+2025-08-26 15:45:03,688 11312 INFO None odoo.modules.loading: loading base/data/ir_module_module.xml 
+2025-08-26 15:45:03,858 11312 INFO None odoo.modules.loading: loading base/report/ir_module_reports.xml 
+2025-08-26 15:45:03,872 11312 INFO None odoo.modules.loading: loading base/report/ir_module_report_templates.xml 
+2025-08-26 15:45:03,889 11312 INFO None odoo.modules.loading: loading base/wizard/base_module_update_views.xml 
+2025-08-26 15:45:03,915 11312 INFO None odoo.modules.loading: loading base/wizard/base_language_install_views.xml 
+2025-08-26 15:45:03,941 11312 INFO None odoo.modules.loading: loading base/wizard/base_import_language_views.xml 
+2025-08-26 15:45:03,968 11312 INFO None odoo.modules.loading: loading base/wizard/base_module_upgrade_views.xml 
+2025-08-26 15:45:04,015 11312 INFO None odoo.modules.loading: loading base/wizard/base_module_uninstall_views.xml 
+2025-08-26 15:45:04,041 11312 INFO None odoo.modules.loading: loading base/wizard/base_export_language_views.xml 
+2025-08-26 15:45:04,082 11312 INFO None odoo.modules.loading: loading base/wizard/base_partner_merge_views.xml 
+2025-08-26 15:45:04,117 11312 INFO None odoo.modules.loading: loading base/data/ir_demo_failure_data.xml 
+2025-08-26 15:45:04,165 11312 INFO None odoo.modules.loading: loading base/views/ir_profile_views.xml 
+2025-08-26 15:45:04,203 11312 INFO None odoo.modules.loading: loading base/views/res_company_views.xml 
+2025-08-26 15:45:04,242 11312 INFO None odoo.modules.loading: loading base/views/res_lang_views.xml 
+2025-08-26 15:45:04,280 11312 INFO None odoo.modules.loading: loading base/views/res_partner_views.xml 
+2025-08-26 15:45:04,449 11312 INFO None odoo.modules.loading: loading base/views/res_bank_views.xml 
+2025-08-26 15:45:04,509 11312 INFO None odoo.modules.loading: loading base/views/res_country_views.xml 
+2025-08-26 15:45:04,571 11312 INFO None odoo.modules.loading: loading base/views/res_currency_views.xml 
+2025-08-26 15:45:04,643 11312 INFO None odoo.modules.loading: loading base/views/res_users_views.xml 
+2025-08-26 15:45:04,812 11312 INFO None odoo.modules.loading: loading base/views/res_users_identitycheck_views.xml 
+2025-08-26 15:45:04,836 11312 INFO None odoo.modules.loading: loading base/views/ir_property_views.xml 
+2025-08-26 15:45:04,869 11312 INFO None odoo.modules.loading: loading base/views/res_config_settings_views.xml 
+2025-08-26 15:45:04,888 11312 INFO None odoo.modules.loading: loading base/views/report_paperformat_views.xml 
+2025-08-26 15:45:04,930 11312 INFO None odoo.modules.loading: loading base/security/ir.model.access.csv 
+2025-08-26 15:45:05,138 11312 INFO None odoo.addons.base.models.ir_module: module base: loading translation file c:\dev\odoo17-internship\odoo-source\odoo\addons\base\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:05,139 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\odoo\addons\base\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:06,434 11312 INFO None odoo.modules.loading: Module base loaded in 15.33s, 7973 queries (+7973 other) 
+2025-08-26 15:45:06,434 11312 INFO None odoo.modules.loading: 1 modules loaded in 15.33s, 7973 queries (+7973 extra) 
+2025-08-26 15:45:06,487 11312 INFO None odoo.addons.base.models.ir_module: module base: loading translation file c:\dev\odoo17-internship\odoo-source\odoo\addons\base\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:06,488 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\odoo\addons\base\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:07,720 11312 INFO None odoo.modules.loading: updating modules list 
+2025-08-26 15:45:07,723 11312 INFO None odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via n/a 
+2025-08-26 15:45:09,274 11312 INFO None odoo.modules.loading: loading 11 modules... 
+2025-08-26 15:45:09,274 11312 INFO None odoo.modules.loading: Loading module web (2/11) 
+2025-08-26 15:45:09,345 11312 INFO None odoo.modules.registry: module web: creating or updating database tables 
+2025-08-26 15:45:10,224 11312 INFO None odoo.modules.loading: loading web/security/ir.model.access.csv 
+2025-08-26 15:45:10,274 11312 INFO None odoo.modules.loading: loading web/views/webclient_templates.xml 
+2025-08-26 15:45:10,525 11312 INFO None odoo.modules.loading: loading web/views/report_templates.xml 
+2025-08-26 15:45:10,713 11312 INFO None odoo.modules.loading: loading web/views/base_document_layout_views.xml 
+2025-08-26 15:45:10,742 11312 INFO None odoo.modules.loading: loading web/views/partner_view.xml 
+2025-08-26 15:45:10,763 11312 INFO None odoo.modules.loading: loading web/views/speedscope_template.xml 
+2025-08-26 15:45:10,814 11312 INFO None odoo.modules.loading: loading web/views/neutralize_views.xml 
+2025-08-26 15:45:10,837 11312 INFO None odoo.modules.loading: loading web/data/ir_attachment.xml 
+2025-08-26 15:45:10,859 11312 INFO None odoo.modules.loading: loading web/data/report_layout.xml 
+2025-08-26 15:45:10,925 11312 INFO None odoo.addons.base.models.ir_module: module web: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:10,939 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:11,403 11312 INFO None odoo.modules.loading: Module web loaded in 2.13s, 1002 queries (+1002 other) 
+2025-08-26 15:45:11,403 11312 INFO None odoo.modules.loading: Loading module auth_totp (3/11) 
+2025-08-26 15:45:11,791 11312 INFO None odoo.modules.registry: module auth_totp: creating or updating database tables 
+2025-08-26 15:45:11,878 11312 INFO None odoo.modules.loading: loading auth_totp/security/security.xml 
+2025-08-26 15:45:11,917 11312 INFO None odoo.modules.loading: loading auth_totp/security/ir.model.access.csv 
+2025-08-26 15:45:11,937 11312 INFO None odoo.modules.loading: loading auth_totp/data/ir_action_data.xml 
+2025-08-26 15:45:11,957 11312 INFO None odoo.modules.loading: loading auth_totp/views/res_users_views.xml 
+2025-08-26 15:45:12,006 11312 INFO None odoo.modules.loading: loading auth_totp/views/templates.xml 
+2025-08-26 15:45:12,036 11312 INFO None odoo.modules.loading: loading auth_totp/wizard/auth_totp_wizard_views.xml 
+2025-08-26 15:45:12,056 11312 INFO None odoo.addons.base.models.ir_module: module auth_totp: loading translation file c:\dev\odoo17-internship\odoo-source\addons\auth_totp\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:12,075 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\auth_totp\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:12,139 11312 INFO None odoo.modules.loading: Module auth_totp loaded in 0.74s, 185 queries (+185 other) 
+2025-08-26 15:45:12,140 11312 INFO None odoo.modules.loading: Loading module base_import (4/11) 
+2025-08-26 15:45:12,307 11312 INFO None odoo.modules.registry: module base_import: creating or updating database tables 
+2025-08-26 15:45:13,216 11312 INFO None odoo.modules.loading: loading base_import/security/ir.model.access.csv 
+2025-08-26 15:45:13,250 11312 INFO None odoo.addons.base.models.ir_module: module base_import: loading translation file c:\dev\odoo17-internship\odoo-source\addons\base_import\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:13,264 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\base_import\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:13,311 11312 INFO None odoo.modules.loading: Module base_import loaded in 1.17s, 809 queries (+809 other) 
+2025-08-26 15:45:13,311 11312 INFO None odoo.modules.loading: Loading module base_import_module (5/11) 
+2025-08-26 15:45:13,590 11312 INFO None odoo.modules.registry: module base_import_module: creating or updating database tables 
+2025-08-26 15:45:13,793 11312 INFO None odoo.modules.loading: loading base_import_module/security/ir.model.access.csv 
+2025-08-26 15:45:13,830 11312 INFO None odoo.modules.loading: loading base_import_module/views/base_import_module_view.xml 
+2025-08-26 15:45:13,867 11312 INFO None odoo.modules.loading: loading base_import_module/views/ir_module_views.xml 
+2025-08-26 15:45:13,919 11312 INFO None odoo.addons.base.models.ir_module: module base_import_module: loading translation file c:\dev\odoo17-internship\odoo-source\addons\base_import_module\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:13,931 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\base_import_module\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:13,975 11312 INFO None odoo.modules.loading: Module base_import_module loaded in 0.66s, 163 queries (+163 other) 
+2025-08-26 15:45:13,976 11312 INFO None odoo.modules.loading: Loading module base_setup (6/11) 
+2025-08-26 15:45:14,117 11312 INFO None odoo.modules.registry: module base_setup: creating or updating database tables 
+2025-08-26 15:45:14,183 11312 INFO None odoo.modules.loading: loading base_setup/data/base_setup_data.xml 
+2025-08-26 15:45:14,215 11312 INFO None odoo.modules.loading: loading base_setup/views/res_config_settings_views.xml 
+2025-08-26 15:45:14,330 11312 INFO None odoo.modules.loading: loading base_setup/views/res_partner_views.xml 
+2025-08-26 15:45:14,372 11312 INFO None odoo.addons.base.models.ir_module: module base_setup: loading translation file c:\dev\odoo17-internship\odoo-source\addons\base_setup\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:14,387 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\base_setup\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:14,515 11312 INFO None odoo.modules.loading: Module base_setup loaded in 0.54s, 147 queries (+147 other) 
+2025-08-26 15:45:14,515 11312 INFO None odoo.modules.loading: Loading module bus (7/11) 
+2025-08-26 15:45:15,016 11312 INFO None odoo.modules.registry: module bus: creating or updating database tables 
+2025-08-26 15:45:15,234 11312 INFO None odoo.modules.loading: loading bus/security/ir.model.access.csv 
+2025-08-26 15:45:15,297 11312 INFO None odoo.addons.base.models.ir_module: module bus: loading translation file c:\dev\odoo17-internship\odoo-source\addons\bus\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:15,318 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\bus\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:15,341 11312 INFO None odoo.modules.loading: Module bus loaded in 0.83s, 120 queries (+120 other) 
+2025-08-26 15:45:15,341 11312 INFO None odoo.modules.loading: Loading module web_tour (8/11) 
+2025-08-26 15:45:15,410 11312 INFO None odoo.modules.registry: module web_tour: creating or updating database tables 
+2025-08-26 15:45:15,455 11312 INFO None odoo.modules.loading: loading web_tour/security/ir.model.access.csv 
+2025-08-26 15:45:15,482 11312 INFO None odoo.modules.loading: loading web_tour/security/ir.rule.csv 
+2025-08-26 15:45:15,507 11312 INFO None odoo.modules.loading: loading web_tour/views/tour_views.xml 
+2025-08-26 15:45:15,550 11312 INFO None odoo.addons.base.models.ir_module: module web_tour: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web_tour\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:15,560 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web_tour\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:15,597 11312 INFO None odoo.modules.loading: Module web_tour loaded in 0.26s, 111 queries (+111 other) 
+2025-08-26 15:45:15,597 11312 INFO None odoo.modules.loading: Loading module iap (9/11) 
+2025-08-26 15:45:15,829 11312 INFO None odoo.modules.registry: module iap: creating or updating database tables 
+2025-08-26 15:45:15,930 11312 INFO None odoo.modules.loading: loading iap/security/ir.model.access.csv 
+2025-08-26 15:45:15,977 11312 INFO None odoo.modules.loading: loading iap/security/ir_rule.xml 
+2025-08-26 15:45:16,007 11312 INFO None odoo.modules.loading: loading iap/views/iap_views.xml 
+2025-08-26 15:45:16,118 11312 INFO None odoo.modules.loading: loading iap/views/res_config_settings.xml 
+2025-08-26 15:45:16,182 11312 INFO None odoo.addons.base.models.ir_module: module iap: loading translation file c:\dev\odoo17-internship\odoo-source\addons\iap\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:16,194 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\iap\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:16,230 11312 INFO None odoo.modules.loading: Module iap loaded in 0.63s, 159 queries (+159 other) 
+2025-08-26 15:45:16,230 11312 INFO None odoo.modules.loading: Loading module web_editor (10/11) 
+2025-08-26 15:45:17,081 11312 INFO None odoo.modules.registry: module web_editor: creating or updating database tables 
+2025-08-26 15:45:17,880 11312 INFO None odoo.modules.loading: loading web_editor/security/ir.model.access.csv 
+2025-08-26 15:45:17,904 11312 INFO None odoo.modules.loading: loading web_editor/data/editor_assets.xml 
+2025-08-26 15:45:17,922 11312 INFO None odoo.modules.loading: loading web_editor/views/editor.xml 
+2025-08-26 15:45:17,964 11312 INFO None odoo.modules.loading: loading web_editor/views/snippets.xml 
+2025-08-26 15:45:18,039 11312 INFO None odoo.addons.base.models.ir_module: module web_editor: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web_editor\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:18,054 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web_editor\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:18,138 11312 INFO None odoo.modules.loading: Module web_editor loaded in 1.91s, 917 queries (+917 other) 
+2025-08-26 15:45:18,138 11312 INFO None odoo.modules.loading: Loading module web_unsplash (11/11) 
+2025-08-26 15:45:18,259 11312 INFO None odoo.modules.registry: module web_unsplash: creating or updating database tables 
+2025-08-26 15:45:18,324 11312 INFO None odoo.modules.loading: loading web_unsplash/views/res_config_settings_view.xml 
+2025-08-26 15:45:18,362 11312 INFO None odoo.addons.base.models.ir_module: module web_unsplash: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web_unsplash\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:18,373 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web_unsplash\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:18,398 11312 INFO None odoo.modules.loading: Module web_unsplash loaded in 0.26s, 100 queries (+100 other) 
+2025-08-26 15:45:18,398 11312 INFO None odoo.modules.loading: 11 modules loaded in 9.12s, 3713 queries (+3713 extra) 
+2025-08-26 15:45:18,877 11312 INFO None odoo.modules.loading: Modules loaded. 
+2025-08-26 15:45:18,905 11312 INFO None odoo.modules.registry: Registry loaded in 27.839s 
+2025-08-26 15:45:18,923 11312 INFO None odoo.addons.base.models.ir_module: module base: loading translation file c:\dev\odoo17-internship\odoo-source\odoo\addons\base\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:18,924 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\odoo\addons\base\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,441 11312 INFO None odoo.addons.base.models.ir_module: module web: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,442 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,787 11312 INFO None odoo.addons.base.models.ir_module: module auth_totp: loading translation file c:\dev\odoo17-internship\odoo-source\addons\auth_totp\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,787 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\auth_totp\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,837 11312 INFO None odoo.addons.base.models.ir_module: module base_import: loading translation file c:\dev\odoo17-internship\odoo-source\addons\base_import\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,837 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\base_import\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,853 11312 INFO None odoo.addons.base.models.ir_module: module base_import_module: loading translation file c:\dev\odoo17-internship\odoo-source\addons\base_import_module\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,853 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\base_import_module\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,864 11312 INFO None odoo.addons.base.models.ir_module: module base_setup: loading translation file c:\dev\odoo17-internship\odoo-source\addons\base_setup\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,865 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\base_setup\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,872 11312 INFO None odoo.addons.base.models.ir_module: module bus: loading translation file c:\dev\odoo17-internship\odoo-source\addons\bus\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,873 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\bus\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,877 11312 INFO None odoo.addons.base.models.ir_module: module iap: loading translation file c:\dev\odoo17-internship\odoo-source\addons\iap\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,877 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\iap\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,881 11312 INFO None odoo.addons.base.models.ir_module: module web_editor: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web_editor\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,881 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web_editor\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,910 11312 INFO None odoo.addons.base.models.ir_module: module web_tour: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web_tour\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,911 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web_tour\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,916 11312 INFO None odoo.addons.base.models.ir_module: module web_unsplash: loading translation file c:\dev\odoo17-internship\odoo-source\addons\web_unsplash\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:19,916 11312 INFO None odoo.tools.translate: loading base translation file c:\dev\odoo17-internship\odoo-source\addons\web_unsplash\i18n\fr.po for language fr_FR 
+2025-08-26 15:45:22,418 11312 INFO None odoo.addons.base.models.res_users: Login successful for db:mydb login:admin@example.com from 127.0.0.1 
+2025-08-26 15:45:22,431 11312 INFO None werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:22] "POST /web/database/create HTTP/1.1" 303 - 17766 15.310 21.803
+2025-08-26 15:45:22,796 11312 INFO mydb odoo.addons.base.models.ir_http: Generating routing map for key None 
+2025-08-26 15:45:22,820 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:22] "GET /web HTTP/1.1" 303 - 5 0.010 0.069
+2025-08-26 15:45:23,783 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:23] "GET /web/login HTTP/1.1" 200 - 51 0.038 0.743
+2025-08-26 15:45:24,484 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:24] "GET /web/binary/company_logo HTTP/1.1" 200 - 2 0.015 0.296
+2025-08-26 15:45:25,210 11312 INFO mydb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/01c6c9d/web.assets_frontend_minimal.min.js (id:14) 
+2025-08-26 15:45:25,243 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:25] "GET /web/assets/01c6c9d/web.assets_frontend_minimal.min.js HTTP/1.1" 200 - 12 0.037 0.401
+2025-08-26 15:45:33,766 11312 INFO mydb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/ea1fa62/web.assets_frontend.min.css (id:15) 
+2025-08-26 15:45:33,799 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:33] "GET /web/assets/ea1fa62/web.assets_frontend.min.css HTTP/1.1" 200 - 9 0.058 9.877
+2025-08-26 15:45:49,645 11312 INFO mydb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/026591a/web.assets_frontend_lazy.min.js (id:16) 
+2025-08-26 15:45:50,407 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:50] "GET /web/assets/026591a/web.assets_frontend_lazy.min.js HTTP/1.1" 200 - 9 0.007 16.108
+2025-08-26 15:45:51,896 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:45:51] "GET /web/webclient/translations/1756223150544 HTTP/1.1" 200 - 4 0.024 1.015
+2025-08-26 15:46:04,892 11312 INFO mydb odoo.addons.base.models.ir_cron: Starting job `Base: Auto-vacuum internal data`. 
+2025-08-26 15:46:04,952 11312 INFO mydb odoo.addons.base.models.ir_attachment: filestore gc 13 checked, 0 removed 
+2025-08-26 15:46:05,024 11312 INFO mydb odoo.addons.base.models.res_users: GC'd 0 user log entries 
+2025-08-26 15:46:05,067 11312 INFO mydb odoo.addons.auth_totp.models.auth_totp: GC'd 0 totp devices entries 
+2025-08-26 15:46:05,085 11312 INFO mydb odoo.addons.base.models.ir_cron: Job done: `Base: Auto-vacuum internal data` (0.193s). 
+2025-08-26 15:46:05,091 11312 INFO mydb odoo.addons.base.models.ir_cron: Starting job `Base: Portal Users Deletion`. 
+2025-08-26 15:46:05,095 11312 INFO mydb odoo.addons.base.models.ir_cron: Job done: `Base: Portal Users Deletion` (0.004s). 
+2025-08-26 15:46:09,772 11312 INFO mydb odoo.addons.base.models.res_users: Login successful for db:mydb login:admin@example.com from 127.0.0.1 
+2025-08-26 15:46:09,789 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:09] "POST /web/login HTTP/1.1" 303 - 27 0.028 1.364
+2025-08-26 15:46:10,470 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:10] "GET /web HTTP/1.1" 200 - 63 0.051 0.304
+2025-08-26 15:46:10,853 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:10] "GET /web/webclient/load_menus/1d2d2941deddb33eb2315179322cc47481f440c7c73e0b1108195044947e7976 HTTP/1.1" 200 - 1 0.003 0.014
+2025-08-26 15:46:10,884 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:10] "GET /web/webclient/translations/dc4e4f3a6aa6dbda54a81d3e7dbe22c7a8f7840b?lang=fr_FR HTTP/1.1" 200 - 3 0.018 0.026
+2025-08-26 15:46:20,793 11312 INFO mydb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/5f81586/web.assets_web.min.css (id:17) 
+2025-08-26 15:46:20,885 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:20] "GET /web/assets/5f81586/web.assets_web.min.css HTTP/1.1" 200 - 12 0.037 10.346
+2025-08-26 15:46:38,618 11312 INFO mydb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/2c2c16d/web.assets_web.min.js (id:18) 
+2025-08-26 15:46:39,522 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:39] "GET /web/assets/2c2c16d/web.assets_web.min.js HTTP/1.1" 200 - 11 0.010 28.678
+2025-08-26 15:46:40,118 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 7 0.018 0.018
+2025-08-26 15:46:40,211 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /web/static/img/odoo-icon-192x192.png HTTP/1.1" 200 - 0 0.000 0.039
+2025-08-26 15:46:40,242 11312 INFO mydb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/c9df19f/bus.websocket_worker_assets.min.js (id:19) 
+2025-08-26 15:46:40,273 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /bus/websocket_worker_bundle?v=17.0-1 HTTP/1.1" 200 - 8 0.014 0.174
+2025-08-26 15:46:40,366 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.025
+2025-08-26 15:46:40,491 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "POST /web/action/load HTTP/1.1" 200 - 9 0.022 0.034
+2025-08-26 15:46:40,534 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 200 - 8 0.010 0.019
+2025-08-26 15:46:40,562 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /web/service-worker.js HTTP/1.1" 200 - 1 0.001 0.031
+2025-08-26 15:46:40,598 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:40] "GET /websocket?version=17.0-1 HTTP/1.1" 101 - 1 0.001 0.005
+2025-08-26 15:46:40,955 11312 INFO ? odoo.addons.bus.models.bus: Bus.loop listen imbus on db postgres 
+2025-08-26 15:46:41,049 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:41] "GET /web/offline HTTP/1.1" 200 - 6 0.009 0.135
+2025-08-26 15:46:41,344 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:41] "POST /web/dataset/call_kw/ir.module.module/get_views HTTP/1.1" 200 - 47 0.038 0.075
+2025-08-26 15:46:41,693 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:41] "POST /web/dataset/call_kw/ir.module.module/search_panel_select_range HTTP/1.1" 200 - 1 0.004 0.010
+2025-08-26 15:46:41,767 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:41] "POST /web/dataset/call_kw/ir.module.module/search_panel_select_range HTTP/1.1" 200 - 39 0.045 0.039
+2025-08-26 15:46:42,701 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:42] "POST /web/dataset/call_kw/ir.module.module/web_search_read HTTP/1.1" 200 - 4 0.015 0.999
+2025-08-26 15:46:43,071 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /sale_management/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.002
+2025-08-26 15:46:43,410 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /base/static/img/icons/mrp_workorder.png HTTP/1.1" 200 - 0 0.000 0.020
+2025-08-26 15:46:43,421 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /website/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.028
+2025-08-26 15:46:43,422 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /pos_restaurant/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.037
+2025-08-26 15:46:43,429 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /account/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.042
+2025-08-26 15:46:43,435 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /crm/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.047
+2025-08-26 15:46:43,440 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /project/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.044
+2025-08-26 15:46:43,791 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /mrp/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.015
+2025-08-26 15:46:43,792 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /base/static/img/icons/account_accountant.png HTTP/1.1" 200 - 0 0.000 0.014
+2025-08-26 15:46:43,823 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /base/static/img/icons/knowledge.png HTTP/1.1" 200 - 0 0.000 0.022
+2025-08-26 15:46:43,827 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /purchase/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.018
+2025-08-26 15:46:43,843 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /mass_mailing/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.014
+2025-08-26 15:46:43,846 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:43] "GET /website_sale/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.011
+2025-08-26 15:46:44,138 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /stock/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.008
+2025-08-26 15:46:44,138 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /point_of_sale/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.007
+2025-08-26 15:46:44,169 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/timesheet_grid.png HTTP/1.1" 200 - 0 0.000 0.010
+2025-08-26 15:46:44,184 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /hr_expense/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.009
+2025-08-26 15:46:44,196 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/web_studio.png HTTP/1.1" 200 - 0 0.000 0.007
+2025-08-26 15:46:44,230 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /hr_holidays/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.004
+2025-08-26 15:46:44,472 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /hr_recruitment/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.005
+2025-08-26 15:46:44,474 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/industry_fsm.png HTTP/1.1" 200 - 0 0.000 0.006
+2025-08-26 15:46:44,497 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /hr/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.003
+2025-08-26 15:46:44,541 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /data_recycle/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.007
+2025-08-26 15:46:44,546 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /maintenance/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.011
+2025-08-26 15:46:44,560 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/sign.png HTTP/1.1" 200 - 0 0.000 0.012
+2025-08-26 15:46:44,831 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/helpdesk.png HTTP/1.1" 200 - 0 0.000 0.009
+2025-08-26 15:46:44,832 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/sale_subscription.png HTTP/1.1" 200 - 0 0.000 0.009
+2025-08-26 15:46:44,835 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/quality_control.png HTTP/1.1" 200 - 0 0.000 0.011
+2025-08-26 15:46:44,873 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /website_slides/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.008
+2025-08-26 15:46:44,876 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /base/static/img/icons/planning.png HTTP/1.1" 200 - 0 0.000 0.009
+2025-08-26 15:46:44,898 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:44] "GET /website_event/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.020
+2025-08-26 15:46:45,155 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /mail/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.003
+2025-08-26 15:46:45,193 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/mrp_plm.png HTTP/1.1" 200 - 0 0.000 0.005
+2025-08-26 15:46:45,195 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /contacts/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.008
+2025-08-26 15:46:45,218 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /calendar/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.013
+2025-08-26 15:46:45,223 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/hr_appraisal.png HTTP/1.1" 200 - 0 0.000 0.010
+2025-08-26 15:46:45,224 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/social.png HTTP/1.1" 200 - 0 0.000 0.017
+2025-08-26 15:46:45,493 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /fleet/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.009
+2025-08-26 15:46:45,533 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/marketing_automation.png HTTP/1.1" 200 - 0 0.000 0.015
+2025-08-26 15:46:45,542 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /im_livechat/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.011
+2025-08-26 15:46:45,557 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/appointment.png HTTP/1.1" 200 - 0 0.000 0.004
+2025-08-26 15:46:45,576 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /survey/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.007
+2025-08-26 15:46:45,578 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/web_mobile.png HTTP/1.1" 200 - 0 0.000 0.005
+2025-08-26 15:46:45,839 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /repair/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.009
+2025-08-26 15:46:45,893 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /hr_attendance/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.021
+2025-08-26 15:46:45,901 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /mass_mailing_sms/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.022
+2025-08-26 15:46:45,907 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /base/static/img/icons/stock_barcode.png HTTP/1.1" 200 - 0 0.000 0.025
+2025-08-26 15:46:45,939 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /project_todo/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.015
+2025-08-26 15:46:45,950 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:45] "GET /hr_skills/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.004
+2025-08-26 15:46:46,221 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:46] "GET /base/static/img/icons/voip.png HTTP/1.1" 200 - 0 0.000 0.007
+2025-08-26 15:46:46,244 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:46] "GET /lunch/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.018
+2025-08-26 15:46:57,053 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:57] "GET /website_hr_recruitment/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.005
+2025-08-26 15:46:57,054 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:57] "GET /base/static/img/icons/sale_amazon.png HTTP/1.1" 200 - 0 0.000 0.005
+2025-08-26 15:46:57,056 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:57] "GET /base/static/img/icons/sale_ebay.png HTTP/1.1" 200 - 0 0.000 0.006
+2025-08-26 15:46:57,088 11312 INFO ? werkzeug: 127.0.0.1 - - [26/Aug/2025 15:46:57] "GET /hr_contract/static/description/icon.png HTTP/1.1" 200 - 0 0.000 0.002
+2025-08-26 15:47:05,113 11312 INFO mydb odoo.addons.base.models.ir_cron: Starting job `Base: Auto-vacuum internal data`. 
+2025-08-26 15:47:05,160 11312 INFO mydb odoo.addons.base.models.ir_attachment: filestore gc 3 checked, 0 removed 
+2025-08-26 15:47:05,236 11312 INFO mydb odoo.addons.base.models.res_users: GC'd 1 user log entries 
+2025-08-26 15:47:05,268 11312 INFO mydb odoo.addons.auth_totp.models.auth_totp: GC'd 0 totp devices entries 
+2025-08-26 15:47:05,284 11312 INFO mydb odoo.addons.base.models.ir_cron: Job done: `Base: Auto-vacuum internal data` (0.172s). 
+2025-08-26 16:29:43,706 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 16:29:43] "GET /websocket?version=17.0-1 HTTP/1.1" 101 - 1 0.001 0.064
+2025-08-26 17:44:47,502 11312 INFO mydb werkzeug: 127.0.0.1 - - [26/Aug/2025 17:44:47] "GET /websocket?version=17.0-1 HTTP/1.1" 101 - 1 0.002 0.027
+2025-08-26 18:31:30,263 11312 INFO ? odoo.service.server: Initiating shutdown 
+2025-08-26 18:31:30,277 11312 INFO ? odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2025-08-26 18:31:30,985 11312 INFO ? odoo.sql_db: ConnectionPool(used=0/count=0/max=64): Closed 4 connections  
