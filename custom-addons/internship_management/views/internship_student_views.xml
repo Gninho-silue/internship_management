@@ -1,118 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Form View -->
-    <record id="view_internship_student_form" model="ir.ui.view">
-        <field name="name">internship.student.form</field>
-        <field name="model">internship.student</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <field name="image" widget="image" class="oe_avatar"/>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Nom complet"/>
-                        </h1>
+    <data>
+
+        <!-- Vue liste étudiants -->
+        <record id="view_internship_student_tree" model="ir.ui.view">
+            <field name="name">internship.student.tree</field>
+            <field name="model">internship.student</field>
+            <field name="arch" type="xml">
+                <tree string="Étudiants">
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="school"/>
+                    <field name="study_level"/>
+                    <field name="speciality"/>
+                    <field name="stage_count" string="Stages"/>
+                    <field name="average_grade" string="Note moy."/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue formulaire étudiant -->
+        <record id="view_internship_student_form" model="ir.ui.view">
+            <field name="name">internship.student.form</field>
+            <field name="model">internship.student</field>
+            <field name="arch" type="xml">
+                <form string="Étudiant">
+                    <sheet>
+                        <field name="image" widget="image" class="oe_avatar"
+                               options="{'size': [90, 90]}"/>
+
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Nom complet"/></h1>
+                        </div>
+
+                        <group>
+                            <group name="contact" string="Contact">
+                                <field name="email"/>
+                                <field name="phone"/>
+                                <field name="birth_date"/>
+                                <field name="linkedin_profile" widget="url"/>
+                                <field name="user_id"/>
+                            </group>
+
+                            <group name="academic" string="Informations Académiques">
+                                <field name="school"/>
+                                <field name="study_level"/>
+                                <field name="speciality"/>
+                                <field name="student_number"/>
+                                <field name="expected_graduation"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page name="stages" string="Stages">
+                                <field name="stage_ids">
+                                    <tree>
+                                        <field name="reference"/>
+                                        <field name="name"/>
+                                        <field name="company_id"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="grade"/>
+                                    </tree>
+                                </field>
+
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="stage_count" string="Total Stages"/>
+                                    <field name="average_grade" string="Moyenne"/>
+                                    <field name="completion_rate" string="Taux Complétude"
+                                           widget="progressbar"/>
+                                </group>
+                            </page>
+
+                            <page name="skills" string="Compétences">
+                                <field name="skill_ids" widget="many2many_tags"/>
+                                <field name="interest_areas" widget="many2many_tags"/>
+                            </page>
+
+                            <page name="documents" string="Documents">
+                                <group>
+                                    <field name="cv" filename="cv_filename"/>
+                                </group>
+                                <field name="document_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="type"/>
+                                        <field name="date_upload"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
                     </div>
-                    <group>
-                        <group>
-                            <field name="email"/>
-                            <field name="phone"/>
-                            <field name="birth_date"/>
-                            <field name="linkedin_profile" widget="url"/>
-                        </group>
-                        <group>
-                            <field name="school"/>
-                            <field name="study_level"/>
-                            <field name="speciality"/>
-                            <field name="student_id"/>
-                            <field name="expected_graduation"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Stages">
-                            <field name="stage_ids">
-                                <tree>
-                                    <field name="name"/>
-                                    <field name="company_id"/>
-                                    <field name="start_date"/>
-                                    <field name="end_date"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Documents">
-                            <field name="document_ids">
-                                <tree>
-                                    <field name="name"/>
-                                    <field name="type"/>
-                                    <field name="date_upload"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
-            </form>
-        </field>
-    </record>
+                </form>
+            </field>
+        </record>
 
-    <!-- Tree View -->
-    <record id="view_internship_student_tree" model="ir.ui.view">
-        <field name="name">internship.student.tree</field>
-        <field name="model">internship.student</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="school"/>
-                <field name="study_level"/>
-                <field name="speciality"/>
-                <field name="stage_count"/>
-            </tree>
-        </field>
-    </record>
+        <!-- Vue kanban étudiants -->
+        <record id="view_internship_student_kanban" model="ir.ui.view">
+            <field name="name">internship.student.kanban</field>
+            <field name="model">internship.student</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="school"/>
+                    <field name="study_level"/>
+                    <field name="stage_count"/>
+                    <field name="image"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('internship.student', 'image', record.id.raw_value)"
+                                         alt="Étudiant" class="o_kanban_image_inner_pic"/>
+                                </div>
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="o_kanban_tags_section">
+                                        <div><field name="school"/></div>
+                                        <div><field name="study_level"/></div>
+                                        <div><i class="fa fa-envelope" title="Email"/> <field name="email"/></div>
+                                        <div><i class="fa fa-graduation-cap" title="Stages"/> <field name="stage_count"/> stages</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
 
-    <!-- Search View -->
-    <record id="view_internship_student_search" model="ir.ui.view">
-        <field name="name">internship.student.search</field>
-        <field name="model">internship.student</field>
-        <field name="arch" type="xml">
-            <search>
-                <field name="name"/>
-                <field name="school"/>
-                <field name="study_level"/>
-                <field name="speciality"/>
-                <separator/>
-                <filter string="Actif" name="active" domain="[('active','=',True)]"/>
-            </search>
-        </field>
-    </record>
+        <!-- Action liste étudiants -->
+        <record id="action_internship_student_list" model="ir.actions.act_window">
+            <field name="name">Étudiants</field>
+            <field name="res_model">internship.student</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Ajouter votre premier étudiant !
+                </p>
+                <p>
+                    Gérez les profils des étudiants, leurs compétences et leur parcours de stages.
+                </p>
+            </field>
+        </record>
 
-    <!-- Action -->
-    <record id="action_internship_student" model="ir.actions.act_window">
-        <field name="name">Stagiaires</field>
-        <field name="res_model">internship.student</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_active': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Créer votre premier stagiaire
-            </p>
-        </field>
-    </record>
-
-    <!-- Menu Items -->
-    <menuitem id="menu_internship_root"
-              name="Stages"
-              sequence="10"/>
-
-    <menuitem id="menu_internship_student"
-              name="Stagiaires"
-              parent="menu_internship_root"
-              action="action_internship_student"
-              sequence="10"/>
+    </data>
 </odoo>

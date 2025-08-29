@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Menu racine principal -->
+        <menuitem id="menu_internship_root"
+                  name="Gestion Stages"
+                  sequence="10"/>
+
+        <!-- ================================= -->
+        <!-- MENUS PRINCIPAUX -->
+        <!-- ================================= -->
+
+        <!-- Menu Stages -->
+        <menuitem id="menu_internship_stages"
+                  name="Stages"
+                  parent="menu_internship_root"
+                  sequence="10"/>
+
+        <!-- Menu Personnes -->
+        <menuitem id="menu_internship_people"
+                  name="Personnes"
+                  parent="menu_internship_root"
+                  sequence="20"/>
+
+        <!-- Menu Entreprises -->
+        <menuitem id="menu_internship_companies"
+                  name="Entreprises"
+                  parent="menu_internship_root"
+                  sequence="30"/>
+
+        <!-- ================================= -->
+        <!-- SOUS-MENUS - STAGES -->
+        <!-- ================================= -->
+
+        <!-- Tous les stages -->
+        <menuitem id="menu_internship_stage_all"
+                  name="Tous les Stages"
+                  parent="menu_internship_stages"
+                  action="action_internship_stage_list"
+                  sequence="10"/>
+
+        <!-- Mes stages (pour étudiants) -->
+        <menuitem id="menu_internship_stage_my"
+                  name="Mes Stages"
+                  parent="menu_internship_stages"
+                  action="action_internship_stage_my"
+                  sequence="20"
+                  groups="group_internship_student"/>
+
+        <!-- Stages à encadrer (pour encadrants) -->
+        <menuitem id="menu_internship_stage_supervise"
+                  name="Stages à Encadrer"
+                  parent="menu_internship_stages"
+                  action="action_internship_stage_supervise"
+                  sequence="30"
+                  groups="group_internship_supervisor"/>
+
+        <!-- ================================= -->
+        <!-- SOUS-MENUS - PERSONNES -->
+        <!-- ================================= -->
+
+        <!-- Étudiants -->
+        <menuitem id="menu_internship_student"
+                  name="Étudiants"
+                  parent="menu_internship_people"
+                  action="action_internship_student_list"
+                  sequence="10"/>
+
+        <!-- Encadrants -->
+        <menuitem id="menu_internship_supervisor"
+                  name="Encadrants"
+                  parent="menu_internship_people"
+                  action="action_internship_supervisor_list"
+                  sequence="20"/>
+
+        <!-- ================================= -->
+        <!-- SOUS-MENUS - ENTREPRISES -->
+        <!-- ================================= -->
+
+        <!-- Liste entreprises -->
+        <menuitem id="menu_internship_company"
+                  name="Entreprises"
+                  parent="menu_internship_companies"
+                  action="action_internship_company_list"
+                  sequence="10"/>
+
+        <!-- ================================= -->
+        <!-- MENU CONFIGURATION -->
+        <!-- ================================= -->
+
+        <!-- Menu configuration -->
+        <menuitem id="menu_internship_config"
+                  name="Configuration"
+                  parent="menu_internship_root"
+                  sequence="40"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ===============================
+             VUES COMPÉTENCES (Skills)
+        =============================== -->
+
+        <!-- Vue liste des compétences -->
+        <record id="view_internship_skill_tree" model="ir.ui.view">
+            <field name="name">internship.skill.tree</field>
+            <field name="model">internship.skill</field>
+            <field name="arch" type="xml">
+                <tree string="Compétences">
+                    <field name="name"/>
+                    <field name="category"/>
+                    <field name="level_required"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue formulaire des compétences -->
+        <record id="view_internship_skill_form" model="ir.ui.view">
+            <field name="name">internship.skill.form</field>
+            <field name="model">internship.skill</field>
+            <field name="arch" type="xml">
+                <form string="Compétence">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Nom de la compétence"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="category"/>
+                                <field name="level_required"/>
+                            </group>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action pour les compétences -->
+        <record id="action_internship_skill_list" model="ir.actions.act_window">
+            <field name="name">Compétences</field>
+            <field name="res_model">internship.skill</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer une nouvelle compétence
+                </p>
+                <p>
+                    Gérez ici toutes les compétences disponibles pour les stages.
+                </p>
+            </field>
+        </record>
+
+        <!-- ===============================
+             VUES DOMAINES D'EXPERTISE
+        =============================== -->
+
+        <!-- Vue liste des domaines -->
+        <record id="view_internship_area_tree" model="ir.ui.view">
+            <field name="name">internship.area.tree</field>
+            <field name="model">internship.area</field>
+            <field name="arch" type="xml">
+                <tree string="Domaines d'Expertise">
+                    <field name="name"/>
+                    <field name="parent_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue formulaire des domaines -->
+        <record id="view_internship_area_form" model="ir.ui.view">
+            <field name="name">internship.area.form</field>
+            <field name="model">internship.area</field>
+            <field name="arch" type="xml">
+                <form string="Domaine d'Expertise">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Nom du domaine"/></h1>
+                        </div>
+                        <group>
+                            <field name="parent_id"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                        <notebook>
+                            <page name="subdomains" string="Sous-domaines">
+                                <field name="child_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action pour les domaines -->
+        <record id="action_internship_area_list" model="ir.actions.act_window">
+            <field name="name">Domaines d'Expertise</field>
+            <field name="res_model">internship.area</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer un nouveau domaine
+                </p>
+                <p>
+                    Gérez ici tous les domaines d'expertise disponibles.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

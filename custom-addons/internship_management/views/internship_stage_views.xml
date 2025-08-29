@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- VUES LISTE (TREE) -->
+        <!-- ================================= -->
+
+        <!-- Vue liste des stages -->
+        <record id="view_internship_stage_tree" model="ir.ui.view">
+            <field name="name">internship.stage.tree</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <tree string="Stages" decoration-info="state=='draft'"
+                      decoration-warning="state=='submitted'"
+                      decoration-success="state=='approved'"
+                      decoration-primary="state=='in_progress'">
+                    <field name="reference"/>
+                    <field name="name"/>
+                    <field name="stage_type"/>
+                    <field name="student_id"/>
+                    <field name="supervisor_id"/>
+                    <field name="company_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="duration" string="Durée (j)"/>
+                    <field name="progress" widget="progressbar"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state=='draft'"
+                           decoration-warning="state=='submitted'"
+                           decoration-success="state=='approved'"
+                           decoration-primary="state=='in_progress'"
+                           decoration-muted="state=='cancelled'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUES FORMULAIRE (FORM) -->
+        <!-- ================================= -->
+
+        <!-- Vue formulaire des stages -->
+        <record id="view_internship_stage_form" model="ir.ui.view">
+            <field name="name">internship.stage.form</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <form string="Stage">
+                    <header>
+                        <!-- Boutons d'action selon l'état -->
+                        <button name="action_submit" string="Soumettre" type="object"
+                                class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="Approuver" type="object"
+                                class="oe_highlight" invisible="state != 'submitted'"
+                                groups="internship_management.group_internship_supervisor"/>
+                        <button name="action_start" string="Démarrer" type="object"
+                                class="oe_highlight" invisible="state != 'approved'"/>
+                        <button name="action_complete" string="Terminer" type="object"
+                                class="oe_highlight" invisible="state != 'in_progress'"/>
+                        <button name="action_evaluate" string="Évaluer" type="object"
+                                class="oe_highlight" invisible="state != 'completed'"
+                                groups="internship_management.group_internship_supervisor"/>
+                        <button name="action_cancel" string="Annuler" type="object"
+                                invisible="state in ['cancelled', 'evaluated']"/>
+                        <button name="action_draft" string="Remettre en brouillon" type="object"
+                                invisible="state == 'draft'"
+                                groups="internship_management.group_internship_admin"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"/>
+                    </header>
+
+                    <sheet>
+                        <!-- Titre avec référence -->
+                        <div class="oe_title">
+                            <label for="name" string="Sujet du Stage"/>
+                            <h1><field name="name" placeholder="Titre du stage..."/></h1>
+                            <h3><field name="reference" readonly="1"/></h3>
+                        </div>
+
+                        <group>
+                            <group name="basic_info" string="Informations de Base">
+                                <field name="stage_type" widget="radio" options="{'horizontal': true}"/>
+                                <field name="student_id" options="{'no_create': True}"/>
+                                <field name="supervisor_id" options="{'no_create': True}"/>
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                            <group name="dates" string="Dates et Durée">
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="duration" readonly="1"/>
+                                <field name="progress" widget="progressbar"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page name="description" string="Description">
+                                <group>
+                                    <field name="description" nolabel="1"
+                                           placeholder="Décrivez le contexte, les missions et le périmètre du stage..."/>
+                                </group>
+                            </page>
+
+                            <page name="objectives" string="Objectifs">
+                                <group>
+                                    <field name="objectives" nolabel="1"
+                                           placeholder="Listez les objectifs pédagogiques et professionnels..."/>
+                                </group>
+                            </page>
+
+                            <page name="tasks" string="Tâches">
+                                <field name="todo_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="deadline"/>
+                                        <field name="assigned_to"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="priority" widget="priority"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page name="evaluation" string="Évaluation"
+                                  invisible="state not in ['completed', 'evaluated']">
+                                <group>
+                                    <group>
+                                        <field name="grade"/>
+                                        <field name="defense_grade"/>
+                                        <field name="defense_date"/>
+                                        <field name="defense_room"/>
+                                    </group>
+                                    <group>
+                                        <field name="jury_ids" widget="many2many_tags"/>
+                                        <field name="presentation_uploaded"/>
+                                    </group>
+                                </group>
+                                <group string="Commentaires d'Évaluation">
+                                    <field name="feedback" nolabel="1"/>
+                                </group>
+                            </page>
+
+                            <page name="documents" string="Documents">
+                                <field name="document_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="type"/>
+                                        <field name="date_upload"/>
+                                        <field name="state" widget="badge"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <!-- Chatter pour le suivi -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUES KANBAN -->
+        <!-- ================================= -->
+
+        <!-- Vue kanban des stages -->
+        <record id="view_internship_stage_kanban" model="ir.ui.view">
+            <field name="name">internship.stage.kanban</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="student_id"/>
+                    <field name="supervisor_id"/>
+                    <field name="company_id"/>
+                    <field name="start_date"/>
+                    <field name="progress"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                        </div>
+                                        <div class="o_kanban_record_body">
+                                            <div><i class="fa fa-user" title="Stagiaire"/> <field name="student_id"/></div>
+                                            <div><i class="fa fa-building" title="Entreprise"/> <field name="company_id"/></div>
+                                            <div><i class="fa fa-calendar" title="Date de début"/> <field name="start_date"/></div>
+                                            <div class="mt-2">
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar"
+                                                         t-att-style="'width: ' + record.progress.raw_value + '%'">
+                                                        <t t-esc="record.progress.raw_value"/>%
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================= -->
+
+        <!-- Action principale : Liste de tous les stages -->
+        <record id="action_internship_stage_list" model="ir.actions.act_window">
+            <field name="name">Stages</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer votre premier stage !
+                </p>
+                <p>
+                    Gérez tous les stages de votre organisation : création, suivi, évaluation.
+                </p>
+            </field>
+        </record>
+
+        <!-- Action : Mes stages (pour étudiants) -->
+        <record id="action_internship_stage_my" model="ir.actions.act_window">
+            <field name="name">Mes Stages</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('student_id.user_id', '=', uid)]</field>
+            <field name="context">{'default_student_id': [(6, 0, [])]}</field>
+        </record>
+
+        <!-- Action : Stages à encadrer (pour superviseurs) -->
+        <record id="action_internship_stage_supervise" model="ir.actions.act_window">
+            <field name="name">Stages à Encadrer</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('supervisor_id.user_id', '=', uid)]</field>
+        </record>
+
+    </data>
+</odoo>

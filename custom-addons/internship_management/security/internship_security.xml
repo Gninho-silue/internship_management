@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Catégories de sécurité -->
+        <record id="module_category_internship" model="ir.module.category">
+            <field name="name">Gestion des Stages</field>
+            <field name="description">Gestion complète des stages et stagiaires</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- =============================================== -->
+        <!-- GROUPES DE SÉCURITÉ -->
+        <!-- =============================================== -->
+
+        <!-- Groupe : Étudiant/Stagiaire -->
+        <record id="group_internship_student" model="res.groups">
+            <field name="name">Étudiant/Stagiaire</field>
+            <field name="category_id" ref="module_category_internship"/>
+            <field name="comment">Accès en lecture/écriture à ses propres stages et documents</field>
+        </record>
+
+        <!-- Groupe : Encadrant -->
+        <record id="group_internship_supervisor" model="res.groups">
+            <field name="name">Encadrant</field>
+            <field name="category_id" ref="module_category_internship"/>
+            <field name="implied_ids" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="comment">Gestion des étudiants assignés et validation des stages</field>
+        </record>
+
+        <!-- Groupe : Entreprise -->
+        <record id="group_internship_company" model="res.groups">
+            <field name="name">Entreprise</field>
+            <field name="category_id" ref="module_category_internship"/>
+            <field name="implied_ids" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="comment">Proposition de stages et gestion des stagiaires de l'entreprise</field>
+        </record>
+
+        <!-- Groupe : Coordinateur Stages -->
+        <record id="group_internship_coordinator" model="res.groups">
+            <field name="name">Coordinateur Stages</field>
+            <field name="category_id" ref="module_category_internship"/>
+            <field name="implied_ids" eval="[(4, ref('group_internship_supervisor'))]"/>
+            <field name="comment">Coordination générale des stages et affectations</field>
+        </record>
+
+        <!-- Groupe : Administrateur -->
+        <record id="group_internship_admin" model="res.groups">
+            <field name="name">Administrateur</field>
+            <field name="category_id" ref="module_category_internship"/>
+            <field name="implied_ids" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="comment">Accès complet à tous les modules de gestion des stages</field>
+        </record>
+
+        <!-- =============================================== -->
+        <!-- RÈGLES D'ENREGISTREMENT (RECORD RULES) -->
+        <!-- =============================================== -->
+
+        <!-- Règle : Étudiants - Voir seulement ses propres données -->
+        <record id="internship_student_rule_own" model="ir.rule">
+            <field name="name">Étudiant: propres données seulement</field>
+            <field name="model_id" ref="model_internship_student"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle : Stages - Étudiants voient seulement leurs stages -->
+        <record id="internship_stage_rule_student" model="ir.rule">
+            <field name="name">Stages: étudiant voit ses stages</field>
+            <field name="model_id" ref="model_internship_stage"/>
+            <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle : Stages - Encadrants voient leurs stages assignés -->
+        <record id="internship_stage_rule_supervisor" model="ir.rule">
+            <field name="name">Stages: encadrant voit ses stages</field>
+            <field name="model_id" ref="model_internship_stage"/>
+            <field name="domain_force">[('supervisor_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle : Entreprises - Voir seulement sa propre entreprise -->
+        <record id="internship_company_rule_own" model="ir.rule">
+            <field name="name">Entreprise: propres données seulement</field>
+            <field name="model_id" ref="model_internship_company"/>
+            <field name="domain_force">[('partner_id.user_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_company'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Règle : Documents - Étudiants voient leurs propres documents -->
+        <record id="internship_document_rule_student" model="ir.rule">
+            <field name="name">Documents: étudiant voit ses documents</field>
+            <field name="model_id" ref="model_internship_document"/>
+            <field name="domain_force">['|', ('student_id.user_id', '=', user.id), ('stage_id.student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Règle : Coordinateurs et Admins - Accès complet -->
+        <record id="internship_all_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinateur: accès complet</field>
+            <field name="model_id" ref="model_internship_stage"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="internship_student_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinateur: tous les étudiants</field>
+            <field name="model_id" ref="model_internship_student"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Règle : Documents - Coordinateurs et Admins ont accès complet -->
+        <record id="internship_document_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinateur: tous les documents</field>
+            <field name="model_id" ref="model_internship_document"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

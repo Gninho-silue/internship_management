@@ -1,13 +1,103 @@
-<record id="action_internship_supervisor_list" model="ir.actions.act_window">
-    <field name="name">Superviseurs</field>
-    <field name="res_model">internship.supervisor</field>
-    <field name="view_mode">tree,form</field>
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
-            Ajouter votre premier superviseur !
-        </p>
-        <p>
-            Gérez les profils des superviseurs de stages.
-        </p>
-    </field>
-</record>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue liste des superviseurs -->
+        <record id="internship_supervisor_tree_view" model="ir.ui.view">
+            <field name="name">internship.supervisor.tree</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <tree string="Encadrants de Stage">
+                    <field name="name"/>
+                    <field name="company_id"/>
+                    <field name="department"/>
+                    <field name="position"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="availability"/>
+                    <field name="stage_count"/>
+                    <field name="current_students_count"/>
+                    <field name="max_students"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue formulaire superviseur -->
+        <record id="internship_supervisor_form_view" model="ir.ui.view">
+            <field name="name">internship.supervisor.form</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <form string="Encadrant de Stage">
+                    <header>
+                        <field name="availability" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Nom complet"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group name="contact">
+                                <field name="email"/>
+                                <field name="phone"/>
+                                <field name="user_id"/>
+                            </group>
+                            <group name="professional">
+                                <field name="company_id"/>
+                                <field name="department"/>
+                                <field name="position"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="capacity">
+                                <field name="max_students"/>
+                                <field name="current_students_count"/>
+                                <field name="stage_count"/>
+                            </group>
+                            <group name="status">
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <field name="expertise" widget="many2many_tags"/>
+                        <notebook>
+                            <page string="Stages encadrés">
+                                <field name="stage_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="student_id"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action pour la liste des superviseurs -->
+        <record id="action_internship_supervisor_list" model="ir.actions.act_window">
+            <field name="name">Encadrants</field>
+            <field name="res_model">internship.supervisor</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer un nouvel encadrant
+                </p>
+                <p>
+                    Gérez ici tous les encadrants de stage de votre organisation.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
