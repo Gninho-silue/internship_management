@@ -1,0 +1,13 @@
+<record id="action_internship_supervisor_list" model="ir.actions.act_window">
+    <field name="name">Superviseurs</field>
+    <field name="res_model">internship.supervisor</field>
+    <field name="view_mode">tree,form</field>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Ajouter votre premier superviseur !
+        </p>
+        <p>
+            Gérez les profils des superviseurs de stages.
+        </p>
+    </field>
+</record>
