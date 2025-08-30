@@ -30,6 +30,7 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'base',  # Module de base Odoo (obligatoire)
         'mail',  # Système de messagerie et notifications
         'contacts',  # Gestion des contacts (entreprises)
+       
     ],
 
     # Fichiers de données à charger
@@ -47,6 +48,8 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'views/internship_supervisor_views.xml',
         'views/internship_company_views.xml',
         'views/internship_config_views.xml',
+        'views/internship_message_views.xml',
+        'views/internship_conversation_views.xml',
 
         # Menus (en dernier)
         'views/internship_menus.xml',
