@@ -30,19 +30,7 @@
                   action="action_internship_message_list"
                   sequence="30"/>
 
-        <!-- Conversations -->
-        <menuitem id="menu_internship_conversation"
-                  name="Conversations"
-                  parent="menu_internship_people"
-                  action="action_internship_conversation_list"
-                  sequence="40"/>
 
-        <!-- Commentaires -->
-        <menuitem id="menu_internship_comment"
-                  name="Commentaires"
-                  parent="menu_internship_people"
-                  action="action_internship_comment_list"
-                  sequence="50"/>
 
         <!-- Menu Entreprises -->
         <menuitem id="menu_internship_companies"
