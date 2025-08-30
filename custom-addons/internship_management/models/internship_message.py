@@ -16,10 +16,9 @@ class InternshipMessage(models.Model):
                                 default=lambda self: self.env.user)
     recipient_ids = fields.Many2many('res.users', string='Destinataires', required=True)
 
-    # Relations
-    conversation_id = fields.Many2one('internship.conversation', string='Conversation')
-    stage_id = fields.Many2one('internship.stage', string='Stage lié')
-    document_id = fields.Many2one('internship.document', string='Document lié')
+    # Relations (optionnelles)
+    stage_id = fields.Many2one('internship.stage', string='Stage lié', required=False)
+    document_id = fields.Many2one('internship.document', string='Document lié', required=False)
 
     # Métadonnées
     message_type = fields.Selection([
