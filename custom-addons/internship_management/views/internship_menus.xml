@@ -22,6 +22,20 @@
                   name="Personnes"
                   parent="menu_internship_root"
                   sequence="20"/>
+        
+        <!-- Messages -->
+        <menuitem id="menu_internship_message"
+                  name="Messages"
+                  parent="menu_internship_people"
+                  action="action_internship_message_list"
+                  sequence="30"/>
+
+        <!-- Conversations -->
+        <menuitem id="menu_internship_conversation"
+                  name="Conversations"
+                  parent="menu_internship_people"
+                  action="action_internship_conversation_list"
+                  sequence="40"/>
 
         <!-- Menu Entreprises -->
         <menuitem id="menu_internship_companies"

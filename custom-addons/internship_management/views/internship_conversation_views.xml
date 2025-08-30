@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- VUES LISTE (TREE) -->
+        <!-- ================================= -->
+
+        <!-- Vue liste des conversations -->
+        <record id="view_internship_conversation_tree" model="ir.ui.view">
+            <field name="name">internship.conversation.tree</field>
+            <field name="model">internship.conversation</field>
+            <field name="arch" type="xml">
+                <tree string="Conversations">
+                    <field name="name"/>
+                    <field name="creator_id"/>
+                    <field name="participant_ids" widget="many2many_tags"/>
+                    <field name="conversation_type"/>
+                    <field name="message_count"/>
+                    <field name="last_message_date"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state=='active'"
+                           decoration-muted="state=='archived'"
+                           decoration-danger="state=='closed'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUES FORMULAIRE (FORM) -->
+        <!-- ================================= -->
+
+        <!-- Vue formulaire des conversations -->
+        <record id="view_internship_conversation_form" model="ir.ui.view">
+            <field name="name">internship.conversation.form</field>
+            <field name="model">internship.conversation</field>
+            <field name="arch" type="xml">
+                <form string="Conversation">
+                    <header>
+                        <button name="action_archive" string="Archiver" type="object"
+                                invisible="state == 'archived'"/>
+                        <button name="action_close" string="Fermer" type="object"
+                                invisible="state == 'closed'"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="active,archived,closed"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Sujet de la conversation..."/></h1>
+                        </div>
+
+                        <group>
+                            <group name="conversation_info" string="Informations">
+                                <field name="conversation_type"/>
+                                <field name="creator_id" readonly="1"/>
+                                <field name="create_date" readonly="1"/>
+                            </group>
+                            <group name="participants" string="Participants">
+                                <field name="participant_ids" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page name="description" string="Description">
+                                <field name="description" nolabel="1"/>
+                            </page>
+
+                            <page name="relations" string="Relations">
+                                <group>
+                                    <field name="stage_id"/>
+                                    <field name="company_id"/>
+                                </group>
+                            </page>
+
+                            <page name="messages" string="Messages">
+                                <field name="message_ids" readonly="1">
+                                    <tree>
+                                        <field name="subject"/>
+                                        <field name="sender_id"/>
+                                        <field name="create_date"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================= -->
+
+        <!-- Action principale : Liste de toutes les conversations -->
+        <record id="action_internship_conversation_list" model="ir.actions.act_window">
+            <field name="name">Conversations</field>
+            <field name="res_model">internship.conversation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer votre première conversation !
+                </p>
+                <p>
+                    Organisez vos échanges autour des stages.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
