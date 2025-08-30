@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ================================= -->
+        <!-- DONNÉES DE DÉMONSTRATION -->
+        <!-- ================================= -->
+
+        <!-- Entreprises de démo -->
+        <record id="demo_company_techpal" model="internship.company">
+            <field name="name">TechPal Casablanca</field>
+            <field name="industry">Développement Logiciel</field>
+            <field name="size">medium</field>
+            <field name="website">https://techpal.ma</field>
+            <field name="city">Casablanca</field>
+            <field name="zip">20000</field>
+            <field name="contact_name">Ahmed Benali</field>
+            <field name="contact_email">ahmed.benali@techpal.ma</field>
+            <field name="contact_phone">+212-5-22-123456</field>
+            <field name="internship_capacity">5</field>
+        </record>
+
+        <record id="demo_company_innovatech" model="internship.company">
+            <field name="name">InnovaTech Rabat</field>
+            <field name="industry">Intelligence Artificielle</field>
+            <field name="size">large</field>
+            <field name="website">https://innovatech.ma</field>
+            <field name="city">Rabat</field>
+            <field name="zip">10000</field>
+            <field name="contact_name">Sara El Fassi</field>
+            <field name="contact_email">sara.elfassi@innovatech.ma</field>
+            <field name="contact_phone">+212-5-37-789012</field>
+            <field name="internship_capacity">8</field>
+        </record>
+
+        <!-- Encadrants de démo -->
+        <record id="demo_supervisor_fatima" model="internship.supervisor">
+            <field name="name">Dr. Fatima Zahra</field>
+            <field name="email">fatima.zahra@techpal.ma</field>
+            <field name="phone">+212-6-12-345678</field>
+            <field name="company_id" ref="demo_company_techpal"/>
+            <field name="department">Recherche et Développement</field>
+            <field name="position">Lead Developer</field>
+            <field name="max_students">3</field>
+        </record>
+
+        <record id="demo_supervisor_karim" model="internship.supervisor">
+            <field name="name">Dr. Karim Bennani</field>
+            <field name="email">karim.bennani@innovatech.ma</field>
+            <field name="phone">+212-6-34-567890</field>
+            <field name="company_id" ref="demo_company_innovatech"/>
+            <field name="department">Machine Learning</field>
+            <field name="position">Senior AI Engineer</field>
+            <field name="max_students">4</field>
+        </record>
+
+        <!-- Étudiants de démo -->
+        <record id="demo_student_youssef" model="internship.student">
+            <field name="name">Youssef Alami</field>
+            <field name="email">youssef.alami@student.ma</field>
+            <field name="phone">+212-6-78-901234</field>
+            <field name="school">École Nationale des Sciences Appliquées</field>
+            <field name="study_level">bac+5</field>
+            <field name="speciality">Génie Informatique</field>
+            <field name="student_number">ENSA2024001</field>
+            <field name="expected_graduation">2025-06-30</field>
+        </record>
+
+        <record id="demo_student_amina" model="internship.student">
+            <field name="name">Amina Tazi</field>
+            <field name="email">amina.tazi@student.ma</field>
+            <field name="phone">+212-6-90-123456</field>
+            <field name="school">Université Mohammed V</field>
+            <field name="study_level">bac+5</field>
+            <field name="speciality">Data Science</field>
+            <field name="student_number">UM52024002</field>
+            <field name="expected_graduation">2025-07-15</field>
+        </record>
+
+        <!-- Stages de démo -->
+        <record id="demo_stage_platform" model="internship.stage">
+            <field name="name">Développement d'une plateforme de gestion des stages</field>
+            <field name="stage_type">pfe</field>
+            <field name="student_id" ref="demo_student_youssef"/>
+            <field name="supervisor_id" ref="demo_supervisor_fatima"/>
+            <field name="company_id" ref="demo_company_techpal"/>
+            <field name="start_date">2025-02-01</field>
+            <field name="end_date">2025-06-30</field>
+            <field name="description">Développement d'une application web complète pour la gestion des stages avec Odoo, incluant la gestion des étudiants, encadrants, entreprises et documents.</field>
+            <field name="objectives">Maîtriser le développement Odoo, créer une solution fonctionnelle et sécurisée, documenter le processus de développement, implémenter un workflow complet de gestion des stages.</field>
+            <field name="progress">75.0</field>
+            <field name="state">in_progress</field>
+        </record>
+
+        <record id="demo_stage_ai" model="internship.stage">
+            <field name="name">Développement d'un système d'IA pour l'analyse de données</field>
+            <field name="stage_type">pfe</field>
+            <field name="student_id" ref="demo_student_amina"/>
+            <field name="supervisor_id" ref="demo_supervisor_karim"/>
+            <field name="company_id" ref="demo_company_innovatech"/>
+            <field name="start_date">2025-03-01</field>
+            <field name="end_date">2025-07-31</field>
+            <field name="description">Conception et développement d'un système d'intelligence artificielle pour l'analyse prédictive de données métier.</field>
+            <field name="objectives">Maîtriser les techniques de machine learning, implémenter des algorithmes d'IA, créer une interface utilisateur intuitive, valider les performances du système.</field>
+            <field name="progress">45.0</field>
+            <field name="state">approved</field>
+        </record>
+
+        <!-- Tâches de démo -->
+        <record id="demo_todo_analysis" model="internship.todo">
+            <field name="name">Analyse des besoins et cahier des charges</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="deadline">2025-02-15</field>
+            <field name="state">done</field>
+            <field name="priority">2</field>
+            <field name="description">Analyser les besoins des utilisateurs et rédiger le cahier des charges détaillé</field>
+        </record>
+
+        <record id="demo_todo_design" model="internship.todo">
+            <field name="name">Conception de l'architecture technique</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="deadline">2025-03-01</field>
+            <field name="state">done</field>
+            <field name="priority">2</field>
+            <field name="description">Concevoir l'architecture de la base de données et des modèles Odoo</field>
+        </record>
+
+        <record id="demo_todo_development" model="internship.todo">
+            <field name="name">Développement des modèles de base</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="deadline">2025-03-15</field>
+            <field name="state">done</field>
+            <field name="priority">1</field>
+            <field name="description">Implémenter les modèles étudiants, encadrants, stages et entreprises</field>
+        </record>
+
+        <record id="demo_todo_interface" model="internship.todo">
+            <field name="name">Création des vues et interface utilisateur</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="deadline">2025-04-01</field>
+            <field name="state">in_progress</field>
+            <field name="priority">1</field>
+            <field name="description">Développer les vues liste, formulaire et kanban pour chaque entité</field>
+        </record>
+
+        <record id="demo_todo_testing" model="internship.todo">
+            <field name="name">Tests et validation</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="deadline">2025-05-15</field>
+            <field name="state">todo</field>
+            <field name="priority">2</field>
+            <field name="description">Tester toutes les fonctionnalités et valider le module</field>
+        </record>
+
+        <!-- Documents de démo -->
+        <record id="demo_doc_convention" model="internship.document">
+            <field name="name">Convention de stage TechPal</field>
+            <field name="type">convention</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="student_id" ref="demo_student_youssef"/>
+            <field name="state">validated</field>
+            <field name="comments">Convention signée et validée par toutes les parties</field>
+        </record>
+
+        <record id="demo_doc_rapport" model="internship.document">
+            <field name="name">Rapport intermédiaire - Phase 1</field>
+            <field name="type">rapport</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="student_id" ref="demo_student_youssef"/>
+            <field name="state">submitted</field>
+            <field name="comments">Rapport soumis, en attente de validation</field>
+        </record>
+
+        <record id="demo_doc_presentation" model="internship.document">
+            <field name="name">Présentation finale - Soutenance</field>
+            <field name="type">presentation</field>
+            <field name="stage_id" ref="demo_stage_platform"/>
+            <field name="student_id" ref="demo_student_youssef"/>
+            <field name="state">draft</field>
+            <field name="comments">Présentation en cours de préparation</field>
+        </record>
+
+    </data>
+</odoo>
