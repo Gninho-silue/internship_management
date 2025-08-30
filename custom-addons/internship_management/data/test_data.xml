@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data noupdate="1">
+<odoo noupdate="1">
 
         <!-- ================================= -->
         <!-- DONNÉES DE TEST - MESSAGES -->
@@ -128,5 +127,4 @@
             <field name="state">archived</field>
         </record>
 
-    </data>
 </odoo>
