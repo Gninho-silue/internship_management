@@ -8,7 +8,7 @@
             <field name="model">internship.comment</field>
             <field name="arch" type="xml">
                 <tree string="Commentaires">
-                    <field name="content" max_width="200"/>
+                    <field name="content"/>
                     <field name="author_id"/>
                     <field name="document_id"/>
                     <field name="comment_type"/>
