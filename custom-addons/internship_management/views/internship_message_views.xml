@@ -72,7 +72,6 @@
 
                             <page name="relations" string="Relations">
                                 <group>
-                                    <field name="conversation_id"/>
                                     <field name="stage_id"/>
                                     <field name="document_id"/>
                                 </group>
