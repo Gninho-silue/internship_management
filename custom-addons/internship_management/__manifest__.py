@@ -44,7 +44,7 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
 
         # Données
         'data/sequences.xml',
-        'data/test_data.xml',
+        'data/internship_demo_data.xml',
 
         # Vues principales
         'views/internship_stage_views.xml',
@@ -60,7 +60,7 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
     ],
 
     'demo': [
-        'demo/demo_data.xml',
+        #'data/internship_demo_data.xml',
     ],
 
     # Configuration du module
