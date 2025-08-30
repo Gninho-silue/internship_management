@@ -44,6 +44,7 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
 
         # Données
         'data/sequences.xml',
+        'data/test_data.xml',
 
         # Vues principales
         'views/internship_stage_views.xml',

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ================================= -->
+        <!-- DONNÉES DE TEST - MESSAGES -->
+        <!-- ================================= -->
+
+        <!-- Message 1: Rappel de stage -->
+        <record id="test_message_1" model="internship.message">
+            <field name="subject">Rappel: Soutenance dans 2 semaines</field>
+            <field name="body">
+                <p>Bonjour,</p>
+                <p>N'oubliez pas que votre soutenance de stage est prévue dans 2 semaines.</p>
+                <p>Préparez bien votre présentation et vos documents.</p>
+                <p>Cordialement,<br/>Votre encadrant</p>
+            </field>
+            <field name="sender_id" ref="base.user_admin"/>
+            <field name="recipient_ids" eval="[(6, 0, [ref('base.user_admin')])]"/>
+            <field name="message_type">reminder</field>
+            <field name="priority">2</field>
+            <field name="state">sent</field>
+        </record>
+
+        <!-- Message 2: Question sur document -->
+        <record id="test_message_2" model="internship.message">
+            <field name="subject">Question sur le rapport intermédiaire</field>
+            <field name="body">
+                <p>Salut,</p>
+                <p>J'ai une question sur la section 3.2 de ton rapport.</p>
+                <p>Peux-tu m'expliquer cette partie ?</p>
+                <p>Merci !</p>
+            </field>
+            <field name="sender_id" ref="base.user_admin"/>
+            <field name="recipient_ids" eval="[(6, 0, [ref('base.user_admin')])]"/>
+            <field name="message_type">internal</field>
+            <field name="priority">1</field>
+            <field name="state">sent</field>
+        </record>
+
+        <!-- Message 3: Information importante -->
+        <record id="test_message_3" model="internship.message">
+            <field name="subject">Information: Changement de planning</field>
+            <field name="body">
+                <p>Information importante :</p>
+                <p>Le planning des soutenances a été modifié.</p>
+                <p>Vérifiez vos nouvelles dates sur le portail.</p>
+                <p>Désolé pour le dérangement.</p>
+            </field>
+            <field name="sender_id" ref="base.user_admin"/>
+            <field name="recipient_ids" eval="[(6, 0, [ref('base.user_admin')])]"/>
+            <field name="message_type">notification</field>
+            <field name="priority">2</field>
+            <field name="state">sent</field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- DONNÉES DE TEST - NOTIFICATIONS -->
+        <!-- ================================= -->
+
+        <!-- Notification 1: Échéance de rapport -->
+        <record id="test_notification_1" model="internship.notification">
+            <field name="title">Échéance: Rapport final à rendre</field>
+            <field name="message">Votre rapport final doit être rendu avant le 15 décembre 2025. Ne tardez pas !</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">deadline</field>
+            <field name="priority">3</field>
+            <field name="state">unread</field>
+            <field name="due_date" eval="(DateTime.now() + timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+
+        <!-- Notification 2: Rappel de réunion -->
+        <record id="test_notification_2" model="internship.notification">
+            <field name="title">Rappel: Réunion de suivi demain</field>
+            <field name="message">Rappel : Réunion de suivi de stage demain à 14h00 en salle A12.</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">reminder</field>
+            <field name="priority">2</field>
+            <field name="state">unread</field>
+            <field name="due_date" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+
+        <!-- Notification 3: Approbation de document -->
+        <record id="test_notification_3" model="internship.notification">
+            <field name="title">Approbation: Convention de stage validée</field>
+            <field name="message">Félicitations ! Votre convention de stage a été approuvée par l'administration.</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">approval</field>
+            <field name="priority">1</field>
+            <field name="state">unread</field>
+        </record>
+
+        <!-- Notification 4: Alerte de retard -->
+        <record id="test_notification_4" model="internship.notification">
+            <field name="title">Alerte: Retard dans le planning</field>
+            <field name="message">Attention : Vous avez 5 jours de retard sur votre planning de stage. Contactez votre encadrant.</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">alert</field>
+            <field name="priority">3</field>
+            <field name="state">unread</field>
+        </record>
+
+        <!-- Notification 5: Information générale -->
+        <record id="test_notification_5" model="internship.notification">
+            <field name="title">Information: Nouveau module disponible</field>
+            <field name="message">Un nouveau module de formation est disponible : "Gestion de projet agile". Inscrivez-vous !</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">info</field>
+            <field name="priority">0</field>
+            <field name="state">unread</field>
+        </record>
+
+        <!-- Notification 6: Déjà lue -->
+        <record id="test_notification_6" model="internship.notification">
+            <field name="title">Information: Bibliothèque ouverte 24h/24</field>
+            <field name="message">La bibliothèque universitaire est maintenant ouverte 24h/24 pour les étudiants en stage.</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">info</field>
+            <field name="priority">0</field>
+            <field name="state">read</field>
+        </record>
+
+        <!-- Notification 7: Archivée -->
+        <record id="test_notification_7" model="internship.notification">
+            <field name="title">Ancienne notification archivée</field>
+            <field name="message">Cette notification a été archivée automatiquement après 30 jours.</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="notification_type">info</field>
+            <field name="priority">0</field>
+            <field name="state">archived</field>
+        </record>
+
+    </data>
+</odoo>
