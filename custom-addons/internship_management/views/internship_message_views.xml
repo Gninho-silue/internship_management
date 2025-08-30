@@ -92,11 +92,51 @@
         <!-- ACTIONS -->
         <!-- ================================= -->
 
+        <!-- Vue kanban des messages -->
+        <record id="view_internship_message_kanban" model="ir.ui.view">
+            <field name="name">internship.message.kanban</field>
+            <field name="model">internship.message</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="message_type" class="o_kanban_small_column">
+                    <field name="subject"/>
+                    <field name="sender_id"/>
+                    <field name="recipient_ids"/>
+                    <field name="message_type"/>
+                    <field name="priority"/>
+                    <field name="state"/>
+                    <field name="create_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="subject"/></strong>
+                                        <div><i class="fa fa-user" title="Expéditeur"/> <field name="sender_id"/></div>
+                                        <div><i class="fa fa-users" title="Destinataires"/> <field name="recipient_ids" widget="many2many_tags"/></div>
+                                        <div><i class="fa fa-clock-o" title="Date"/> <field name="create_date"/></div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <field name="priority" widget="priority"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="state" widget="label_selection"
+                                                       options="{'classes': {'draft': 'default', 'sent': 'warning', 'read': 'success', 'archived': 'muted'}}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <!-- Action principale : Liste de tous les messages -->
         <record id="action_internship_message_list" model="ir.actions.act_window">
             <field name="name">Messages</field>
             <field name="res_model">internship.message</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">

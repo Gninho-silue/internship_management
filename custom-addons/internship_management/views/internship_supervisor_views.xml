@@ -83,11 +83,56 @@
             </field>
         </record>
 
+        <!-- ================================= -->
+        <!-- VUE KANBAN -->
+        <!-- ================================= -->
+
+        <!-- Vue kanban des superviseurs -->
+        <record id="view_internship_supervisor_kanban" model="ir.ui.view">
+            <field name="name">internship.supervisor.kanban</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="availability" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="company_id"/>
+                    <field name="department"/>
+                    <field name="position"/>
+                    <field name="max_students"/>
+                    <field name="availability"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="name"/></strong>
+                                        <div><i class="fa fa-envelope" title="Email"/> <field name="email"/></div>
+                                        <div><i class="fa fa-briefcase" title="Entreprise"/> <field name="company_id"/></div>
+                                        <div><i class="fa fa-building" title="Département"/> <field name="department"/> - <field name="position"/></div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <i class="fa fa-users" title="Étudiants max"/> <field name="max_students"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="availability" widget="label_selection"
+                                                       options="{'classes': {'available': 'success', 'busy': 'warning', 'unavailable': 'muted'}}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <!-- Action pour la liste des superviseurs -->
         <record id="action_internship_supervisor_list" model="ir.actions.act_window">
             <field name="name">Encadrants</field>
             <field name="res_model">internship.supervisor</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
