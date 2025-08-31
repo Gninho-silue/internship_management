@@ -45,6 +45,21 @@
                   sequence="50"
                   groups="group_internship_coordinator,group_internship_admin"/>
 
+        <!-- Réunions -->
+        <menuitem id="menu_internship_meeting"
+                  name="Réunions"
+                  parent="menu_internship_people"
+                  action="action_internship_meeting_my"
+                  sequence="60"/>
+
+        <!-- Toutes les réunions (admin) -->
+        <menuitem id="menu_internship_meeting_all"
+                  name="Toutes les Réunions"
+                  parent="menu_internship_people"
+                  action="action_internship_meeting_list"
+                  sequence="70"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
 
 
         <!-- Menu Entreprises -->

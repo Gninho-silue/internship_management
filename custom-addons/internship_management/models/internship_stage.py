@@ -50,10 +50,11 @@ class InternshipStage(models.Model):
         ('cancelled', 'Annulé')
     ], string='État', default='draft', tracking=True)
 
-    # Documents et soutenance
-    document_ids = fields.One2many('internship.document', 'stage_id', string='Documents')
-    message_ids = fields.One2many('internship.message', 'stage_id', string='Messages liés')
-    notification_ids = fields.One2many('internship.notification', 'stage_id', string='Notifications liées')
+                # Documents et soutenance
+            document_ids = fields.One2many('internship.document', 'stage_id', string='Documents')
+            message_ids = fields.One2many('internship.message', 'stage_id', string='Messages liés')
+            notification_ids = fields.One2many('internship.notification', 'stage_id', string='Notifications liées')
+            meeting_ids = fields.One2many('internship.meeting', 'stage_id', string='Réunions')
     convention_generated = fields.Boolean(string='Convention générée', default=False)
     defense_date = fields.Datetime(string='Date soutenance')
     jury_ids = fields.Many2many('internship.supervisor', string='Jury')
