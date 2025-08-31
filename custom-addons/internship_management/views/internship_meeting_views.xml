@@ -82,6 +82,13 @@
                             <field name="participant_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
 
+                        <group>
+                            <group name="notifications" string="Notifications">
+                                <field name="reminder_sent"/>
+                                <field name="reminder_date"/>
+                            </group>
+                        </group>
+
                         <notebook>
                             <page name="agenda" string="Ordre du jour">
                                 <field name="agenda" nolabel="1"
