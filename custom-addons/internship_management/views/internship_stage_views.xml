@@ -93,17 +93,15 @@
 
                         <notebook>
                             <page name="description" string="Description">
-                                <group>
-                                    <field name="description" nolabel="1"
-                                           placeholder="Décrivez le contexte, les missions et le périmètre du stage..."/>
-                                </group>
+                                <field name="description" nolabel="1"
+                                       placeholder="Décrivez le contexte, les missions et le périmètre du stage..."
+                                       class="oe_form_field_html"/>
                             </page>
 
                             <page name="objectives" string="Objectifs">
-                                <group>
-                                    <field name="objectives" nolabel="1"
-                                           placeholder="Listez les objectifs pédagogiques et professionnels..."/>
-                                </group>
+                                <field name="objectives" nolabel="1"
+                                       placeholder="Listez les objectifs pédagogiques et professionnels..."
+                                       class="oe_form_field_html"/>
                             </page>
 
                             <page name="tasks" string="Tâches">
