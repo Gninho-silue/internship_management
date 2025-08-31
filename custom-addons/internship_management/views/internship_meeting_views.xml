@@ -84,6 +84,7 @@
 
                         <group>
                             <group name="notifications" string="Notifications">
+                                <field name="email_sent"/>
                                 <field name="reminder_sent"/>
                                 <field name="reminder_date"/>
                             </group>
