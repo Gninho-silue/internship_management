@@ -131,9 +131,9 @@
                                         <field name="presentation_uploaded"/>
                                     </group>
                                 </group>
-                                <group string="Commentaires d'Évaluation">
-                                    <field name="feedback" nolabel="1"/>
-                                </group>
+                                <field name="feedback" nolabel="1" 
+                                       placeholder="Commentaires détaillés sur l'évaluation du stage..."
+                                       class="oe_form_field_html"/>
                             </page>
 
                             <page name="documents" string="Documents">
