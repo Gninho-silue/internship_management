@@ -16,12 +16,12 @@ class InternshipDocument(models.Model):
         ('autre', 'Autre')
     ], string='Type', required=True)
 
-                # Relations
-            stage_id = fields.Many2one('internship.stage', string='Stage')
-            student_id = fields.Many2one('internship.student', string='Étudiant')
-            meeting_id = fields.Many2one('internship.meeting', string='Réunion liée')
-            message_ids = fields.One2many('internship.message', 'document_id', string='Messages liés')
-            notification_ids = fields.One2many('internship.notification', 'document_id', string='Notifications liées')
+    # Relations
+    stage_id = fields.Many2one('internship.stage', string='Stage')
+    student_id = fields.Many2one('internship.student', string='Étudiant')
+    meeting_id = fields.Many2one('internship.meeting', string='Réunion liée')
+    message_ids = fields.One2many('internship.message', 'document_id', string='Messages liés')
+    notification_ids = fields.One2many('internship.notification', 'document_id', string='Notifications liées')
 
     # Document
     file = fields.Binary(string='Fichier', attachment=True, required=True)
