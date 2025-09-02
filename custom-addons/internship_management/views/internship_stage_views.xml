@@ -290,7 +290,7 @@
             <field name="name">internship.stage.dashboard</field>
             <field name="model">internship.stage</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_dashboard" default_group_by="state">
+                <kanban class="o_kanban_dashboard" default_group_by="state" type="primary">
                     <field name="name"/>
                     <field name="student_id"/>
                     <field name="supervisor_id"/>
@@ -339,6 +339,24 @@
             </field>
         </record>
 
+        <!-- Action dashboard : Vue dashboard des stages -->
+        <record id="action_internship_stage_dashboard" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="view_internship_stage_dashboard"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez votre premier stage !
+                </p>
+                <p>
+                    Le tableau de bord vous permet de visualiser tous vos stages
+                    avec des indicateurs de progression et de statut.
+                </p>
+            </field>
+        </record>
+
         <!-- ================================= -->
         <!-- ACTIONS -->
         <!-- ================================= -->
@@ -347,7 +365,7 @@
         <record id="action_internship_stage_list" model="ir.actions.act_window">
             <field name="name">Stages</field>
             <field name="res_model">internship.stage</field>
-            <field name="view_mode">dashboard,kanban,tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">

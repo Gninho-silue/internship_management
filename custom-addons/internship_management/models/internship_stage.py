@@ -105,11 +105,12 @@ class InternshipStage(models.Model):
             if stage.start_date and stage.end_date and stage.start_date > stage.end_date:
                 raise ValidationError(_("La date de fin doit être postérieure à la date de début."))
 
-    @api.model
-    def create(self, vals):
-        if vals.get('reference', 'Nouveau') == 'Nouveau':
-            vals['reference'] = self.env['ir.sequence'].next_by_code('internship.stage') or 'Nouveau'
-        return super(InternshipStage, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('reference', 'Nouveau') == 'Nouveau':
+                vals['reference'] = self.env['ir.sequence'].next_by_code('internship.stage') or 'Nouveau'
+        return super(InternshipStage, self).create(vals_list)
 
     def action_submit(self):
         self.write({'state': 'submitted'})

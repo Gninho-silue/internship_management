@@ -91,26 +91,27 @@ class InternshipMeeting(models.Model):
             else:
                 meeting.is_today = False
 
-    @api.model
-    def create(self, vals):
-        """Créer une réunion et envoyer des notifications"""
-        meeting = super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Créer des réunions et envoyer des notifications"""
+        meetings = super().create(vals_list)
         
-        # Ajouter automatiquement les participants principaux
-        if meeting.stage_id:
-            participants = []
-            if meeting.stage_id.student_id.user_id:
-                participants.append(meeting.stage_id.student_id.user_id.id)
-            if meeting.stage_id.supervisor_id.user_id:
-                participants.append(meeting.stage_id.supervisor_id.user_id.id)
+        for meeting in meetings:
+            # Ajouter automatiquement les participants principaux
+            if meeting.stage_id:
+                participants = []
+                if meeting.stage_id.student_id.user_id:
+                    participants.append(meeting.stage_id.student_id.user_id.id)
+                if meeting.stage_id.supervisor_id.user_id:
+                    participants.append(meeting.stage_id.supervisor_id.user_id.id)
+                
+                if participants:
+                    meeting.participant_ids = [(6, 0, participants)]
             
-            if participants:
-                meeting.participant_ids = [(6, 0, participants)]
+            # Envoyer un email de notification
+            meeting._send_meeting_notification_email()
         
-        # Envoyer un email de notification
-        meeting._send_meeting_notification_email()
-        
-        return meeting
+        return meetings
 
     def action_confirm(self):
         """Confirmer la réunion"""
