@@ -45,6 +45,7 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         # Données
         'data/sequences.xml',
         'data/internship_demo_data.xml',
+        'data/internship_cron.xml',
 
         # Vues principales
         'views/internship_stage_views.xml',
@@ -54,6 +55,10 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'views/internship_message_views.xml',
         'views/internship_notification_views.xml',
         'views/internship_meeting_views.xml',
+
+        # Rapports
+        'reports/defense_report_template.xml',
+        'reports/internship_reports.xml',
 
         # Menus (en dernier)
         'views/internship_menus.xml',

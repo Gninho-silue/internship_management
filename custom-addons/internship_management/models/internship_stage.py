@@ -41,9 +41,57 @@ class InternshipStage(models.Model):
     objectives = fields.Text(string='Objectifs')
 
     # Suivi du stage
-    progress = fields.Float(string='Progression (%)', tracking=True)
+    progress = fields.Float(string='Progression (%)', compute='_compute_progress', store=True, tracking=True)
     next_meeting_date = fields.Datetime(string='Prochaine réunion')
     todo_ids = fields.One2many('internship.todo', 'stage_id', string='Tâches à faire')
+
+    @api.depends(
+        'todo_ids.state',
+        'start_date',
+        'end_date',
+        'state',
+        'defense_status',
+    )
+    def _compute_progress(self):
+        for stage in self:
+            # Completed/evaluated → 100%; cancelled → 0
+            if stage.state in ('completed', 'evaluated') or stage.defense_status == 'completed':
+                stage.progress = 100.0
+                continue
+            if stage.state == 'cancelled':
+                stage.progress = 0.0
+                continue
+
+            progress_value = 0.0
+
+            # If todos exist, use ratio done/total
+            total_todos = len(stage.todo_ids)
+            if total_todos:
+                done_todos = len(stage.todo_ids.filtered(lambda t: t.state == 'done'))
+                progress_value = (done_todos / total_todos) * 100.0
+            else:
+                # Fallback: time-based progress
+                if stage.start_date and stage.end_date and stage.end_date >= stage.start_date:
+                    total_days = (stage.end_date - stage.start_date).days + 1
+                    if total_days > 0:
+                        # Use today for elapsed time within bounds
+                        today = fields.Date.context_today(stage)
+                        elapsed_days = 0
+                        if today <= stage.start_date:
+                            elapsed_days = 0
+                        elif today >= stage.end_date:
+                            elapsed_days = total_days
+                        else:
+                            elapsed_days = (today - stage.start_date).days
+                        progress_value = (elapsed_days / total_days) * 100.0
+
+            # Clamp 0..100
+            if progress_value < 0:
+                progress_value = 0.0
+            if progress_value > 100:
+                progress_value = 100.0
+
+            stage.progress = round(progress_value, 2)
 
     # État du stage
     state = fields.Selection([
@@ -66,6 +114,8 @@ class InternshipStage(models.Model):
     jury_ids = fields.Many2many('internship.supervisor', string='Jury')
     defense_room = fields.Char(string='Salle soutenance')
     presentation_uploaded = fields.Boolean(string='Présentation déposée')
+    presentation_document_id = fields.Many2one('internship.document', string='Document de présentation',
+                                              domain="[('type', '=', 'presentation'), ('stage_id', '=', id)]")
     
     # Soutenance avancée
     defense_report = fields.Text(string='Procès-verbal de soutenance')
@@ -105,6 +155,18 @@ class InternshipStage(models.Model):
             if stage.start_date and stage.end_date and stage.start_date > stage.end_date:
                 raise ValidationError(_("La date de fin doit être postérieure à la date de début."))
 
+    @api.constrains('jury_ids', 'defense_status')
+    def _check_jury_for_defense(self):
+        for stage in self:
+            if stage.defense_status in ['in_progress', 'completed'] and len(stage.jury_ids) < 2:
+                raise ValidationError(_("Au moins 2 membres du jury sont requis pour démarrer une soutenance."))
+
+    @api.constrains('presentation_document_id', 'defense_status')
+    def _check_presentation_for_defense(self):
+        for stage in self:
+            if stage.defense_status == 'completed' and not stage.presentation_document_id:
+                raise ValidationError(_("Un document de présentation est obligatoire pour terminer la soutenance."))
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -136,6 +198,118 @@ class InternshipStage(models.Model):
     def action_generate_convention(self):
         self.write({'convention_generated': True})
         return True
+
+    # Méthodes d'alertes automatiques
+    @api.model
+    def _check_delays_and_stagnation(self):
+        """Vérifier les retards et blocages - appelé par cron"""
+        today = fields.Date.today()
+        
+        # Alertes de retard (fin de stage dépassée)
+        delayed_stages = self.search([
+            ('end_date', '<', today),
+            ('state', 'in', ['draft', 'submitted', 'approved', 'in_progress']),
+            ('active', '=', True)
+        ])
+        
+        for stage in delayed_stages:
+            self._create_delay_alert(stage)
+        
+        # Alertes de blocage (progression stagnante)
+        active_stages = self.search([
+            ('state', '=', 'in_progress'),
+            ('active', '=', True)
+        ])
+        
+        for stage in active_stages:
+            self._check_progress_stagnation(stage)
+        
+        # Alertes de réunions manquées
+        self._check_missing_meetings()
+    
+    def _create_delay_alert(self, stage):
+        """Créer une alerte de retard"""
+        if stage.student_id.user_id:
+            self.env['internship.notification'].create({
+                'title': f'⚠️ Retard détecté - {stage.name}',
+                'message': f'Votre stage a dépassé la date de fin prévue ({stage.end_date}). Contactez votre encadrant.',
+                'user_id': stage.student_id.user_id.id,
+                'notification_type': 'alert',
+                'stage_id': stage.id,
+            })
+        
+        if stage.supervisor_id.user_id:
+            self.env['internship.notification'].create({
+                'title': f'⚠️ Retard détecté - {stage.name}',
+                'message': f'Le stage de {stage.student_id.name} a dépassé la date de fin. Action requise.',
+                'user_id': stage.supervisor_id.user_id.id,
+                'notification_type': 'alert',
+                'stage_id': stage.id,
+            })
+    
+    def _check_progress_stagnation(self, stage):
+        """Vérifier la stagnation de progression"""
+        # Vérifier si la progression n'a pas bougé depuis 7 jours
+        last_activity = self.env['mail.message'].search([
+            ('model', '=', 'internship.stage'),
+            ('res_id', '=', stage.id)
+        ], order='create_date desc', limit=1)
+        
+        if last_activity:
+            days_since_activity = (fields.Date.today() - last_activity.create_date.date()).days
+            if days_since_activity > 7 and stage.progress < 50:
+                self._create_stagnation_alert(stage, days_since_activity)
+    
+    def _create_stagnation_alert(self, stage, days):
+        """Créer une alerte de stagnation"""
+        if stage.supervisor_id.user_id:
+            self.env['internship.notification'].create({
+                'title': f'📊 Progression stagnante - {stage.name}',
+                'message': f'Aucune activité depuis {days} jours sur le stage de {stage.student_id.name}. Progression: {stage.progress}%',
+                'user_id': stage.supervisor_id.user_id.id,
+                'notification_type': 'warning',
+                'stage_id': stage.id,
+            })
+    
+    def _check_missing_meetings(self):
+        """Vérifier les réunions manquées"""
+        # Stages en cours sans réunion depuis 14 jours
+        active_stages = self.search([
+            ('state', '=', 'in_progress'),
+            ('active', '=', True)
+        ])
+        
+        for stage in active_stages:
+            last_meeting = self.env['internship.meeting'].search([
+                ('stage_id', '=', stage.id),
+                ('state', 'in', ['confirmed', 'completed'])
+            ], order='date desc', limit=1)
+            
+            if last_meeting:
+                days_since_meeting = (fields.Date.today() - last_meeting.date.date()).days
+                if days_since_meeting > 14:
+                    self._create_missing_meeting_alert(stage, days_since_meeting)
+            else:
+                # Pas de réunion du tout
+                if stage.start_date and (fields.Date.today() - stage.start_date).days > 14:
+                    self._create_missing_meeting_alert(stage, 0)
+    
+    def _create_missing_meeting_alert(self, stage, days):
+        """Créer une alerte de réunion manquée"""
+        if stage.supervisor_id.user_id:
+            message = f'Réunion de suivi nécessaire pour le stage de {stage.student_id.name}.'
+            if days > 0:
+                message += f' Dernière réunion il y a {days} jours.'
+            else:
+                message += ' Aucune réunion programmée depuis le début du stage.'
+            
+            self.env['internship.notification'].create({
+                'title': f'📅 Réunion de suivi nécessaire - {stage.name}',
+                'message': message,
+                'user_id': stage.supervisor_id.user_id.id,
+                'notification_type': 'info',
+                'stage_id': stage.id,
+            })
 
     # Méthodes pour les soutenances
     def action_schedule_defense(self):

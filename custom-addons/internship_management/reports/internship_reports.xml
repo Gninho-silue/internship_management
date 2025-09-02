@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        
+        <!-- Définition du rapport -->
+        <record id="action_defense_report" model="ir.actions.report">
+            <field name="name">Procès-verbal de Soutenance</field>
+            <field name="model">internship.stage</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">internship_management.defense_report_document</field>
+            <field name="report_file">internship_management.defense_report_document</field>
+            <field name="print_report_name">'Procès-verbal - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_internship_stage"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>
