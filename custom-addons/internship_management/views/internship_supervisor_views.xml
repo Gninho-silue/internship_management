@@ -84,6 +84,25 @@
         </record>
 
         <!-- ================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================= -->
+
+        <!-- Action liste superviseurs -->
+        <record id="action_internship_supervisor_list" model="ir.actions.act_window">
+            <field name="name">Encadrants</field>
+            <field name="res_model">internship.supervisor</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Ajouter votre premier encadrant !
+                </p>
+                <p>
+                    Gérez les profils des encadrants, leurs domaines d'expertise et leur disponibilité.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================= -->
         <!-- VUE KANBAN -->
         <!-- ================================= -->
 

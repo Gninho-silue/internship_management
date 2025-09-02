@@ -366,6 +366,13 @@
             </field>
         </record>
 
+        <!-- Action dashboard web : Dashboard avec statistiques -->
+        <record id="action_internship_dashboard_web" model="ir.actions.url">
+            <field name="name">Tableau de Bord</field>
+            <field name="url">/internship/dashboard</field>
+            <field name="target">self</field>
+        </record>
+
         <!-- ================================= -->
         <!-- ACTIONS -->
         <!-- ================================= -->

@@ -15,7 +15,7 @@
         <menuitem id="menu_internship_dashboard"
                   name="Tableau de Bord"
                   parent="menu_internship_root"
-                  action="action_internship_stage_dashboard"
+                  action="action_internship_dashboard_web"
                   sequence="5"/>
         
         <!-- Menu Stages -->
@@ -28,6 +28,20 @@
         <menuitem id="menu_internship_people"
                   name="Personnes"
                   parent="menu_internship_root"
+                  sequence="20"/>
+
+        <!-- Étudiants -->
+        <menuitem id="menu_internship_students"
+                  name="Étudiants"
+                  parent="menu_internship_people"
+                  action="action_internship_student_list"
+                  sequence="10"/>
+
+        <!-- Encadrants -->
+        <menuitem id="menu_internship_supervisors"
+                  name="Encadrants"
+                  parent="menu_internship_people"
+                  action="action_internship_supervisor_list"
                   sequence="20"/>
 
         <!-- Messages -->

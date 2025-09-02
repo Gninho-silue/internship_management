@@ -56,6 +56,9 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'views/internship_notification_views.xml',
         'views/internship_meeting_views.xml',
 
+        # Dashboard
+        'views/dashboard_template.xml',
+
         # Rapports
         'reports/defense_report_template.xml',
         'reports/internship_reports.xml',
