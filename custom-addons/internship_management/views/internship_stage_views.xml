@@ -80,11 +80,11 @@
                                 groups="internship_management.group_internship_supervisor"/>
                         
                         <!-- Bouton d'impression du PV -->
-                        <!-- <button name="%(action_defense_report)d" 
+                        <button name="%(action_defense_report)d" 
                                 string="Imprimer PV" type="ir.actions.report"
                                 invisible="defense_status != 'completed'"
                                 class="oe_highlight"
-                                groups="internship_management.group_internship_supervisor"/> -->
+                                groups="internship_management.group_internship_supervisor"/>
                         
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"/>
