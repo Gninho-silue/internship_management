@@ -15,7 +15,12 @@ class InternshipSupervisor(models.Model):
     phone = fields.Char(string='Téléphone')
 
     # Informations professionnelles
-    company_id = fields.Many2one('internship.company', string='Entreprise', required=True)
+    company_id = fields.Many2one(
+        'res.company',
+        string='Entreprise',
+        required=True,
+        default=lambda self: self.env.company,
+    )
     department = fields.Char(string='Département', required=True)
     position = fields.Char(string='Poste', required=True)
     # CORRIGÉ: Utiliser internship.area au lieu de internship.expertise

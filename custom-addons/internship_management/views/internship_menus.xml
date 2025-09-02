@@ -62,11 +62,7 @@
 
 
 
-        <!-- Menu Entreprises -->
-        <menuitem id="menu_internship_companies"
-                  name="Entreprises"
-                  parent="menu_internship_root"
-                  sequence="30"/>
+        <!-- Menu Entreprises removed: using res.company internally -->
 
         <!-- ================================= -->
         <!-- SOUS-MENUS - STAGES -->
@@ -114,15 +110,7 @@
                   sequence="20"/>
 
         <!-- ================================= -->
-        <!-- SOUS-MENUS - ENTREPRISES -->
-        <!-- ================================= -->
-
-        <!-- Liste entreprises -->
-        <menuitem id="menu_internship_company"
-                  name="Entreprises"
-                  parent="menu_internship_companies"
-                  action="action_internship_company_list"
-                  sequence="10"/>
+        <!-- Entreprises submenu removed -->
 
         <!-- ================================= -->
         <!-- MENU CONFIGURATION -->

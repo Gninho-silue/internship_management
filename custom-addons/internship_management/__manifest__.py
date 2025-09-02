@@ -50,11 +50,10 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'views/internship_stage_views.xml',
         'views/internship_student_views.xml',
         'views/internship_supervisor_views.xml',
-        'views/internship_company_views.xml',
-                            'views/internship_config_views.xml',
-                    'views/internship_message_views.xml',
-                    'views/internship_notification_views.xml',
-                    'views/internship_meeting_views.xml',
+        'views/internship_config_views.xml',
+        'views/internship_message_views.xml',
+        'views/internship_notification_views.xml',
+        'views/internship_meeting_views.xml',
 
         # Menus (en dernier)
         'views/internship_menus.xml',

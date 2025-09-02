@@ -98,57 +98,7 @@
             <field name="description">Conception d'expériences utilisateur et interfaces</field>
         </record>
 
-        <!-- ================================= -->
-        <!-- ENTREPRISES (Companies) -->
-        <!-- ================================= -->
-
-        <record id="company_tech_solutions" model="internship.company">
-            <field name="name">Tech Solutions SARL</field>
-            <field name="industry">Technologies de l'information</field>
-            <field name="size">medium</field>
-            <field name="website">https://techsolutions.ma</field>
-            <field name="street">123 Boulevard Mohammed V</field>
-            <field name="city">Casablanca</field>
-            <field name="zip">20000</field>
-            <field name="country_id" ref="base.ma"/>
-            <field name="contact_name">Ahmed Benali</field>
-            <field name="contact_email">ahmed.benali@techsolutions.ma</field>
-            <field name="contact_phone">+212 522 123456</field>
-            <field name="internship_capacity">5</field>
-            <field name="agreement_signed">True</field>
-        </record>
-
-        <record id="company_digital_agency" model="internship.company">
-            <field name="name">Digital Agency</field>
-            <field name="industry">Marketing Digital</field>
-            <field name="size">small</field>
-            <field name="website">https://digitalagency.ma</field>
-            <field name="street">456 Avenue Hassan II</field>
-            <field name="city">Rabat</field>
-            <field name="zip">10000</field>
-            <field name="country_id" ref="base.ma"/>
-            <field name="contact_name">Fatima Zahra</field>
-            <field name="contact_email">f.zahra@digitalagency.ma</field>
-            <field name="contact_phone">+212 537 654321</field>
-            <field name="internship_capacity">3</field>
-            <field name="agreement_signed">True</field>
-        </record>
-
-        <record id="company_innovate_startup" model="internship.company">
-            <field name="name">Innovate Startup</field>
-            <field name="industry">Fintech</field>
-            <field name="size">small</field>
-            <field name="website">https://innovate.ma</field>
-            <field name="street">789 Rue des Entrepreneurs</field>
-            <field name="city">Marrakech</field>
-            <field name="zip">40000</field>
-            <field name="country_id" ref="base.ma"/>
-            <field name="contact_name">Youssef Alami</field>
-            <field name="contact_email">y.alami@innovate.ma</field>
-            <field name="contact_phone">+212 524 987654</field>
-            <field name="internship_capacity">2</field>
-            <field name="agreement_signed">False</field>
-        </record>
+        <!-- Entreprises supprimées: nous utilisons res.company (société interne) -->
 
         <!-- ================================= -->
         <!-- ENCADRANTS (Supervisors) -->
@@ -158,7 +108,7 @@
             <field name="name">Mohammed Idrissi</field>
             <field name="email">m.idrissi@techsolutions.ma</field>
             <field name="phone">+212 661 123456</field>
-            <field name="company_id" ref="company_tech_solutions"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="department">Développement</field>
             <field name="position">Lead Developer</field>
             <field name="max_students">3</field>
@@ -170,7 +120,7 @@
             <field name="name">Aicha Bennani</field>
             <field name="email">a.bennani@techsolutions.ma</field>
             <field name="phone">+212 661 789012</field>
-            <field name="company_id" ref="company_tech_solutions"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="department">Data Science</field>
             <field name="position">Senior Data Analyst</field>
             <field name="max_students">2</field>
@@ -182,7 +132,7 @@
             <field name="name">Salma Tahiri</field>
             <field name="email">s.tahiri@digitalagency.ma</field>
             <field name="phone">+212 662 345678</field>
-            <field name="company_id" ref="company_digital_agency"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="department">Marketing</field>
             <field name="position">Marketing Manager</field>
             <field name="max_students">2</field>
@@ -194,7 +144,7 @@
             <field name="name">Karim El Fassi</field>
             <field name="email">k.elfassi@innovate.ma</field>
             <field name="phone">+212 663 456789</field>
-            <field name="company_id" ref="company_innovate_startup"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="department">Technology</field>
             <field name="position">CTO</field>
             <field name="max_students">1</field>
@@ -276,7 +226,7 @@
             <field name="stage_type">pfe</field>
             <field name="student_id" ref="student_ahmed_rami"/>
             <field name="supervisor_id" ref="supervisor_tech_lead"/>
-            <field name="company_id" ref="company_tech_solutions"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="start_date">2024-02-01</field>
             <field name="end_date">2024-07-31</field>
             <field name="description">Développement d'une plateforme e-commerce complète avec Python/Django et React. Le projet inclut la gestion des produits, des commandes, des paiements et un tableau de bord administrateur.</field>
@@ -297,7 +247,7 @@
             <field name="stage_type">pfe</field>
             <field name="student_id" ref="student_sara_benchekroun"/>
             <field name="supervisor_id" ref="supervisor_data_analyst"/>
-            <field name="company_id" ref="company_tech_solutions"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="start_date">2024-03-01</field>
             <field name="end_date">2024-08-31</field>
             <field name="description">Développement d'un modèle prédictif pour analyser et prévoir les tendances de ventes. Utilisation de Python, pandas, scikit-learn et visualisation avec matplotlib/seaborn.</field>
@@ -318,7 +268,7 @@
             <field name="stage_type">stage_ete</field>
             <field name="student_id" ref="student_omar_alaoui"/>
             <field name="supervisor_id" ref="supervisor_tech_lead"/>
-            <field name="company_id" ref="company_tech_solutions"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="start_date">2024-06-15</field>
             <field name="end_date">2024-08-15</field>
             <field name="description">Développement d'une application mobile cross-platform avec React Native pour la gestion de tâches et projets d'équipe.</field>
@@ -338,7 +288,7 @@
             <field name="stage_type">stage_ete</field>
             <field name="student_id" ref="student_lina_benali"/>
             <field name="supervisor_id" ref="supervisor_marketing_manager"/>
-            <field name="company_id" ref="company_digital_agency"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="start_date">2024-07-01</field>
             <field name="end_date">2024-08-31</field>
             <field name="description">Élaboration et mise en œuvre d'une stratégie marketing digital intégrant réseaux sociaux, content marketing, SEO et publicité en ligne pour augmenter la visibilité client.</field>
