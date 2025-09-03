@@ -62,6 +62,9 @@ class InternshipDashboard(http.Controller):
                     'my_avg_progress': sum(my_stages.mapped('progress')) / len(my_stages) if my_stages else 0,
                     'my_defense_scheduled': len(my_stages.filtered(lambda s: s.defense_status == 'scheduled')),
                     'my_defense_completed': len(my_stages.filtered(lambda s: s.defense_status == 'completed')),
+                    # Ajouter les clés manquantes pour compatibilité
+                    'my_progress': sum(my_stages.mapped('progress')) / len(my_stages) if my_stages else 0,
+                    'my_grade': 0,  # Les superviseurs n'ont pas de note
                 }
             else:
                 role_stats = {
@@ -74,6 +77,8 @@ class InternshipDashboard(http.Controller):
                     'my_avg_progress': 0,
                     'my_defense_scheduled': 0,
                     'my_defense_completed': 0,
+                    'my_progress': 0,
+                    'my_grade': 0,
                 }
         elif user.has_group('internship_management.group_internship_student'):
             # Étudiant : ses stages
@@ -88,6 +93,11 @@ class InternshipDashboard(http.Controller):
                     'my_stages_evaluated': len(my_stages.filtered(lambda s: s.state == 'evaluated')),
                     'my_progress': sum(my_stages.mapped('progress')) / len(my_stages) if my_stages else 0,
                     'my_grade': sum(my_stages.mapped('grade')) / len(my_stages.filtered(lambda s: s.grade > 0)) if my_stages.filtered(lambda s: s.grade > 0) else 0,
+                    # Ajouter les clés manquantes pour compatibilité
+                    'my_students_count': 0,  # Les étudiants n'ont pas d'étudiants
+                    'my_avg_progress': sum(my_stages.mapped('progress')) / len(my_stages) if my_stages else 0,
+                    'my_defense_scheduled': len(my_stages.filtered(lambda s: s.defense_status == 'scheduled')),
+                    'my_defense_completed': len(my_stages.filtered(lambda s: s.defense_status == 'completed')),
                 }
             else:
                 role_stats = {
@@ -98,6 +108,10 @@ class InternshipDashboard(http.Controller):
                     'my_stages_evaluated': 0,
                     'my_progress': 0,
                     'my_grade': 0,
+                    'my_students_count': 0,
+                    'my_avg_progress': 0,
+                    'my_defense_scheduled': 0,
+                    'my_defense_completed': 0,
                 }
         else:
             # Utilisateur sans rôle spécifique
