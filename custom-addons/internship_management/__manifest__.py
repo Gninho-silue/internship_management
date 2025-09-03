@@ -47,6 +47,13 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'data/internship_demo_data.xml',
         'data/internship_cron.xml',
 
+        # Rapports (avant les vues pour que les actions soient disponibles)
+        'reports/defense_report_template.xml',
+        'reports/convention_attestation_template.xml',
+        'reports/evaluation_report_template.xml',
+        'reports/stage_report_template.xml',
+        'reports/internship_reports.xml',
+
         # Vues principales
         'views/internship_stage_views.xml',
         'views/internship_student_views.xml',
@@ -58,13 +65,6 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
 
         # Dashboard
         'views/dashboard_template.xml',
-
-        # Rapports
-        'reports/defense_report_template.xml',
-        'reports/convention_attestation_template.xml',
-        'reports/evaluation_report_template.xml',
-        'reports/stage_report_template.xml',
-        'reports/internship_reports.xml',
 
         # Menus (en dernier)
         'views/internship_menus.xml',

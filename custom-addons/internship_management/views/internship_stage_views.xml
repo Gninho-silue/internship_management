@@ -134,6 +134,8 @@
 
                             <page name="reports" string="Rapports et Documents">
                                 <div class="oe_button_box" name="button_box">
+                                    <!-- Boutons temporairement commentés pour permettre la mise à jour -->
+                                    <!--
                                     <button name="%(action_convention_report)d" string="Convention de Stage" type="ir.actions.report" 
                                             class="oe_stat_button" icon="fa-file-text-o"
                                             help="Générer la convention de stage"/>
@@ -149,6 +151,7 @@
                                             class="oe_stat_button" icon="fa-star"
                                             help="Générer le rapport d'évaluation"
                                             invisible="state != 'evaluated'"/>
+                                    -->
                                 </div>
                                 
                                 <group>
