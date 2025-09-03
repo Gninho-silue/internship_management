@@ -64,7 +64,17 @@ class InternshipDashboard(http.Controller):
                     'my_defense_completed': len(my_stages.filtered(lambda s: s.defense_status == 'completed')),
                 }
             else:
-                role_stats = {}
+                role_stats = {
+                    'my_stages_count': 0,
+                    'my_stages_draft': 0,
+                    'my_stages_in_progress': 0,
+                    'my_stages_completed': 0,
+                    'my_stages_evaluated': 0,
+                    'my_students_count': 0,
+                    'my_avg_progress': 0,
+                    'my_defense_scheduled': 0,
+                    'my_defense_completed': 0,
+                }
         elif user.has_group('internship_management.group_internship_student'):
             # Étudiant : ses stages
             student = request.env['internship.student'].search([('user_id', '=', user.id)], limit=1)
@@ -80,9 +90,30 @@ class InternshipDashboard(http.Controller):
                     'my_grade': sum(my_stages.mapped('grade')) / len(my_stages.filtered(lambda s: s.grade > 0)) if my_stages.filtered(lambda s: s.grade > 0) else 0,
                 }
             else:
-                role_stats = {}
+                role_stats = {
+                    'my_stages_count': 0,
+                    'my_stages_draft': 0,
+                    'my_stages_in_progress': 0,
+                    'my_stages_completed': 0,
+                    'my_stages_evaluated': 0,
+                    'my_progress': 0,
+                    'my_grade': 0,
+                }
         else:
-            role_stats = {}
+            # Utilisateur sans rôle spécifique
+            role_stats = {
+                'my_stages_count': 0,
+                'my_stages_draft': 0,
+                'my_stages_in_progress': 0,
+                'my_stages_completed': 0,
+                'my_stages_evaluated': 0,
+                'my_students_count': 0,
+                'my_avg_progress': 0,
+                'my_defense_scheduled': 0,
+                'my_defense_completed': 0,
+                'my_progress': 0,
+                'my_grade': 0,
+            }
             
         return request.render('internship_management.dashboard_template', {
             'stats': stats,
