@@ -3,313 +3,266 @@
     <template id="dashboard_template" name="Dashboard Gestion Stages">
         <t t-call="web.layout">
             <t t-set="head">
-                <!-- Bootstrap CSS -->
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-                <!-- Font Awesome -->
-                <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-                <!-- Chart.js -->
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <!-- Utiliser les ressources Odoo internes -->
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.min.css"/>
+                <link rel="stylesheet" href="/web/static/lib/font-awesome/css/font-awesome.min.css"/>
+                <script src="/web/static/lib/chart.js/Chart.js"></script>
                 
-                <!-- Styles personnalisés -->
+                <!-- Styles personnalisés inline -->
                 <style>
-                    .card {
+                    .dashboard-container {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        min-height: 100vh;
+                        padding: 20px 0;
+                    }
+                    .dashboard-card {
+                        background: white;
+                        border-radius: 15px;
+                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                        transition: all 0.3s ease;
+                        border: none;
+                        margin-bottom: 20px;
+                    }
+                    .dashboard-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                    }
+                    .stat-card {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border-radius: 15px;
+                        padding: 25px;
+                        text-align: center;
+                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                        transition: all 0.3s ease;
+                    }
+                    .stat-card:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+                    }
+                    .stat-card h2 {
+                        font-size: 2.5rem;
+                        font-weight: bold;
+                        margin: 10px 0;
+                    }
+                    .stat-card i {
+                        font-size: 2rem;
+                        margin-bottom: 10px;
+                    }
+                    .stat-card.success {
+                        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                    }
+                    .stat-card.info {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    }
+                    .stat-card.warning {
+                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                    }
+                    .dashboard-title {
+                        color: white;
+                        text-align: center;
+                        margin-bottom: 30px;
+                        font-weight: 300;
+                    }
+                    .dashboard-subtitle {
+                        color: rgba(255, 255, 255, 0.8);
+                        text-align: center;
+                        margin-bottom: 40px;
+                    }
+                    .action-btn {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border: none;
                         border-radius: 10px;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                        transition: transform 0.2s;
-                    }
-                    .card:hover {
-                        transform: translateY(-2px);
-                    }
-                    .card-body {
-                        padding: 1.5rem;
-                    }
-                    .btn {
-                        border-radius: 8px;
+                        padding: 15px 25px;
+                        color: white;
                         font-weight: 500;
+                        transition: all 0.3s ease;
+                        text-decoration: none;
+                        display: inline-block;
+                        margin: 5px;
                     }
-                    .btn-block {
-                        padding: 12px;
-                        font-size: 14px;
+                    .action-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                        color: white;
+                        text-decoration: none;
                     }
-                    h1, h2, h3 {
-                        color: #2c3e50;
+                    .action-btn.success {
+                        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
                     }
-                    .text-muted {
-                        color: #6c757d !important;
+                    .action-btn.info {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     }
-                    .bg-primary {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                    .action-btn.warning {
+                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
                     }
-                    .bg-success {
-                        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+                    .chart-container {
+                        background: white;
+                        border-radius: 15px;
+                        padding: 20px;
+                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
                     }
-                    .bg-info {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                    }
-                    .bg-warning {
-                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+                    .section-title {
+                        color: white;
+                        margin-bottom: 20px;
+                        font-weight: 500;
                     }
                 </style>
             </t>
             
-            <div class="container-fluid">
+            <div class="dashboard-container">
                 <!-- En-tête du dashboard -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h1 class="text-center">
-                            <i class="fa fa-dashboard"></i> Tableau de Bord - Gestion des Stages
-                        </h1>
-                        <p class="text-center text-muted">
-                            Bienvenue <t t-esc="user.name"/> - <t t-esc="user.has_group('internship_management.group_internship_admin') and 'Administrateur' or user.has_group('internship_management.group_internship_supervisor') and 'Encadrant' or user.has_group('internship_management.group_internship_student') and 'Étudiant' or 'Utilisateur'"/>
-                        </p>
-                    </div>
-                </div>
+                <div class="container">
+                    <h1 class="dashboard-title">
+                        <i class="fa fa-dashboard"></i> Tableau de Bord - Gestion des Stages
+                    </h1>
+                    <p class="dashboard-subtitle">
+                        Bienvenue <t t-esc="user.name"/> - <t t-esc="user.has_group('internship_management.group_internship_admin') and 'Administrateur' or user.has_group('internship_management.group_internship_supervisor') and 'Encadrant' or user.has_group('internship_management.group_internship_student') and 'Étudiant' or 'Utilisateur'"/>
+                    </p>
 
-                <!-- Statistiques générales (Admin) -->
-                <t t-if="user.has_group('internship_management.group_internship_admin')">
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h3><i class="fa fa-chart-bar"></i> Statistiques Générales</h3>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-4">
-                        <!-- Cartes de statistiques -->
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-graduation-cap"></i></h4>
+                    <!-- Statistiques générales (Admin) -->
+                    <t t-if="user.has_group('internship_management.group_internship_admin')">
+                        <h3 class="section-title"><i class="fa fa-chart-bar"></i> Statistiques Générales</h3>
+                        
+                        <div class="row">
+                            <!-- Cartes de statistiques -->
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <i class="fa fa-graduation-cap"></i>
                                     <h2><t t-esc="stats['total_stages']"/></h2>
                                     <p>Total Stages</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-success text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-users"></i></h4>
+                            
+                            <div class="col-md-3">
+                                <div class="stat-card success">
+                                    <i class="fa fa-users"></i>
                                     <h2><t t-esc="stats['total_students']"/></h2>
                                     <p>Étudiants</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-info text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-user-tie"></i></h4>
+                            
+                            <div class="col-md-3">
+                                <div class="stat-card info">
+                                    <i class="fa fa-user-tie"></i>
                                     <h2><t t-esc="stats['total_supervisors']"/></h2>
                                     <p>Encadrants</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-building"></i></h4>
+                            
+                            <div class="col-md-3">
+                                <div class="stat-card warning">
+                                    <i class="fa fa-building"></i>
                                     <h2><t t-esc="stats['total_companies']"/></h2>
                                     <p>Entreprises</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Répartition des stages par état -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
+                        <!-- Répartition des stages par état -->
+                        <div class="row" style="margin-top: 30px;">
+                            <div class="col-md-6">
+                                <div class="chart-container">
                                     <h5><i class="fa fa-pie-chart"></i> Répartition par État</h5>
-                                </div>
-                                <div class="card-body">
                                     <canvas id="stagesByStateChart"></canvas>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
+                            
+                            <div class="col-md-6">
+                                <div class="chart-container">
                                     <h5><i class="fa fa-bar-chart"></i> Répartition par Type</h5>
-                                </div>
-                                <div class="card-body">
                                     <canvas id="stagesByTypeChart"></canvas>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </t>
 
-                    <!-- Détail des stages par état -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5><i class="fa fa-list"></i> Détail des Stages par État</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-2 text-center">
-                                            <div class="border rounded p-3">
-                                                <h3 class="text-secondary"><t t-esc="stats['stages_draft']"/></h3>
-                                                <small>Brouillon</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <div class="border rounded p-3">
-                                                <h3 class="text-info"><t t-esc="stats['stages_submitted']"/></h3>
-                                                <small>Soumis</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <div class="border rounded p-3">
-                                                <h3 class="text-warning"><t t-esc="stats['stages_approved']"/></h3>
-                                                <small>Approuvé</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <div class="border rounded p-3">
-                                                <h3 class="text-primary"><t t-esc="stats['stages_in_progress']"/></h3>
-                                                <small>En cours</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <div class="border rounded p-3">
-                                                <h3 class="text-success"><t t-esc="stats['stages_completed']"/></h3>
-                                                <small>Terminé</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <div class="border rounded p-3">
-                                                <h3 class="text-success"><t t-esc="stats['stages_evaluated']"/></h3>
-                                                <small>Évalué</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </t>
-
-                <!-- Statistiques par rôle -->
-                <t t-if="user.has_group('internship_management.group_internship_supervisor') and role_stats">
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h3><i class="fa fa-user-tie"></i> Mes Statistiques d'Encadrant</h3>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-graduation-cap"></i></h4>
+                    <!-- Statistiques par rôle -->
+                    <t t-if="user.has_group('internship_management.group_internship_supervisor') and role_stats">
+                        <h3 class="section-title"><i class="fa fa-user-tie"></i> Mes Statistiques d'Encadrant</h3>
+                        
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <i class="fa fa-graduation-cap"></i>
                                     <h2><t t-esc="role_stats['my_stages_count']"/></h2>
                                     <p>Mes Stages</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-success text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-users"></i></h4>
+                            
+                            <div class="col-md-3">
+                                <div class="stat-card success">
+                                    <i class="fa fa-users"></i>
                                     <h2><t t-esc="role_stats['my_students_count']"/></h2>
                                     <p>Mes Étudiants</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-info text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-percent"></i></h4>
+                            
+                            <div class="col-md-3">
+                                <div class="stat-card info">
+                                    <i class="fa fa-percent"></i>
                                     <h2><t t-esc="'%.1f' % role_stats['my_avg_progress']"/>%</h2>
                                     <p>Progression Moyenne</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-gavel"></i></h4>
+                            
+                            <div class="col-md-3">
+                                <div class="stat-card warning">
+                                    <i class="fa fa-gavel"></i>
                                     <h2><t t-esc="role_stats['my_defense_completed']"/></h2>
                                     <p>Soutenances Terminées</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </t>
+                    </t>
 
-                <t t-if="user.has_group('internship_management.group_internship_student') and role_stats">
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h3><i class="fa fa-user-graduate"></i> Mes Statistiques d'Étudiant</h3>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-4">
-                        <div class="col-md-4 mb-3">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-graduation-cap"></i></h4>
+                    <t t-if="user.has_group('internship_management.group_internship_student') and role_stats">
+                        <h3 class="section-title"><i class="fa fa-user-graduate"></i> Mes Statistiques d'Étudiant</h3>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stat-card">
+                                    <i class="fa fa-graduation-cap"></i>
                                     <h2><t t-esc="role_stats['my_stages_count']"/></h2>
                                     <p>Mes Stages</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <div class="card bg-info text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-percent"></i></h4>
+                            
+                            <div class="col-md-4">
+                                <div class="stat-card info">
+                                    <i class="fa fa-percent"></i>
                                     <h2><t t-esc="'%.1f' % role_stats['my_progress']"/>%</h2>
                                     <p>Ma Progression</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <div class="card bg-success text-white">
-                                <div class="card-body text-center">
-                                    <h4><i class="fa fa-star"></i></h4>
+                            
+                            <div class="col-md-4">
+                                <div class="stat-card success">
+                                    <i class="fa fa-star"></i>
                                     <h2><t t-esc="'%.1f' % role_stats['my_grade']"/></h2>
                                     <p>Ma Note Moyenne</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </t>
+                    </t>
 
-                <!-- Actions rapides -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fa fa-bolt"></i> Actions Rapides</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3 mb-2">
-                                        <a href="/web#action=internship_management.action_internship_stage_list" class="btn btn-primary btn-block">
+                    <!-- Actions rapides -->
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-12">
+                            <div class="dashboard-card">
+                                <div class="card-body">
+                                    <h5><i class="fa fa-bolt"></i> Actions Rapides</h5>
+                                    <div class="text-center">
+                                        <a href="/web#action=internship_management.action_internship_stage_list" class="action-btn">
                                             <i class="fa fa-list"></i> Voir tous les Stages
                                         </a>
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <a href="/web#action=internship_management.action_internship_student_list" class="btn btn-success btn-block">
+                                        <a href="/web#action=internship_management.action_internship_student_list" class="action-btn success">
                                             <i class="fa fa-users"></i> Gérer les Étudiants
                                         </a>
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <a href="/web#action=internship_management.action_internship_supervisor_list" class="btn btn-info btn-block">
+                                        <a href="/web#action=internship_management.action_internship_supervisor_list" class="action-btn info">
                                             <i class="fa fa-user-tie"></i> Gérer les Encadrants
                                         </a>
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <a href="/web#action=internship_management.action_internship_notification_list" class="btn btn-warning btn-block">
+                                        <a href="/web#action=internship_management.action_internship_notification_list" class="action-btn warning">
                                             <i class="fa fa-bell"></i> Notifications
                                         </a>
                                     </div>
