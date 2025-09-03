@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Rapports de stage -->
+    
+    <!-- Rapport de soutenance -->
+    <record id="action_defense_report" model="ir.actions.report">
+        <field name="name">Procès-Verbal de Soutenance</field>
+        <field name="model">internship.stage</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.defense_report_document</field>
+        <field name="report_file">internship_management.defense_report_document</field>
+        <field name="print_report_name">'Procès-Verbal de Soutenance - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_internship_stage"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Convention de stage -->
+    <record id="action_convention_report" model="ir.actions.report">
+        <field name="name">Convention de Stage</field>
+        <field name="model">internship.stage</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.convention_report_document</field>
+        <field name="report_file">internship_management.convention_report_document</field>
+        <field name="print_report_name">'Convention de Stage - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_internship_stage"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Attestation de stage -->
+    <record id="action_attestation_report" model="ir.actions.report">
+        <field name="name">Attestation de Stage</field>
+        <field name="model">internship.stage</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.attestation_report_document</field>
+        <field name="report_file">internship_management.attestation_report_document</field>
+        <field name="print_report_name">'Attestation de Stage - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_internship_stage"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Rapport d'évaluation -->
+    <record id="action_evaluation_report" model="ir.actions.report">
+        <field name="name">Rapport d'Évaluation</field>
+        <field name="model">internship.stage</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.evaluation_report_document</field>
+        <field name="report_file">internship_management.evaluation_report_document</field>
+        <field name="print_report_name">'Rapport d\'Évaluation - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_internship_stage"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

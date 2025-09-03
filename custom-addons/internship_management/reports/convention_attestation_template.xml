@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Convention de Stage -->
+    <template id="convention_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="internship_management.convention_report_template"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="convention_report_template">
+        <div class="page">
+            <div class="oe_structure"/>
+            
+            <!-- En-tête -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h1 style="color: #2c3e50; margin-bottom: 20px;">
+                            <strong>CONVENTION DE STAGE</strong>
+                        </h1>
+                        <h3 style="color: #7f8c8d; margin-bottom: 30px;">
+                            Gestion des Stages - Techpal
+                        </h3>
+                        <p style="color: #7f8c8d; font-size: 14px;">
+                            Convention établie le <span t-esc="data[stage.id]['current_date']"/>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Parties contractantes -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #3498db; border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-users"></i> Parties Contractantes
+                            </h4>
+                            
+                            <!-- Stagiaire -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h5 style="color: #3498db;">Stagiaire :</h5>
+                                    <p><strong>Nom :</strong> <span t-field="stage.student_id.name"/></p>
+                                    <p><strong>Email :</strong> <span t-field="stage.student_id.email"/></p>
+                                    <p><strong>Téléphone :</strong> <span t-field="stage.student_id.phone"/></p>
+                                    <p><strong>Adresse :</strong> <span t-field="stage.student_id.address"/></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Entreprise -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h5 style="color: #e74c3c;">Entreprise d'accueil :</h5>
+                                    <p><strong>Nom :</strong> <span t-field="stage.company_id.name"/></p>
+                                    <p><strong>Adresse :</strong> <span t-field="stage.company_id.address"/></p>
+                                    <p><strong>Téléphone :</strong> <span t-field="stage.company_id.phone"/></p>
+                                    <p><strong>Email :</strong> <span t-field="stage.company_id.email"/></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Encadrant -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 style="color: #27ae60;">Encadrant :</h5>
+                                    <p><strong>Nom :</strong> <span t-field="stage.supervisor_id.name"/></p>
+                                    <p><strong>Email :</strong> <span t-field="stage.supervisor_id.email"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations du stage -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #9b59b6; border-radius: 10px; padding: 20px; background-color: #f8f4f8;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-graduation-cap"></i> Informations du Stage
+                            </h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><strong>Sujet :</strong> <span t-field="stage.name"/></p>
+                                    <p><strong>Type de stage :</strong> <span t-field="stage.stage_type"/></p>
+                                    <p><strong>Date de début :</strong> <span t-field="stage.start_date" t-options='{"widget": "date"}'/></p>
+                                    <p><strong>Date de fin :</strong> <span t-field="stage.end_date" t-options='{"widget": "date"}'/></p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Description :</strong></p>
+                                    <div t-field="stage.description" t-options='{"widget": "html"}'/>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <p><strong>Objectifs :</strong></p>
+                                    <div t-field="stage.objectives" t-options='{"widget": "html"}'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions et obligations -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #f39c12; border-radius: 10px; padding: 20px; background-color: #fef9e7;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-file-text"></i> Conditions et Obligations
+                            </h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <h5>Obligations du stagiaire :</h5>
+                                    <ul>
+                                        <li>Respecter les horaires de l'entreprise</li>
+                                        <li>Suivre les instructions de l'encadrant</li>
+                                        <li>Réaliser les tâches confiées</li>
+                                        <li>Respecter la confidentialité</li>
+                                        <li>Rédiger un rapport de stage</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <h5>Obligations de l'entreprise :</h5>
+                                    <ul>
+                                        <li>Fournir un encadrement approprié</li>
+                                        <li>Permettre l'accès aux ressources nécessaires</li>
+                                        <li>Évaluer le travail du stagiaire</li>
+                                        <li>Participer à la soutenance</li>
+                                        <li>Signer les documents administratifs</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signatures -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #34495e; border-radius: 10px; padding: 20px; background-color: #ecf0f1;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-pencil"></i> Signatures
+                            </h4>
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 50px;">
+                                        <p><strong>Stagiaire</strong></p>
+                                        <p style="font-size: 12px; color: #7f8c8d;">Signature</p>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 50px;">
+                                        <p><strong>Encadrant</strong></p>
+                                        <p style="font-size: 12px; color: #7f8c8d;">Signature</p>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 50px;">
+                                        <p><strong>Entreprise</strong></p>
+                                        <p style="font-size: 12px; color: #7f8c8d;">Signature</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Attestation de Stage -->
+    <template id="attestation_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="internship_management.attestation_report_template"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="attestation_report_template">
+        <div class="page">
+            <div class="oe_structure"/>
+            
+            <!-- En-tête -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h1 style="color: #2c3e50; margin-bottom: 20px;">
+                            <strong>ATTESTATION DE STAGE</strong>
+                        </h1>
+                        <h3 style="color: #7f8c8d; margin-bottom: 30px;">
+                            Gestion des Stages - Techpal
+                        </h3>
+                        <p style="color: #7f8c8d; font-size: 14px;">
+                            Attestation délivrée le <span t-esc="data[stage.id]['current_date']"/>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Informations du stagiaire -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #3498db; border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-user"></i> Informations du Stagiaire
+                            </h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><strong>Nom :</strong> <span t-field="stage.student_id.name"/></p>
+                                    <p><strong>Numéro étudiant :</strong> <span t-field="stage.student_id.student_id"/></p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Type de stage :</strong> <span t-field="stage.stage_type"/></p>
+                                    <p><strong>Sujet :</strong> <span t-field="stage.name"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations du stage -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #27ae60; border-radius: 10px; padding: 20px; background-color: #f0f9f0;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-calendar"></i> Informations du Stage
+                            </h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><strong>Entreprise :</strong> <span t-field="stage.company_id.name"/></p>
+                                    <p><strong>Date de début :</strong> <span t-field="stage.start_date" t-options='{"widget": "date"}'/></p>
+                                    <p><strong>Date de fin :</strong> <span t-field="stage.end_date" t-options='{"widget": "date"}'/></p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Encadrant :</strong> <span t-field="stage.supervisor_id.name"/></p>
+                                    <p><strong>Durée :</strong> <span t-esc="data[stage.id]['duration_days']"/> jours</p>
+                                    <p><strong>Progression :</strong> <span t-field="stage.progress"/>%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Évaluation -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #e74c3c; border-radius: 10px; padding: 20px; background-color: #fdf2f2;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-star"></i> Évaluation
+                            </h4>
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <h5>Note de stage</h5>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #3498db;">
+                                        <span t-field="stage.grade"/>/20
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <h5>Note de soutenance</h5>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #e74c3c;">
+                                        <span t-field="stage.defense_grade"/>/20
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <h5>Note finale</h5>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #27ae60;">
+                                        <span t-esc="'%.1f' % data[stage.id]['final_grade']"/>/20
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attestation -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #9b59b6; border-radius: 10px; padding: 20px; background-color: #f8f4f8;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-certificate"></i> Attestation
+                            </h4>
+                            <p style="text-align: justify; line-height: 1.6;">
+                                Nous attestons que <strong><span t-field="stage.student_id.name"/></strong> a effectué un stage 
+                                au sein de notre organisation du <span t-field="stage.start_date" t-options='{"widget": "date"}'/> 
+                                au <span t-field="stage.end_date" t-options='{"widget": "date"}'/>.
+                            </p>
+                            <p style="text-align: justify; line-height: 1.6;">
+                                Le stagiaire a réalisé le projet intitulé : <strong>"<span t-field="stage.name"/>"</strong> 
+                                sous la supervision de <strong><span t-field="stage.supervisor_id.name"/></strong>.
+                            </p>
+                            <p style="text-align: justify; line-height: 1.6;">
+                                Nous confirmons que le stagiaire a fait preuve de professionnalisme, de sérieux et de motivation 
+                                tout au long de son stage. Il a obtenu une note finale de 
+                                <strong><span t-esc="'%.1f' % data[stage.id]['final_grade']"/>/20</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signature -->
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <div style="border-top: 1px solid #34495e; padding-top: 20px; margin-top: 50px;">
+                            <p><strong>Signature et cachet de l'entreprise</strong></p>
+                            <p style="font-size: 12px; color: #7f8c8d;">Date : <span t-esc="data[stage.id]['current_date']"/></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

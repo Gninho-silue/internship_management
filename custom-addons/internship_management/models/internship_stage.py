@@ -133,6 +133,15 @@ class InternshipStage(models.Model):
     grade = fields.Float(string='Note finale', digits=(4, 2))
     defense_grade = fields.Float(string='Note soutenance')
     feedback = fields.Text(string='Commentaire d\'évaluation')
+    
+    # Documents générés
+    convention_generated = fields.Boolean(string='Convention générée', default=False)
+    attestation_generated = fields.Boolean(string='Attestation générée', default=False)
+    defense_report_generated = fields.Boolean(string='PV généré', default=False)
+    evaluation_report_generated = fields.Boolean(string='Rapport d\'évaluation généré', default=False)
+    
+    # Notes d'évaluation
+    evaluation_notes = fields.Html(string='Notes d\'évaluation')
 
     # Champs techniques
     active = fields.Boolean(default=True, string='Actif')
@@ -197,6 +206,18 @@ class InternshipStage(models.Model):
 
     def action_generate_convention(self):
         self.write({'convention_generated': True})
+        return True
+
+    def action_generate_attestation(self):
+        self.write({'attestation_generated': True})
+        return True
+
+    def action_generate_defense_report(self):
+        self.write({'defense_report_generated': True})
+        return True
+
+    def action_generate_evaluation_report(self):
+        self.write({'evaluation_report_generated': True})
         return True
 
     # Méthodes d'alertes automatiques

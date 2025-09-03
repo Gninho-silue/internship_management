@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Rapport d'Évaluation -->
+    <template id="evaluation_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="internship_management.evaluation_report_template"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="evaluation_report_template">
+        <div class="page">
+            <div class="oe_structure"/>
+            
+            <!-- En-tête -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h1 style="color: #2c3e50; margin-bottom: 20px;">
+                            <strong>RAPPORT D'ÉVALUATION DE STAGE</strong>
+                        </h1>
+                        <h3 style="color: #7f8c8d; margin-bottom: 30px;">
+                            Gestion des Stages - Techpal
+                        </h3>
+                        <p style="color: #7f8c8d; font-size: 14px;">
+                            Rapport établi le <span t-esc="data[stage.id]['current_date']"/>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Informations générales -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #3498db; border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-info-circle"></i> Informations Générales
+                            </h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><strong>Stagiaire :</strong> <span t-field="stage.student_id.name"/></p>
+                                    <p><strong>Sujet :</strong> <span t-field="stage.name"/></p>
+                                    <p><strong>Type de stage :</strong> <span t-field="stage.stage_type"/></p>
+                                    <p><strong>Entreprise :</strong> <span t-field="stage.company_id.name"/></p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Encadrant :</strong> <span t-field="stage.supervisor_id.name"/></p>
+                                    <p><strong>Date de début :</strong> <span t-field="stage.start_date" t-options='{"widget": "date"}'/></p>
+                                    <p><strong>Date de fin :</strong> <span t-field="stage.end_date" t-options='{"widget": "date"}'/></p>
+                                    <p><strong>Progression :</strong> <span t-field="stage.progress"/>%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description et objectifs -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #27ae60; border-radius: 10px; padding: 20px; background-color: #f0f9f0;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-graduation-cap"></i> Description et Objectifs
+                            </h4>
+                            <div class="row">
+                                <div class="col-6">
+                                    <h5>Description du stage :</h5>
+                                    <div t-field="stage.description" t-options='{"widget": "html"}'/>
+                                </div>
+                                <div class="col-6">
+                                    <h5>Objectifs :</h5>
+                                    <div t-field="stage.objectives" t-options='{"widget": "html"}'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Évaluation -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #e74c3c; border-radius: 10px; padding: 20px; background-color: #fdf2f2;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-star"></i> Évaluation
+                            </h4>
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <h5>Note de stage</h5>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #3498db;">
+                                        <span t-field="stage.grade"/>/20
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <h5>Note de soutenance</h5>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #e74c3c;">
+                                        <span t-field="stage.defense_grade"/>/20
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <h5>Note finale</h5>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #27ae60;">
+                                        <span t-esc="'%.1f' % data[stage.id]['final_grade']"/>/20
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes d'évaluation -->
+                <div class="row mb-4" t-if="stage.evaluation_notes">
+                    <div class="col-12">
+                        <div style="border: 2px solid #9b59b6; border-radius: 10px; padding: 20px; background-color: #f8f4f8;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-comments"></i> Notes d'Évaluation
+                            </h4>
+                            <div t-field="stage.evaluation_notes" t-options='{"widget": "html"}'/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commentaires -->
+                <div class="row mb-4" t-if="stage.feedback">
+                    <div class="col-12">
+                        <div style="border: 2px solid #f39c12; border-radius: 10px; padding: 20px; background-color: #fef9e7;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-comment"></i> Commentaires
+                            </h4>
+                            <div t-field="stage.feedback" t-options='{"widget": "html"}'/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conclusion -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div style="border: 2px solid #34495e; border-radius: 10px; padding: 20px; background-color: #ecf0f1;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-check-circle"></i> Conclusion
+                            </h4>
+                            <p style="text-align: justify; line-height: 1.6;">
+                                Le stage de <strong><span t-field="stage.student_id.name"/></strong> s'est déroulé 
+                                du <span t-field="stage.start_date" t-options='{"widget": "date"}'/> 
+                                au <span t-field="stage.end_date" t-options='{"widget": "date"}'/> 
+                                au sein de <strong><span t-field="stage.company_id.name"/></strong>.
+                            </p>
+                            <p style="text-align: justify; line-height: 1.6;">
+                                Le stagiaire a réalisé le projet "<strong><span t-field="stage.name"/></strong>" 
+                                avec une progression de <strong><span t-field="stage.progress"/>%</strong> 
+                                et a obtenu une note finale de <strong><span t-esc="'%.1f' % data[stage.id]['final_grade']"/>/20</strong>.
+                            </p>
+                            <p style="text-align: justify; line-height: 1.6;">
+                                Ce stage a permis au stagiaire d'acquérir des compétences professionnelles 
+                                et de mettre en pratique ses connaissances théoriques dans un contexte réel.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signatures -->
+                <div class="row">
+                    <div class="col-12">
+                        <div style="border: 2px solid #34495e; border-radius: 10px; padding: 20px; background-color: #ecf0f1;">
+                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                                <i class="fa fa-pencil"></i> Signatures
+                            </h4>
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 50px;">
+                                        <p><strong>Encadrant</strong></p>
+                                        <p style="font-size: 12px; color: #7f8c8d;">Signature</p>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 50px;">
+                                        <p><strong>Stagiaire</strong></p>
+                                        <p style="font-size: 12px; color: #7f8c8d;">Signature</p>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 50px;">
+                                        <p><strong>Administration</strong></p>
+                                        <p style="font-size: 12px; color: #7f8c8d;">Signature</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>
