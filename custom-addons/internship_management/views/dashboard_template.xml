@@ -6,7 +6,6 @@
                 <!-- Utiliser les ressources Odoo internes -->
                 <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.min.css"/>
                 <link rel="stylesheet" href="/web/static/lib/font-awesome/css/font-awesome.min.css"/>
-                <script src="/web/static/lib/chart.js/Chart.js"></script>
                 
                 <!-- Styles personnalisés inline -->
                 <style>
@@ -107,6 +106,31 @@
                         margin-bottom: 20px;
                         font-weight: 500;
                     }
+                    .data-list {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .data-list li {
+                        padding: 10px 15px;
+                        margin: 5px 0;
+                        border-radius: 8px;
+                        background: #f8f9fa;
+                        border-left: 4px solid #667eea;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .data-list li strong {
+                        color: #2c3e50;
+                    }
+                    .data-list li .count {
+                        background: #667eea;
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 15px;
+                        font-weight: bold;
+                    }
                 </style>
             </t>
             
@@ -164,14 +188,56 @@
                             <div class="col-md-6">
                                 <div class="chart-container">
                                     <h5><i class="fa fa-pie-chart"></i> Répartition par État</h5>
-                                    <canvas id="stagesByStateChart"></canvas>
+                                    <ul class="data-list">
+                                        <li>
+                                            <strong>Brouillon</strong>
+                                            <span class="count"><t t-esc="stats['stages_draft']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Soumis</strong>
+                                            <span class="count"><t t-esc="stats['stages_submitted']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Approuvé</strong>
+                                            <span class="count"><t t-esc="stats['stages_approved']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>En cours</strong>
+                                            <span class="count"><t t-esc="stats['stages_in_progress']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Terminé</strong>
+                                            <span class="count"><t t-esc="stats['stages_completed']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Évalué</strong>
+                                            <span class="count"><t t-esc="stats['stages_evaluated']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Annulé</strong>
+                                            <span class="count"><t t-esc="stats['stages_cancelled']"/></span>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="chart-container">
                                     <h5><i class="fa fa-bar-chart"></i> Répartition par Type</h5>
-                                    <canvas id="stagesByTypeChart"></canvas>
+                                    <ul class="data-list">
+                                        <li>
+                                            <strong>PFE</strong>
+                                            <span class="count"><t t-esc="stats['pfe_count']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Stage d'été</strong>
+                                            <span class="count"><t t-esc="stats['summer_internship_count']"/></span>
+                                        </li>
+                                        <li>
+                                            <strong>Stage d'observation</strong>
+                                            <span class="count"><t t-esc="stats['observation_count']"/></span>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -321,103 +387,6 @@
                     </div>
                 </div>
             </div>
-
-                        <script>
-                // Attendre que la page soit chargée
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Données statiques pour les graphiques
-                    var chartData = {
-                        stages_by_state: {
-                            labels: ['Brouillon', 'Soumis', 'Approuvé', 'En cours', 'Terminé', 'Évalué', 'Annulé'],
-                            data: [
-                                <t t-esc="stats['stages_draft']"/>,
-                                <t t-esc="stats['stages_submitted']"/>,
-                                <t t-esc="stats['stages_approved']"/>,
-                                <t t-esc="stats['stages_in_progress']"/>,
-                                <t t-esc="stats['stages_completed']"/>,
-                                <t t-esc="stats['stages_evaluated']"/>,
-                                <t t-esc="stats['stages_cancelled']"/>
-                            ]
-                        },
-                        stages_by_type: {
-                            labels: ['PFE', 'Stage d\'été', 'Stage d\'observation'],
-                            data: [
-                                <t t-esc="stats['pfe_count']"/>,
-                                <t t-esc="stats['summer_internship_count']"/>,
-                                <t t-esc="stats['observation_count']"/>
-                            ]
-                        }
-                    };
-
-                    // Vérifier si Chart.js est disponible
-                    if (typeof Chart !== 'undefined') {
-                        // Graphique des stages par état
-                        var ctx1 = document.getElementById('stagesByStateChart');
-                        if (ctx1) {
-                            new Chart(ctx1, {
-                                type: 'doughnut',
-                                data: {
-                                    labels: chartData.stages_by_state.labels,
-                                    datasets: [{
-                                        data: chartData.stages_by_state.data,
-                                        backgroundColor: [
-                                            '#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#28a745', '#dc3545'
-                                        ]
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    legend: {
-                                        position: 'bottom'
-                                    }
-                                }
-                            });
-                        }
-                        
-                        // Graphique des stages par type
-                        var ctx2 = document.getElementById('stagesByTypeChart');
-                        if (ctx2) {
-                            new Chart(ctx2, {
-                                type: 'bar',
-                                data: {
-                                    labels: chartData.stages_by_type.labels,
-                                    datasets: [{
-                                        label: 'Nombre de stages',
-                                        data: chartData.stages_by_type.data,
-                                        backgroundColor: ['#007bff', '#28a745', '#ffc107']
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    } else {
-                        console.log('Chart.js non disponible');
-                        // Afficher les données en texte si Chart.js n'est pas disponible
-                        var ctx1 = document.getElementById('stagesByStateChart');
-                        if (ctx1) {
-                            ctx1.innerHTML = '<div style="text-align: center; padding: 20px;"><h4>Répartition par État</h4><ul style="list-style: none; padding: 0;">' +
-                                chartData.stages_by_state.labels.map(function(label, index) {
-                                    return '<li style="margin: 5px 0;"><strong>' + label + ':</strong> ' + chartData.stages_by_state.data[index] + '</li>';
-                                }).join('') + '</ul></div>';
-                        }
-                        
-                        var ctx2 = document.getElementById('stagesByTypeChart');
-                        if (ctx2) {
-                            ctx2.innerHTML = '<div style="text-align: center; padding: 20px;"><h4>Répartition par Type</h4><ul style="list-style: none; padding: 0;">' +
-                                chartData.stages_by_type.labels.map(function(label, index) {
-                                    return '<li style="margin: 5px 0;"><strong>' + label + ':</strong> ' + chartData.stages_by_type.data[index] + '</li>';
-                                }).join('') + '</ul></div>';
-                        }
-                    }
-                });
-            </script>
         </t>
     </template>
 </odoo>
