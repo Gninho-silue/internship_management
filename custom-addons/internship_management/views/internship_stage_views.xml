@@ -134,18 +134,18 @@
 
                             <page name="reports" string="Rapports et Documents">
                                 <div class="oe_button_box" name="button_box">
-                                    <button name="%(action_convention_report)d" string="Convention de Stage" type="ir.actions.report" 
+                                    <button name="%(action_convention_report)d" string="Convention de Stage" type="action" 
                                             class="oe_stat_button" icon="fa-file-text-o"
                                             help="Générer la convention de stage"/>
-                                    <button name="%(action_attestation_report)d" string="Attestation de Stage" type="ir.actions.report" 
+                                    <button name="%(action_attestation_report)d" string="Attestation de Stage" type="action" 
                                             class="oe_stat_button" icon="fa-certificate"
                                             help="Générer l'attestation de stage"
                                             invisible="state not in ['completed', 'evaluated']"/>
-                                    <button name="%(action_defense_report)d" string="Procès-Verbal" type="ir.actions.report" 
+                                    <button name="%(action_defense_report)d" string="Procès-Verbal" type="action" 
                                             class="oe_stat_button" icon="fa-gavel"
                                             help="Générer le procès-verbal de soutenance"
                                             invisible="defense_status != 'completed'"/>
-                                    <button name="%(action_evaluation_report)d" string="Rapport d'Évaluation" type="ir.actions.report" 
+                                    <button name="%(action_evaluation_report)d" string="Rapport d'Évaluation" type="action" 
                                             class="oe_stat_button" icon="fa-star"
                                             help="Générer le rapport d'évaluation"
                                             invisible="state != 'evaluated'"/>
