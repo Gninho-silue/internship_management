@@ -341,6 +341,39 @@
             </field>
         </record>
 
+        <!-- Vue dashboard web des stages -->
+        <record id="view_internship_stage_dashboard_web" model="ir.ui.view">
+            <field name="name">internship.stage.dashboard.web</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard" type="primary">
+                    <field name="name"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content text-center">
+                                    <div class="oe_kanban_details">
+                                        <h3><i class="fa fa-dashboard"></i> Tableau de Bord Web</h3>
+                                        <p class="text-muted">Statistiques avancées et graphiques interactifs</p>
+                                        <div class="mt-3">
+                                            <a href="/internship/dashboard" target="_blank" class="btn btn-primary btn-lg">
+                                                <i class="fa fa-external-link"></i> Ouvrir Dashboard Web
+                                            </a>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="fa fa-info-circle"></i> S'ouvre dans un nouvel onglet
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <!-- Action dashboard : Vue dashboard des stages -->
         <record id="action_internship_stage_dashboard" model="ir.actions.act_window">
             <field name="name">Tableau de Bord</field>
@@ -364,11 +397,11 @@
             <field name="name">Tableau de Bord Web</field>
             <field name="res_model">internship.stage</field>
             <field name="view_mode">kanban</field>
-            <field name="view_id" ref="view_internship_stage_dashboard"/>
+            <field name="view_id" ref="view_internship_stage_dashboard_web"/>
             <field name="context">{'dashboard_web': True}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    <a href="/internship/dashboard" target="_blank" class="btn btn-primary">
+                    <a href="/internship/dashboard" target="_blank" class="btn btn-primary" style="font-size: 16px; padding: 10px 20px;">
                         <i class="fa fa-dashboard"></i> Ouvrir Dashboard Web
                     </a>
                 </p>
