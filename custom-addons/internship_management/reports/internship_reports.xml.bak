@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Action pour le rapport de soutenance -->
+        <record id="action_defense_report" model="ir.actions.report">
+            <field name="name">Procès-verbal de Soutenance</field>
+            <field name="model">internship.stage</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">internship_management.defense_report_template</field>
+            <field name="report_file">internship_management.defense_report_template</field>
+            <field name="binding_model_id" ref="model_internship_stage"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Autres actions de rapport si nécessaire -->
+        <record id="action_stage_report" model="ir.actions.report">
+            <field name="name">Rapport de Stage</field>
+            <field name="model">internship.stage</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">internship_management.stage_report_template</field>
+            <field name="report_file">internship_management.stage_report_template</field>
+            <field name="binding_model_id" ref="model_internship_stage"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Action pour la convention de stage -->
+        <record id="action_convention_report" model="ir.actions.report">
+            <field name="name">Convention de Stage</field>
+            <field name="model">internship.stage</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">internship_management.convention_report_template</field>
+            <field name="report_file">internship_management.convention_report_template</field>
+            <field name="binding_model_id" ref="model_internship_stage"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>
