@@ -3,9 +3,53 @@
     <template id="dashboard_template" name="Dashboard Gestion Stages">
         <t t-call="web.layout">
             <t t-set="head">
-                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.min.css"/>
-                <link rel="stylesheet" href="/web/static/lib/font-awesome/css/font-awesome.min.css"/>
-                <script src="/web/static/lib/chart.js/Chart.js"></script>
+                <!-- Bootstrap CSS -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <!-- Font Awesome -->
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+                <!-- Chart.js -->
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                
+                <!-- Styles personnalisés -->
+                <style>
+                    .card {
+                        border-radius: 10px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s;
+                    }
+                    .card:hover {
+                        transform: translateY(-2px);
+                    }
+                    .card-body {
+                        padding: 1.5rem;
+                    }
+                    .btn {
+                        border-radius: 8px;
+                        font-weight: 500;
+                    }
+                    .btn-block {
+                        padding: 12px;
+                        font-size: 14px;
+                    }
+                    h1, h2, h3 {
+                        color: #2c3e50;
+                    }
+                    .text-muted {
+                        color: #6c757d !important;
+                    }
+                    .bg-primary {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                    }
+                    .bg-success {
+                        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+                    }
+                    .bg-info {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                    }
+                    .bg-warning {
+                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+                    }
+                </style>
             </t>
             
             <div class="container-fluid">
@@ -277,58 +321,67 @@
             </div>
 
             <script>
-                // Charger les données du dashboard
-                odoo.define('internship_management.dashboard', function (require) {
-                    "use strict";
-                    
-                    var ajax = require('web.ajax');
-                    
-                    // Récupérer les données pour les graphiques
-                    ajax.jsonRpc('/internship/dashboard/data', 'call', {})
-                    .then(function (data) {
-                        // Graphique des stages par état
-                        var ctx1 = document.getElementById('stagesByStateChart').getContext('2d');
-                        new Chart(ctx1, {
-                            type: 'doughnut',
-                            data: {
-                                labels: data.chart_data.stages_by_state.labels,
-                                datasets: [{
-                                    data: data.chart_data.stages_by_state.data,
-                                    backgroundColor: [
-                                        '#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#28a745', '#dc3545'
-                                    ]
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                legend: {
-                                    position: 'bottom'
-                                }
-                            }
-                        });
-                        
-                        // Graphique des stages par type
-                        var ctx2 = document.getElementById('stagesByTypeChart').getContext('2d');
-                        new Chart(ctx2, {
-                            type: 'bar',
-                            data: {
-                                labels: data.chart_data.stages_by_type.labels,
-                                datasets: [{
-                                    label: 'Nombre de stages',
-                                    data: data.chart_data.stages_by_type.data,
-                                    backgroundColor: ['#007bff', '#28a745', '#ffc107']
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
+                // Attendre que la page soit chargée
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Vérifier si Chart.js est disponible
+                    if (typeof Chart !== 'undefined') {
+                        // Récupérer les données pour les graphiques
+                        fetch('/internship/dashboard/data')
+                        .then(response => response.json())
+                        .then(data => {
+                            // Graphique des stages par état
+                            var ctx1 = document.getElementById('stagesByStateChart');
+                            if (ctx1) {
+                                new Chart(ctx1, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: data.chart_data.stages_by_state.labels,
+                                        datasets: [{
+                                            data: data.chart_data.stages_by_state.data,
+                                            backgroundColor: [
+                                                '#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#28a745', '#dc3545'
+                                            ]
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        legend: {
+                                            position: 'bottom'
+                                        }
                                     }
-                                }
+                                });
                             }
+                            
+                            // Graphique des stages par type
+                            var ctx2 = document.getElementById('stagesByTypeChart');
+                            if (ctx2) {
+                                new Chart(ctx2, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: data.chart_data.stages_by_type.labels,
+                                        datasets: [{
+                                            label: 'Nombre de stages',
+                                            data: data.chart_data.stages_by_type.data,
+                                            backgroundColor: ['#007bff', '#28a745', '#ffc107']
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.log('Erreur lors du chargement des données:', error);
                         });
-                    });
+                    } else {
+                        console.log('Chart.js non disponible');
+                    }
                 });
             </script>
         </t>

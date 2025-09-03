@@ -45,8 +45,20 @@ class InternshipDashboard(http.Controller):
             
         # Statistiques par rôle
         if user.has_group('internship_management.group_internship_admin'):
-            # Admin : toutes les statistiques
-            role_stats = stats
+            # Admin : toutes les statistiques + clés personnalisées
+            role_stats = {
+                'my_stages_count': stats['total_stages'],
+                'my_stages_draft': stats['stages_draft'],
+                'my_stages_in_progress': stats['stages_in_progress'],
+                'my_stages_completed': stats['stages_completed'],
+                'my_stages_evaluated': stats['stages_evaluated'],
+                'my_students_count': stats['total_students'],
+                'my_avg_progress': stats['avg_progress'],
+                'my_defense_scheduled': stats['defense_scheduled'],
+                'my_defense_completed': stats['defense_completed'],
+                'my_progress': stats['avg_progress'],
+                'my_grade': 0,  # Les admins n'ont pas de note personnelle
+            }
         elif user.has_group('internship_management.group_internship_supervisor'):
             # Superviseur : ses stages et étudiants
             supervisor = request.env['internship.supervisor'].search([('user_id', '=', user.id)], limit=1)
