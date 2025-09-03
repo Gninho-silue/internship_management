@@ -62,7 +62,7 @@
                         <button name="action_cancel" string="Annuler" type="object"
                                 invisible="state in ['cancelled', 'evaluated']"/>
                         <button name="action_draft" string="Remettre en brouillon" type="object"
-                                invisible="state == 'draft'"
+                                invisible="state == 'draft' or state == 'evaluated'"
                                 groups="internship_management.group_internship_admin"/>
                         
                         <!-- Boutons de soutenance -->
@@ -80,7 +80,8 @@
                                 groups="internship_management.group_internship_supervisor"/>
                         
                         <field name="state" widget="statusbar"
-                               statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"/>
+                               statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"
+                               statusbar_colors="{'draft': 'secondary', 'submitted': 'warning', 'approved': 'info', 'in_progress': 'primary', 'completed': 'success', 'evaluated': 'success'}"/>
                     </header>
 
                     <sheet>

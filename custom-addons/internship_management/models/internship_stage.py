@@ -202,6 +202,10 @@ class InternshipStage(models.Model):
         self.write({'state': 'cancelled'})
 
     def action_draft(self):
+        """Remettre en brouillon - impossible après évaluation"""
+        for stage in self:
+            if stage.state == 'evaluated':
+                raise ValidationError(_("Impossible de remettre en brouillon un stage déjà évalué."))
         self.write({'state': 'draft'})
 
     def action_generate_convention(self):
