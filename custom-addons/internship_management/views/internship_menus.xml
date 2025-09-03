@@ -11,13 +11,6 @@
         <!-- MENUS PRINCIPAUX -->
         <!-- ================================= -->
 
-        <!-- Menu Tableau de Bord -->
-        <menuitem id="menu_internship_dashboard"
-                  name="Tableau de Bord"
-                  parent="menu_internship_root"
-                  action="action_internship_dashboard_web"
-                  sequence="5"/>
-        
         <!-- Menu Stages -->
         <menuitem id="menu_internship_stages"
                   name="Stages"
