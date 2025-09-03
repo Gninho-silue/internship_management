@@ -241,55 +241,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Détail des stages par état -->
-                        <div class="row" style="margin-top: 30px;">
-                            <div class="col-12">
-                                <div class="dashboard-card">
-                                    <div class="card-body">
-                                        <h5><i class="fa fa-list"></i> Détail des Stages par État</h5>
-                                        <div class="row text-center">
-                                            <div class="col-md-2">
-                                                <div class="stat-card" style="background: #6c757d;">
-                                                    <h3><t t-esc="stats['stages_draft']"/></h3>
-                                                    <small>Brouillon</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="stat-card" style="background: #17a2b8;">
-                                                    <h3><t t-esc="stats['stages_submitted']"/></h3>
-                                                    <small>Soumis</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="stat-card" style="background: #ffc107;">
-                                                    <h3><t t-esc="stats['stages_approved']"/></h3>
-                                                    <small>Approuvé</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="stat-card" style="background: #007bff;">
-                                                    <h3><t t-esc="stats['stages_in_progress']"/></h3>
-                                                    <small>En cours</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="stat-card" style="background: #28a745;">
-                                                    <h3><t t-esc="stats['stages_completed']"/></h3>
-                                                    <small>Terminé</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="stat-card" style="background: #28a745;">
-                                                    <h3><t t-esc="stats['stages_evaluated']"/></h3>
-                                                    <small>Évalué</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </t>
 
                     <!-- Statistiques par rôle -->
