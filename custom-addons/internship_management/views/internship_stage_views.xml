@@ -159,16 +159,16 @@
                                         <field name="evaluation_report_generated" readonly="1" widget="boolean_toggle"/>
                                     </group>
                                     <group string="Actions Rapides">
-                                        <button name="action_generate_convention" string="Marquer Convention Générée" 
+                                        <button name="action_generate_convention" string="Générer Convention" 
                                                 type="object" class="oe_highlight" 
                                                 invisible="convention_generated"/>
-                                        <button name="action_generate_attestation" string="Marquer Attestation Générée" 
+                                        <button name="action_generate_attestation" string="Générer Attestation" 
                                                 type="object" class="oe_highlight" 
                                                 invisible="attestation_generated or state not in ['completed', 'evaluated']"/>
-                                        <button name="action_generate_defense_report" string="Marquer PV Généré" 
+                                        <button name="action_generate_defense_report" string="Générer PV" 
                                                 type="object" class="oe_highlight" 
                                                 invisible="defense_report_generated or defense_status != 'completed'"/>
-                                        <button name="action_generate_evaluation_report" string="Marquer Rapport Généré" 
+                                        <button name="action_generate_evaluation_report" string="Générer Rapport" 
                                                 type="object" class="oe_highlight" 
                                                 invisible="evaluation_report_generated or state != 'evaluated'"/>
                                     </group>

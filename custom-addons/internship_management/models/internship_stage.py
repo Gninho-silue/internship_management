@@ -205,20 +205,44 @@ class InternshipStage(models.Model):
         self.write({'state': 'draft'})
 
     def action_generate_convention(self):
+        """Générer la convention et la marquer comme générée"""
         self.write({'convention_generated': True})
-        return True
+        return {
+            'type': 'ir.actions.report',
+            'report_name': 'internship_management.convention_report_document',
+            'report_type': 'qweb-pdf',
+            'data': {'doc_ids': self.ids},
+        }
 
     def action_generate_attestation(self):
+        """Générer l'attestation et la marquer comme générée"""
         self.write({'attestation_generated': True})
-        return True
+        return {
+            'type': 'ir.actions.report',
+            'report_name': 'internship_management.attestation_report_document',
+            'report_type': 'qweb-pdf',
+            'data': {'doc_ids': self.ids},
+        }
 
     def action_generate_defense_report(self):
+        """Générer le PV et le marquer comme généré"""
         self.write({'defense_report_generated': True})
-        return True
+        return {
+            'type': 'ir.actions.report',
+            'report_name': 'internship_management.defense_report_document',
+            'report_type': 'qweb-pdf',
+            'data': {'doc_ids': self.ids},
+        }
 
     def action_generate_evaluation_report(self):
+        """Générer le rapport d'évaluation et le marquer comme généré"""
         self.write({'evaluation_report_generated': True})
-        return True
+        return {
+            'type': 'ir.actions.report',
+            'report_name': 'internship_management.evaluation_report_document',
+            'report_type': 'qweb-pdf',
+            'data': {'doc_ids': self.ids},
+        }
 
     # Méthodes d'alertes automatiques
     @api.model
