@@ -175,6 +175,55 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Détail des stages par état -->
+                        <div class="row" style="margin-top: 30px;">
+                            <div class="col-12">
+                                <div class="dashboard-card">
+                                    <div class="card-body">
+                                        <h5><i class="fa fa-list"></i> Détail des Stages par État</h5>
+                                        <div class="row text-center">
+                                            <div class="col-md-2">
+                                                <div class="stat-card" style="background: #6c757d;">
+                                                    <h3><t t-esc="stats['stages_draft']"/></h3>
+                                                    <small>Brouillon</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="stat-card" style="background: #17a2b8;">
+                                                    <h3><t t-esc="stats['stages_submitted']"/></h3>
+                                                    <small>Soumis</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="stat-card" style="background: #ffc107;">
+                                                    <h3><t t-esc="stats['stages_approved']"/></h3>
+                                                    <small>Approuvé</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="stat-card" style="background: #007bff;">
+                                                    <h3><t t-esc="stats['stages_in_progress']"/></h3>
+                                                    <small>En cours</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="stat-card" style="background: #28a745;">
+                                                    <h3><t t-esc="stats['stages_completed']"/></h3>
+                                                    <small>Terminé</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="stat-card" style="background: #28a745;">
+                                                    <h3><t t-esc="stats['stages_evaluated']"/></h3>
+                                                    <small>Évalué</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </t>
 
                     <!-- Statistiques par rôle -->
@@ -273,67 +322,99 @@
                 </div>
             </div>
 
-            <script>
+                        <script>
                 // Attendre que la page soit chargée
                 document.addEventListener('DOMContentLoaded', function() {
+                    // Données statiques pour les graphiques
+                    var chartData = {
+                        stages_by_state: {
+                            labels: ['Brouillon', 'Soumis', 'Approuvé', 'En cours', 'Terminé', 'Évalué', 'Annulé'],
+                            data: [
+                                <t t-esc="stats['stages_draft']"/>,
+                                <t t-esc="stats['stages_submitted']"/>,
+                                <t t-esc="stats['stages_approved']"/>,
+                                <t t-esc="stats['stages_in_progress']"/>,
+                                <t t-esc="stats['stages_completed']"/>,
+                                <t t-esc="stats['stages_evaluated']"/>,
+                                <t t-esc="stats['stages_cancelled']"/>
+                            ]
+                        },
+                        stages_by_type: {
+                            labels: ['PFE', 'Stage d\'été', 'Stage d\'observation'],
+                            data: [
+                                <t t-esc="stats['pfe_count']"/>,
+                                <t t-esc="stats['summer_internship_count']"/>,
+                                <t t-esc="stats['observation_count']"/>
+                            ]
+                        }
+                    };
+
                     // Vérifier si Chart.js est disponible
                     if (typeof Chart !== 'undefined') {
-                        // Récupérer les données pour les graphiques
-                        fetch('/internship/dashboard/data')
-                        .then(response => response.json())
-                        .then(data => {
-                            // Graphique des stages par état
-                            var ctx1 = document.getElementById('stagesByStateChart');
-                            if (ctx1) {
-                                new Chart(ctx1, {
-                                    type: 'doughnut',
-                                    data: {
-                                        labels: data.chart_data.stages_by_state.labels,
-                                        datasets: [{
-                                            data: data.chart_data.stages_by_state.data,
-                                            backgroundColor: [
-                                                '#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#28a745', '#dc3545'
-                                            ]
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        legend: {
-                                            position: 'bottom'
+                        // Graphique des stages par état
+                        var ctx1 = document.getElementById('stagesByStateChart');
+                        if (ctx1) {
+                            new Chart(ctx1, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: chartData.stages_by_state.labels,
+                                    datasets: [{
+                                        data: chartData.stages_by_state.data,
+                                        backgroundColor: [
+                                            '#6c757d', '#17a2b8', '#ffc107', '#007bff', '#28a745', '#28a745', '#dc3545'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'bottom'
+                                    }
+                                }
+                            });
+                        }
+                        
+                        // Graphique des stages par type
+                        var ctx2 = document.getElementById('stagesByTypeChart');
+                        if (ctx2) {
+                            new Chart(ctx2, {
+                                type: 'bar',
+                                data: {
+                                    labels: chartData.stages_by_type.labels,
+                                    datasets: [{
+                                        label: 'Nombre de stages',
+                                        data: chartData.stages_by_type.data,
+                                        backgroundColor: ['#007bff', '#28a745', '#ffc107']
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
                                         }
                                     }
-                                });
-                            }
-                            
-                            // Graphique des stages par type
-                            var ctx2 = document.getElementById('stagesByTypeChart');
-                            if (ctx2) {
-                                new Chart(ctx2, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: data.chart_data.stages_by_type.labels,
-                                        datasets: [{
-                                            label: 'Nombre de stages',
-                                            data: data.chart_data.stages_by_type.data,
-                                            backgroundColor: ['#007bff', '#28a745', '#ffc107']
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.log('Erreur lors du chargement des données:', error);
-                        });
+                                }
+                            });
+                        }
                     } else {
                         console.log('Chart.js non disponible');
+                        // Afficher les données en texte si Chart.js n'est pas disponible
+                        var ctx1 = document.getElementById('stagesByStateChart');
+                        if (ctx1) {
+                            ctx1.innerHTML = '<div style="text-align: center; padding: 20px;"><h4>Répartition par État</h4><ul style="list-style: none; padding: 0;">' +
+                                chartData.stages_by_state.labels.map(function(label, index) {
+                                    return '<li style="margin: 5px 0;"><strong>' + label + ':</strong> ' + chartData.stages_by_state.data[index] + '</li>';
+                                }).join('') + '</ul></div>';
+                        }
+                        
+                        var ctx2 = document.getElementById('stagesByTypeChart');
+                        if (ctx2) {
+                            ctx2.innerHTML = '<div style="text-align: center; padding: 20px;"><h4>Répartition par Type</h4><ul style="list-style: none; padding: 0;">' +
+                                chartData.stages_by_type.labels.map(function(label, index) {
+                                    return '<li style="margin: 5px 0;"><strong>' + label + ':</strong> ' + chartData.stages_by_type.data[index] + '</li>';
+                                }).join('') + '</ul></div>';
+                        }
                     }
                 });
             </script>
