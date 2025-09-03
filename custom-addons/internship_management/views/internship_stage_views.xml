@@ -359,6 +359,25 @@
             </field>
         </record>
 
+        <!-- Action dashboard web : Dashboard avec statistiques -->
+        <record id="action_internship_dashboard_web" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord Web</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="view_internship_stage_dashboard"/>
+            <field name="context">{'dashboard_web': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    <a href="/internship/dashboard" target="_blank" class="btn btn-primary">
+                        <i class="fa fa-dashboard"></i> Ouvrir Dashboard Web
+                    </a>
+                </p>
+                <p>
+                    Cliquez sur le bouton ci-dessus pour ouvrir le dashboard web avec toutes les statistiques.
+                </p>
+            </field>
+        </record>
+
         <!-- ================================= -->
         <!-- ACTIONS -->
         <!-- ================================= -->

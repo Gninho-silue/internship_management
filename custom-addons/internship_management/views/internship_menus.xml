@@ -11,6 +11,13 @@
         <!-- MENUS PRINCIPAUX -->
         <!-- ================================= -->
 
+        <!-- Menu Tableau de Bord Web -->
+        <menuitem id="menu_internship_dashboard_web"
+                  name="Tableau de Bord Web"
+                  parent="menu_internship_root"
+                  action="action_internship_dashboard_web"
+                  sequence="5"/>
+
         <!-- Menu Stages -->
         <menuitem id="menu_internship_stages"
                   name="Stages"
@@ -104,27 +111,6 @@
                   action="action_internship_stage_supervise"
                   sequence="30"
                   groups="group_internship_supervisor"/>
-
-        <!-- ================================= -->
-        <!-- SOUS-MENUS - PERSONNES -->
-        <!-- ================================= -->
-
-        <!-- Étudiants -->
-        <menuitem id="menu_internship_student"
-                  name="Étudiants"
-                  parent="menu_internship_people"
-                  action="action_internship_student_list"
-                  sequence="10"/>
-
-        <!-- Encadrants -->
-        <menuitem id="menu_internship_supervisor"
-                  name="Encadrants"
-                  parent="menu_internship_people"
-                  action="action_internship_supervisor_list"
-                  sequence="20"/>
-
-        <!-- ================================= -->
-        <!-- Entreprises submenu removed -->
 
         <!-- ================================= -->
         <!-- MENU CONFIGURATION -->
