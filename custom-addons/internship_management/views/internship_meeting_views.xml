@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- VUES LISTE (TREE) -->
+        <!-- ================================= -->
+
+        <!-- Vue liste des réunions -->
+        <record id="view_internship_meeting_tree" model="ir.ui.view">
+            <field name="name">internship.meeting.tree</field>
+            <field name="model">internship.meeting</field>
+            <field name="arch" type="xml">
+                <tree string="Réunions" decoration-info="state=='draft'"
+                      decoration-warning="state=='confirmed'"
+                      decoration-success="state=='completed'"
+                      decoration-primary="state=='in_progress'"
+                      decoration-muted="state=='cancelled'">
+                    <field name="name"/>
+                    <field name="stage_id"/>
+                    <field name="type"/>
+                    <field name="date"/>
+                    <field name="duration"/>
+                    <field name="organizer_id"/>
+                    <field name="meeting_type"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state=='draft'"
+                           decoration-warning="state=='confirmed'"
+                           decoration-success="state=='completed'"
+                           decoration-primary="state=='in_progress'"
+                           decoration-muted="state=='cancelled'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUES FORMULAIRE (FORM) -->
+        <!-- ================================= -->
+
+        <!-- Vue formulaire des réunions -->
+        <record id="view_internship_meeting_form" model="ir.ui.view">
+            <field name="name">internship.meeting.form</field>
+            <field name="model">internship.meeting</field>
+            <field name="arch" type="xml">
+                <form string="Réunion">
+                    <header>
+                        <button name="action_confirm" string="Confirmer" type="object"
+                                class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_start" string="Démarrer" type="object"
+                                class="oe_highlight" invisible="state != 'confirmed'"/>
+                        <button name="action_complete" string="Terminer" type="object"
+                                class="oe_highlight" invisible="state != 'in_progress'"/>
+                        <button name="action_cancel" string="Annuler" type="object"
+                                invisible="state in ['cancelled', 'completed']"/>
+                        <button name="action_send_reminder" string="Envoyer Rappel" type="object"
+                                invisible="reminder_sent"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,confirmed,in_progress,completed"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Titre de la réunion..."/></h1>
+                        </div>
+
+                        <group>
+                            <group name="basic_info" string="Informations de Base">
+                                <field name="stage_id" options="{'no_create': True}"/>
+                                <field name="type"/>
+                                <field name="organizer_id" readonly="1"/>
+                                <field name="meeting_type" widget="radio" options="{'horizontal': True}"/>
+                            </group>
+                            <group name="schedule" string="Planning">
+                                <field name="date"/>
+                                <field name="duration"/>
+                                <field name="end_date" readonly="1"/>
+                                <field name="location"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <field name="participant_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+
+                        <group>
+                            <group name="notifications" string="Notifications">
+                                <field name="email_sent"/>
+                                <field name="reminder_sent"/>
+                                <field name="reminder_date"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page name="agenda" string="Ordre du jour">
+                                <field name="agenda" nolabel="1"
+                                       placeholder="Détaillez l'ordre du jour de la réunion..."
+                                       class="oe_form_field_html"/>
+                            </page>
+
+                            <page name="summary" string="Compte-rendu">
+                                <field name="summary" nolabel="1"
+                                       placeholder="Rédigez le compte-rendu de la réunion..."
+                                       class="oe_form_field_html"/>
+                            </page>
+
+                            <page name="actions" string="Actions à suivre">
+                                <field name="next_actions" nolabel="1"
+                                       placeholder="Listez les actions à suivre..."
+                                       class="oe_form_field_html"/>
+                            </page>
+
+                            <page name="documents" string="Documents">
+                                <field name="document_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="type"/>
+                                        <field name="date_upload"/>
+                                        <field name="state" widget="badge"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUE KANBAN -->
+        <!-- ================================= -->
+
+        <!-- Vue kanban des réunions -->
+        <record id="view_internship_meeting_kanban" model="ir.ui.view">
+            <field name="name">internship.meeting.kanban</field>
+            <field name="model">internship.meeting</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="stage_id"/>
+                    <field name="type"/>
+                    <field name="date"/>
+                    <field name="duration"/>
+                    <field name="organizer_id"/>
+                    <field name="meeting_type"/>
+                    <field name="state"/>
+                    <field name="is_today"/>
+                    <field name="is_past"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="name"/></strong>
+                                        <div><i class="fa fa-calendar" title="Date"/> <field name="date"/></div>
+                                        <div><i class="fa fa-clock-o" title="Durée"/> <field name="duration"/>h</div>
+                                        <div><i class="fa fa-user" title="Organisateur"/> <field name="organizer_id"/></div>
+                                        <div><i class="fa fa-building" title="Stage"/> <field name="stage_id"/></div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <field name="type" widget="label_selection"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="state" widget="label_selection"
+                                                       options="{'classes': {'draft': 'default', 'confirmed': 'info', 'in_progress': 'primary', 'completed': 'success', 'cancelled': 'muted'}}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================= -->
+
+        <!-- Action principale : Liste de toutes les réunions -->
+        <record id="action_internship_meeting_list" model="ir.actions.act_window">
+            <field name="name">Réunions</field>
+            <field name="res_model">internship.meeting</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer votre première réunion !
+                </p>
+                <p>
+                    Planifiez et gérez les réunions de suivi et soutenances de stage.
+                </p>
+            </field>
+        </record>
+
+        <!-- Action : Mes réunions -->
+        <record id="action_internship_meeting_my" model="ir.actions.act_window">
+            <field name="name">Mes Réunions</field>
+            <field name="res_model">internship.meeting</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('participant_ids', 'in', uid)]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucune réunion programmée !
+                </p>
+                <p>
+                    Vous serez notifié quand de nouvelles réunions seront planifiées.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -30,6 +30,10 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'base',  # Module de base Odoo (obligatoire)
         'mail',  # Système de messagerie et notifications
         'contacts',  # Gestion des contacts (entreprises)
+        'portal',        # Accès portail pour entreprises
+        'hr',            # Ressources humaines (pour les employés/encadrants)
+        'contacts',      # Gestion des contacts (entreprises)
+        'calendar',      # Gestion d'agenda
     ],
 
     # Fichiers de données à charger
@@ -40,16 +44,34 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
 
         # Données
         'data/sequences.xml',
+        'data/internship_demo_data.xml',
+        'data/internship_cron.xml',
+
+        # Rapports (avant les vues pour que les actions soient disponibles)
+        'reports/defense_report_template.xml',
+        'reports/convention_attestation_template.xml',
+        'reports/evaluation_report_template.xml',
+        'reports/stage_report_template.xml',
+        'reports/internship_reports.xml',
 
         # Vues principales
         'views/internship_stage_views.xml',
         'views/internship_student_views.xml',
         'views/internship_supervisor_views.xml',
-        'views/internship_company_views.xml',
         'views/internship_config_views.xml',
+        'views/internship_message_views.xml',
+        'views/internship_notification_views.xml',
+        'views/internship_meeting_views.xml',
+
+        # Dashboard
+        'views/dashboard_template.xml',
 
         # Menus (en dernier)
         'views/internship_menus.xml',
+    ],
+
+    'demo': [
+        #'data/internship_demo_data.xml',
     ],
 
     # Configuration du module

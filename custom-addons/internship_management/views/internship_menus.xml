@@ -11,6 +11,13 @@
         <!-- MENUS PRINCIPAUX -->
         <!-- ================================= -->
 
+        <!-- Menu Tableau de Bord Web -->
+        <menuitem id="menu_internship_dashboard_web"
+                  name="Tableau de Bord Web"
+                  parent="menu_internship_root"
+                  action="action_internship_dashboard_web"
+                  sequence="5"/>
+
         <!-- Menu Stages -->
         <menuitem id="menu_internship_stages"
                   name="Stages"
@@ -23,11 +30,60 @@
                   parent="menu_internship_root"
                   sequence="20"/>
 
-        <!-- Menu Entreprises -->
-        <menuitem id="menu_internship_companies"
-                  name="Entreprises"
-                  parent="menu_internship_root"
+        <!-- Étudiants -->
+        <menuitem id="menu_internship_students"
+                  name="Étudiants"
+                  parent="menu_internship_people"
+                  action="action_internship_student_list"
+                  sequence="10"/>
+
+        <!-- Encadrants -->
+        <menuitem id="menu_internship_supervisors"
+                  name="Encadrants"
+                  parent="menu_internship_people"
+                  action="action_internship_supervisor_list"
+                  sequence="20"/>
+
+        <!-- Messages -->
+        <menuitem id="menu_internship_message"
+                  name="Messages"
+                  parent="menu_internship_people"
+                  action="action_internship_message_list"
                   sequence="30"/>
+
+        <!-- Notifications -->
+        <menuitem id="menu_internship_notification"
+                  name="Notifications"
+                  parent="menu_internship_people"
+                  action="action_internship_notification_my"
+                  sequence="40"/>
+
+        <!-- Toutes les notifications (admin) -->
+        <menuitem id="menu_internship_notification_all"
+                  name="Toutes les Notifications"
+                  parent="menu_internship_people"
+                  action="action_internship_notification_list"
+                  sequence="50"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+        <!-- Réunions -->
+        <menuitem id="menu_internship_meeting"
+                  name="Réunions"
+                  parent="menu_internship_people"
+                  action="action_internship_meeting_my"
+                  sequence="60"/>
+
+        <!-- Toutes les réunions (admin) -->
+        <menuitem id="menu_internship_meeting_all"
+                  name="Toutes les Réunions"
+                  parent="menu_internship_people"
+                  action="action_internship_meeting_list"
+                  sequence="70"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+
+
+        <!-- Menu Entreprises removed: using res.company internally -->
 
         <!-- ================================= -->
         <!-- SOUS-MENUS - STAGES -->
@@ -55,35 +111,6 @@
                   action="action_internship_stage_supervise"
                   sequence="30"
                   groups="group_internship_supervisor"/>
-
-        <!-- ================================= -->
-        <!-- SOUS-MENUS - PERSONNES -->
-        <!-- ================================= -->
-
-        <!-- Étudiants -->
-        <menuitem id="menu_internship_student"
-                  name="Étudiants"
-                  parent="menu_internship_people"
-                  action="action_internship_student_list"
-                  sequence="10"/>
-
-        <!-- Encadrants -->
-        <menuitem id="menu_internship_supervisor"
-                  name="Encadrants"
-                  parent="menu_internship_people"
-                  action="action_internship_supervisor_list"
-                  sequence="20"/>
-
-        <!-- ================================= -->
-        <!-- SOUS-MENUS - ENTREPRISES -->
-        <!-- ================================= -->
-
-        <!-- Liste entreprises -->
-        <menuitem id="menu_internship_company"
-                  name="Entreprises"
-                  parent="menu_internship_companies"
-                  action="action_internship_company_list"
-                  sequence="10"/>
 
         <!-- ================================= -->
         <!-- MENU CONFIGURATION -->

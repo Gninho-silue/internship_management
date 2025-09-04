@@ -62,10 +62,26 @@
                         <button name="action_cancel" string="Annuler" type="object"
                                 invisible="state in ['cancelled', 'evaluated']"/>
                         <button name="action_draft" string="Remettre en brouillon" type="object"
-                                invisible="state == 'draft'"
+                                invisible="state == 'draft' or state == 'evaluated'"
                                 groups="internship_management.group_internship_admin"/>
+                        
+                        <!-- Boutons de soutenance -->
+                        <button name="action_schedule_defense" string="Planifier Soutenance" type="object"
+                                class="oe_highlight" invisible="defense_status != 'scheduled'"
+                                groups="internship_management.group_internship_supervisor"/>
+                        <button name="action_start_defense" string="Démarrer Soutenance" type="object"
+                                class="oe_highlight" invisible="defense_status != 'scheduled'"
+                                groups="internship_management.group_internship_supervisor"/>
+                        <button name="action_complete_defense" string="Terminer Soutenance" type="object"
+                                class="oe_highlight" invisible="defense_status != 'in_progress'"
+                                groups="internship_management.group_internship_supervisor"/>
+                        <button name="action_cancel_defense" string="Annuler Soutenance" type="object"
+                                invisible="defense_status in ['cancelled', 'completed']"
+                                groups="internship_management.group_internship_supervisor"/>
+                        
                         <field name="state" widget="statusbar"
-                               statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"/>
+                               statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"
+                               statusbar_colors="{'draft': 'secondary', 'submitted': 'warning', 'approved': 'info', 'in_progress': 'primary', 'completed': 'success', 'evaluated': 'success'}"/>
                     </header>
 
                     <sheet>
@@ -93,17 +109,15 @@
 
                         <notebook>
                             <page name="description" string="Description">
-                                <group>
                                     <field name="description" nolabel="1"
-                                           placeholder="Décrivez le contexte, les missions et le périmètre du stage..."/>
-                                </group>
+                                       placeholder="Décrivez le contexte, les missions et le périmètre du stage..."
+                                       class="oe_form_field_html"/>
                             </page>
 
                             <page name="objectives" string="Objectifs">
-                                <group>
                                     <field name="objectives" nolabel="1"
-                                           placeholder="Listez les objectifs pédagogiques et professionnels..."/>
-                                </group>
+                                       placeholder="Listez les objectifs pédagogiques et professionnels..."
+                                       class="oe_form_field_html"/>
                             </page>
 
                             <page name="tasks" string="Tâches">
@@ -119,6 +133,49 @@
                                 </field>
                             </page>
 
+                            <page name="reports" string="Rapports et Documents">
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="%(action_convention_report)d" string="Convention de Stage" type="action" 
+                                            class="oe_stat_button" icon="fa-file-text-o"
+                                            help="Générer la convention de stage"/>
+                                    <button name="%(action_attestation_report)d" string="Attestation de Stage" type="action" 
+                                            class="oe_stat_button" icon="fa-certificate"
+                                            help="Générer l'attestation de stage"
+                                            invisible="state not in ['completed', 'evaluated']"/>
+                                    <button name="%(action_defense_report)d" string="Procès-Verbal" type="action" 
+                                            class="oe_stat_button" icon="fa-gavel"
+                                            help="Générer le procès-verbal de soutenance"
+                                            invisible="defense_status != 'completed'"/>
+                                    <button name="%(action_evaluation_report)d" string="Rapport d'Évaluation" type="action" 
+                                            class="oe_stat_button" icon="fa-star"
+                                            help="Générer le rapport d'évaluation"
+                                            invisible="state != 'evaluated'"/>
+                                </div>
+                                
+                                <group>
+                                    <group string="Documents Générés">
+                                        <field name="convention_generated" readonly="1" widget="boolean_toggle"/>
+                                        <field name="attestation_generated" readonly="1" widget="boolean_toggle"/>
+                                        <field name="defense_report_generated" readonly="1" widget="boolean_toggle"/>
+                                        <field name="evaluation_report_generated" readonly="1" widget="boolean_toggle"/>
+                                    </group>
+                                    <group string="Actions Rapides">
+                                        <button name="action_generate_convention" string="Générer Convention" 
+                                                type="object" class="oe_highlight" 
+                                                invisible="convention_generated"/>
+                                        <button name="action_generate_attestation" string="Générer Attestation" 
+                                                type="object" class="oe_highlight" 
+                                                invisible="attestation_generated or state not in ['completed', 'evaluated']"/>
+                                        <button name="action_generate_defense_report" string="Générer PV" 
+                                                type="object" class="oe_highlight" 
+                                                invisible="defense_report_generated or defense_status != 'completed'"/>
+                                        <button name="action_generate_evaluation_report" string="Générer Rapport" 
+                                                type="object" class="oe_highlight" 
+                                                invisible="evaluation_report_generated or state != 'evaluated'"/>
+                                    </group>
+                                </group>
+                            </page>
+
                             <page name="evaluation" string="Évaluation"
                                   invisible="state not in ['completed', 'evaluated']">
                                 <group>
@@ -131,10 +188,27 @@
                                     <group>
                                         <field name="jury_ids" widget="many2many_tags"/>
                                         <field name="presentation_uploaded"/>
+                                        <field name="presentation_document_id"/>
+                                        <field name="defense_status" widget="badge"/>
+                                        <field name="defense_duration"/>
                                     </group>
                                 </group>
-                                <group string="Commentaires d'Évaluation">
-                                    <field name="feedback" nolabel="1"/>
+                                <group string="Soutenance">
+                                    <field name="defense_report" nolabel="1"
+                                           placeholder="Procès-verbal de la soutenance..."
+                                           class="oe_form_field_html"/>
+                                    <field name="defense_notes" nolabel="1"
+                                           placeholder="Notes du jury..."
+                                           class="oe_form_field_html"/>
+                                    <field name="defense_attendance" widget="many2many_tags"/>
+                                </group>
+                                <group string="Évaluation Détaillée">
+                                    <field name="evaluation_notes" nolabel="1" 
+                                           placeholder="Notes d'évaluation détaillées..."
+                                           class="oe_form_field_html"/>
+                                    <field name="feedback" nolabel="1" 
+                                           placeholder="Commentaires détaillés sur l'évaluation du stage..."
+                                           class="oe_form_field_html"/>
                                 </group>
                             </page>
 
@@ -207,6 +281,182 @@
                         </t>
                     </templates>
                 </kanban>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUE KANBAN -->
+        <!-- ================================= -->
+
+        <!-- Vue kanban des stages -->
+        <record id="view_internship_stage_kanban" model="ir.ui.view">
+            <field name="name">internship.stage.kanban</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column">
+                    <field name="reference"/>
+                    <field name="name"/>
+                    <field name="stage_type"/>
+                    <field name="student_id"/>
+                    <field name="supervisor_id"/>
+                    <field name="company_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="progress"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="name"/></strong>
+                                        <div><i class="fa fa-hashtag" title="Référence"/> <field name="reference"/></div>
+                                        <div><i class="fa fa-user" title="Étudiant"/> <field name="student_id"/></div>
+                                        <div><i class="fa fa-briefcase" title="Entreprise"/> <field name="company_id"/></div>
+                                        <div><i class="fa fa-calendar" title="Période"/> <field name="start_date"/> - <field name="end_date"/></div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <field name="progress" widget="progressbar"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="state" widget="label_selection"
+                                                       options="{'classes': {'draft': 'default', 'submitted': 'info', 'approved': 'warning', 'in_progress': 'primary', 'completed': 'success', 'evaluated': 'success', 'cancelled': 'muted'}}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUE DASHBOARD -->
+        <!-- ================================= -->
+
+        <!-- Vue dashboard des stages -->
+        <record id="view_internship_stage_dashboard" model="ir.ui.view">
+            <field name="name">internship.stage.dashboard</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard" default_group_by="state" type="primary">
+                    <field name="name"/>
+                    <field name="student_id"/>
+                    <field name="supervisor_id"/>
+                    <field name="company_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="progress"/>
+                    <field name="state"/>
+                    <field name="defense_status"/>
+                    <field name="grade"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="name"/></strong>
+                                        <div><i class="fa fa-user" title="Étudiant"/> <field name="student_id"/></div>
+                                        <div><i class="fa fa-briefcase" title="Encadrant"/> <field name="supervisor_id"/></div>
+                                        <div><i class="fa fa-calendar" title="Période"/> <field name="start_date"/> - <field name="end_date"/></div>
+                                        <div class="o_kanban_record_bottom">
+                                            <div class="oe_kanban_bottom_left">
+                                                <field name="progress" widget="progressbar"/>
+                                            </div>
+                                            <div class="oe_kanban_bottom_right">
+                                                <field name="state" widget="label_selection"
+                                                       options="{'classes': {'draft': 'default', 'submitted': 'info', 'approved': 'warning', 'in_progress': 'primary', 'completed': 'success', 'evaluated': 'success', 'cancelled': 'muted'}}"/>
+                                            </div>
+                                        </div>
+                                        <div t-if="record.defense_status.raw_value" class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="fa fa-graduation-cap" title="Soutenance"/>
+                                                <field name="defense_status" widget="label_selection"/>
+                                            </small>
+                                        </div>
+                                        <div t-if="record.grade.raw_value" class="mt-1">
+                                            <span class="badge badge-success">
+                                                <i class="fa fa-star" title="Note"/> <field name="grade"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue dashboard web des stages -->
+        <record id="view_internship_stage_dashboard_web" model="ir.ui.view">
+            <field name="name">internship.stage.dashboard.web</field>
+            <field name="model">internship.stage</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard" type="primary">
+                    <field name="name"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content text-center">
+                                    <div class="oe_kanban_details">
+                                        <h3><i class="fa fa-dashboard"></i> Tableau de Bord Web</h3>
+                                        <p class="text-muted">Statistiques avancées et graphiques interactifs</p>
+                                                                                    <div class="mt-3">
+                                                <a href="/internship/dashboard" class="btn btn-primary btn-lg">
+                                                    <i class="fa fa-external-link"></i> Ouvrir Dashboard Web
+                                                </a>
+                                            </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="fa fa-info-circle"></i> Dashboard interactif avec statistiques
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Action dashboard : Vue dashboard des stages -->
+        <record id="action_internship_stage_dashboard" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="view_internship_stage_dashboard"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez votre premier stage !
+                </p>
+                <p>
+                    Le tableau de bord vous permet de visualiser tous vos stages
+                    avec des indicateurs de progression et de statut.
+                </p>
+            </field>
+        </record>
+
+        <!-- Action dashboard web : Dashboard avec statistiques -->
+        <record id="action_internship_dashboard_web" model="ir.actions.act_window">
+            <field name="name">Tableau de Bord Web</field>
+            <field name="res_model">internship.stage</field>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="view_internship_stage_dashboard_web"/>
+            <field name="context">{'dashboard_web': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    <a href="/internship/dashboard" class="btn btn-primary" style="font-size: 16px; padding: 10px 20px;">
+                        <i class="fa fa-dashboard"></i> Ouvrir Dashboard Web
+                    </a>
+                </p>
+                <p>
+                    Cliquez sur le bouton ci-dessus pour ouvrir le dashboard web avec toutes les statistiques.
+                </p>
             </field>
         </record>
 
