@@ -165,7 +165,7 @@ class InternshipStudent(models.Model):
             else:
                 student.average_grade = 0.0
 
-    @api.depends('internship_ids.progress')
+    @api.depends('internship_ids.completion_percentage')
     def _compute_completion_rate(self):
         """Calculate overall completion rate of all internships."""
         for student in self:
@@ -173,7 +173,7 @@ class InternshipStudent(models.Model):
                 lambda x: x.state != 'cancelled'
             )
             if active_internships:
-                total_progress = sum(active_internships.mapped('progress'))
+                total_progress = sum(active_internships.mapped('completion_percentage'))
                 student.completion_rate = total_progress / len(active_internships)
             else:
                 student.completion_rate = 0.0

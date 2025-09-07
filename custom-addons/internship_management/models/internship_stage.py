@@ -137,14 +137,14 @@ class InternshipStage(models.Model):
     # PROGRESS TRACKING
     # ===============================
 
-    @api.depends('task_ids.state', 'start_date', 'end_date', 'current_state')
+    @api.depends('task_ids.state', 'start_date', 'end_date', 'state')
     def _compute_completion_percentage(self):
         """Calculate completion percentage based on tasks and timeline."""
         for stage in self:
-            if stage.current_state in ('completed', 'evaluated'):
+            if stage.state in ('completed', 'evaluated'):
                 stage.completion_percentage = 100.0
                 continue
-            elif stage.current_state == 'cancelled':
+            elif stage.state == 'cancelled':
                 stage.completion_percentage = 0.0
                 continue
 
@@ -184,7 +184,7 @@ class InternshipStage(models.Model):
     # STATE MANAGEMENT
     # ===============================
 
-    current_state = fields.Selection([
+    state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
         ('approved', 'Approved'),
@@ -341,39 +341,39 @@ class InternshipStage(models.Model):
 
     def action_submit(self):
         """Submit internship for approval."""
-        self.write({'current_state': 'submitted'})
+        self.write({'state': 'submitted'})
         self._send_submission_notifications()
 
     def action_approve(self):
         """Approve internship."""
-        self.write({'current_state': 'approved'})
+        self.write({'state': 'approved'})
         self._send_approval_notifications()
 
     def action_start(self):
         """Start internship."""
-        self.write({'current_state': 'in_progress'})
+        self.write({'state': 'in_progress'})
         self._send_start_notifications()
 
     def action_complete(self):
         """Mark internship as completed."""
-        self.write({'current_state': 'completed'})
+        self.write({'state': 'completed'})
         self._send_completion_notifications()
 
     def action_evaluate(self):
         """Mark internship as evaluated."""
-        self.write({'current_state': 'evaluated'})
+        self.write({'state': 'evaluated'})
 
     def action_cancel(self):
         """Cancel internship."""
-        if self.current_state == 'evaluated':
+        if self.state == 'evaluated':
             raise ValidationError(_("Cannot cancel an evaluated internship."))
-        self.write({'current_state': 'cancelled'})
+        self.write({'state': 'cancelled'})
 
     def action_reset_to_draft(self):
         """Reset internship to draft state."""
-        if self.current_state == 'evaluated':
+        if self.state == 'evaluated':
             raise ValidationError(_("Cannot reset an evaluated internship to draft."))
-        self.write({'current_state': 'draft'})
+        self.write({'state': 'draft'})
 
     # ===============================
     # NOTIFICATION METHODS
