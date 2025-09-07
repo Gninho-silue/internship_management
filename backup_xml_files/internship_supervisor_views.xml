@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Supervisor Tree View -->
+        <record id="view_internship_supervisor_tree" model="ir.ui.view">
+            <field name="name">internship.supervisor.tree</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <tree string="Supervisors"
+                      create="true"
+                      editable="false"
+                      multi_edit="1"
+                      decoration-success="availability_status == 'available'"
+                      decoration-warning="availability_status == 'limited'"
+                      decoration-danger="availability_status == 'unavailable'"
+                      decoration-primary="current_students_count > 0">
+                    <!-- Personal Information -->
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="mobile"/>
+
+                    <!-- Professional Information -->
+                    <field name="company_id"/>
+                    <field name="department"/>
+                    <field name="position"/>
+                    <field name="employee_id"/>
+
+                    <!-- Supervision Details -->
+                    <field name="availability_status" widget="badge"/>
+                    <field name="max_students" widget="numeric"/>
+                    <field name="current_students_count" string="Current" widget="numeric"/>
+                    <field name="total_internships_supervised" string="Total" widget="numeric"/>
+                    <field name="successful_completion_rate" string="Success %" widget="numeric"/>
+                    <field name="average_student_grade" string="Avg Grade" widget="numeric"/>
+
+                    <!-- Status and Dates -->
+                    <field name="active" widget="boolean_toggle"/>
+                    <field name="create_date"/>
+                    <field name="write_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Supervisor Kanban View -->
+        <record id="view_internship_supervisor_kanban" model="ir.ui.view">
+            <field name="name">internship.supervisor.kanban</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="position"/>
+                    <field name="department"/>
+                    <field name="company_id"/>
+                    <field name="availability_status"/>
+                    <field name="current_students_count"/>
+                    <field name="max_students"/>
+                    <field name="total_internships_supervised"/>
+                    <field name="average_student_grade"/>
+                    <field name="image_1920"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                                <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{kanban_image('internship.supervisor', 'image_1920', record.id.raw_value)}')">
+                                </div>
+                                <div class="oe_kanban_details">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                            <small class="text-muted">
+                                                <field name="position"/> - <field name="department"/>
+                                            </small>
+                                        </div>
+                                        <span class="badge badge-pill" t-attf-style="background-color: #{record.availability_status.raw_value == 'available' ? '#28a745' : record.availability_status.raw_value == 'limited' ? '#ffc107' : '#dc3545'};">
+                                            <field name="availability_status"/>
+                                        </span>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <field name="email"/>
+                                        <div class="text-muted">
+                                            <i class="fa fa-phone"/> <field name="phone"/>
+                                        </div>
+                                        <div class="text-muted">
+                                            <i class="fa fa-building"/> <field name="company_id"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <span class="badge badge-secondary">
+                                                <field name="current_students_count"/>/<field name="max_students"/> students
+                                            </span>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right" t-if="record.average_student_grade.raw_value > 0">
+                                            <span class="badge badge-success">
+                                                Avg: <field name="average_student_grade"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Supervisor Search View -->
+        <record id="view_internship_supervisor_search" model="ir.ui.view">
+            <field name="name">internship.supervisor.search</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <search string="Search Supervisors">
+                    <!-- Search Fields -->
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="employee_id"/>
+                    <field name="department"/>
+                    <field name="position"/>
+                    <field name="company_id"/>
+
+                    <!-- Filters -->
+                    <filter string="Available" name="available"
+                            domain="[('availability_status', '=', 'available')]"/>
+                    <filter string="Limited Availability" name="limited"
+                            domain="[('availability_status', '=', 'limited')]"/>
+                    <filter string="Unavailable" name="unavailable"
+                            domain="[('availability_status', '=', 'unavailable')]"/>
+                    <filter string="With Current Students" name="with_students"
+                            domain="[('current_students_count', '>', 0)]"/>
+                    <filter string="Available Capacity" name="has_capacity"
+                            domain="[('current_students_count', '<', 'max_students')]"/>
+
+                    <!-- Group By -->
+                    <group expand="0" string="Group By">
+                        <filter string="Availability" name="group_availability" context="{'group_by': 'availability_status'}"/>
+                        <filter string="Department" name="group_department" context="{'group_by': 'department'}"/>
+                        <filter string="Position" name="group_position" context="{'group_by': 'position'}"/>
+                        <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
+                        <filter string="Expertise Areas" name="group_expertise" context="{'group_by': 'expertise_areas'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Supervisor Form View -->
+        <record id="view_internship_supervisor_form" model="ir.ui.view">
+            <field name="name">internship.supervisor.form</field>
+            <field name="model">internship.supervisor</field>
+            <field name="arch" type="xml">
+                <form string="Supervisor">
+                    <header>
+                        <button name="action_set_available" string="Set Available" type="object"
+                                class="oe_highlight"
+                                attrs="{'invisible': [('availability_status', '=', 'available')]}"/>
+                        <button name="action_set_limited" string="Set Limited" type="object"
+                                attrs="{'invisible': [('availability_status', '=', 'limited')]}"/>
+                        <button name="action_set_unavailable" string="Set Unavailable" type="object"
+                                attrs="{'invisible': [('availability_status', '=', 'unavailable')]}"/>
+                        <field name="availability_status" widget="statusbar"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <!-- Smart buttons -->
+                            <button class="oe_stat_button" type="object" name="action_view_current_internships" icon="fa-users">
+                                <field string="Current Students" name="current_students_count" widget="statinfo"/>
+                            </button>
+
+                            <button class="oe_stat_button" type="object" name="action_view_all_internships" icon="fa-briefcase">
+                                <field string="Total Supervised" name="total_internships_supervised" widget="statinfo"/>
+                            </button>
+
+                            <button class="oe_stat_button" type="object" name="action_view_performance" icon="fa-line-chart">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="successful_completion_rate" widget="float"/>%
+                                    </span>
+                                    <span class="o_stat_text">Success Rate</span>
+                                </div>
+                            </button>
+
+                            <button class="oe_stat_button" type="object" name="action_view_meetings" icon="fa-calendar">
+                                <field string="Meetings" name="meeting_count" widget="statinfo"/>
+                            </button>
+                        </div>
+
+                        <!-- Image and Name -->
+                        <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_256'}"/>
+
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1><field name="name" placeholder="Supervisor full name..."/></h1>
+                            <div class="o_row">
+                                <field name="employee_id" placeholder="Employee ID"/>
+                            </div>
+                        </div>
+
+                        <!-- Basic Information -->
+                        <group>
+                            <group name="personal_info" string="Contact Information">
+                                <field name="email" widget="email"/>
+                                <field name="phone" widget="phone"/>
+                                <field name="mobile" widget="phone"/>
+                            </group>
+                            <group name="professional_info" string="Professional Information">
+                                <field name="company_id"/>
+                                <field name="department"/>
+                                <field name="position"/>
+                                <field name="hire_date"/>
+                            </group>
+                        </group>
+
+                        <!-- Supervision Settings -->
+                        <group>
+                            <group name="capacity" string="Supervision Capacity">
+                                <field name="max_students"/>
+                                <field name="current_students_count" readonly="1"/>
+                                <field name="workload_percentage" readonly="1" widget="progressbar"/>
+                            </group>
+                            <group name="performance" string="Performance Metrics">
+                                <field name="successful_completion_rate" readonly="1" widget="percentage"/>
+                                <field name="average_student_grade" readonly="1"/>
+                                <field name="total_internships_supervised" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!-- Additional Information -->
+                        <notebook>
+                            <page name="expertise" string="Expertise &amp; Skills">
+                                <group>
+                                    <group name="areas" string="Areas of Expertise">
+                                        <field name="expertise_areas" widget="many2many_tags" nolabel="1"/>
+                                    </group>
+                                    <group name="skills" string="Technical Skills">
+                                        <field name="skill_ids" widget="many2many_tags" nolabel="1"/>
+                                    </group>
+                                </group>
+
+                                <separator string="Bio &amp; Experience"/>
+                                <field name="bio" nolabel="1" placeholder="Brief description about the supervisor..."/>
+
+                                <separator string="Supervision Philosophy"/>
+                                <field name="supervision_notes" nolabel="1" placeholder="Supervision approach and methodology..."/>
+                            </page>
+
+                            <page name="internships" string="Current Internships">
+                                <field name="stage_ids" nolabel="1" domain="[('state', 'in', ['approved', 'in_progress'])]">
+                                    <tree>
+                                        <field name="reference"/>
+                                        <field name="name"/>
+                                        <field name="student_id"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="progress"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page name="history" string="Supervision History">
+                                <field name="stage_ids" nolabel="1" domain="[('state', 'in', ['completed', 'evaluated'])]">
+                                    <tree>
+                                        <field name="reference"/>
+                                        <field name="name"/>
+                                        <field name="student_id"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="grade"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page name="availability" string="Availability &amp; Schedule">
+                                <group>
+                                    <group name="schedule" string="Work Schedule">
+                                        <field name="office_hours_start"/>
+                                        <field name="office_hours_end"/>
+                                        <field name="timezone"/>
+                                        <field name="preferred_meeting_days"/>
+                                    </group>
+                                    <group name="preferences" string="Preferences">
+                                        <field name="preferred_communication"/>
+                                        <field name="response_time_hours"/>
+                                        <field name="vacation_start"/>
+                                        <field name="vacation_end"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page name="evaluations" string="Evaluations Given">
+                                <field name="evaluation_ids" nolabel="1">
+                                    <tree>
+                                        <field name="student_id"/>
+                                        <field name="internship_id"/>
+                                        <field name="evaluation_date"/>
+                                        <field name="overall_score"/>
+                                        <field name="recommendation"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page name="notes" string="Notes &amp; Comments">
+                                <field name="notes" nolabel="1" placeholder="Additional notes about the supervisor..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================= -->
+
+        <!-- Main action for supervisors -->
+        <record id="action_internship_supervisor_list" model="ir.actions.act_window">
+            <field name="name">Supervisors</field>
+            <field name="res_model">internship.supervisor</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_available': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first supervisor!
+                </p>
+                <p>
+                    Manage supervisors who will mentor students during their internships.
+                </p>
+            </field>
+        </record>
+
+        <!-- My Supervision Action (for supervisors) -->
+        <record id="action_internship_supervisor_my_supervision" model="ir.actions.act_window">
+            <field name="name">My Supervision</field>
+            <field name="res_model">internship.supervisor</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[('user_id', '=', uid)]</field>
+            <field name="context">{'create': False}</field>
+        </record>
+
+    </data>
+</odoo>

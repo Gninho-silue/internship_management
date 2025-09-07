@@ -11,13 +11,6 @@
         <!-- MENUS PRINCIPAUX -->
         <!-- ================================= -->
 
-        <!-- Menu Tableau de Bord Web -->
-        <menuitem id="menu_internship_dashboard_web"
-                  name="Tableau de Bord Web"
-                  parent="menu_internship_root"
-                  action="action_internship_dashboard_web"
-                  sequence="5"/>
-
         <!-- Menu Stages -->
         <menuitem id="menu_internship_stages"
                   name="Stages"
@@ -27,6 +20,12 @@
         <!-- Menu Personnes -->
         <menuitem id="menu_internship_people"
                   name="Personnes"
+                  parent="menu_internship_root"
+                  sequence="20"/>
+
+        <!-- Menu Communications -->
+        <menuitem id="menu_internship_communication"
+                  name="Communication"
                   parent="menu_internship_root"
                   sequence="20"/>
 
@@ -47,21 +46,21 @@
         <!-- Messages -->
         <menuitem id="menu_internship_message"
                   name="Messages"
-                  parent="menu_internship_people"
+                  parent="menu_internship_communication"
                   action="action_internship_message_list"
                   sequence="30"/>
 
         <!-- Notifications -->
         <menuitem id="menu_internship_notification"
                   name="Notifications"
-                  parent="menu_internship_people"
+                  parent="menu_internship_communication"
                   action="action_internship_notification_my"
                   sequence="40"/>
 
         <!-- Toutes les notifications (admin) -->
         <menuitem id="menu_internship_notification_all"
                   name="Toutes les Notifications"
-                  parent="menu_internship_people"
+                  parent="menu_internship_communication"
                   action="action_internship_notification_list"
                   sequence="50"
                   groups="group_internship_coordinator,group_internship_admin"/>
@@ -69,14 +68,14 @@
         <!-- Réunions -->
         <menuitem id="menu_internship_meeting"
                   name="Réunions"
-                  parent="menu_internship_people"
+                  parent="menu_internship_communication"
                   action="action_internship_meeting_my"
                   sequence="60"/>
 
         <!-- Toutes les réunions (admin) -->
         <menuitem id="menu_internship_meeting_all"
                   name="Toutes les Réunions"
-                  parent="menu_internship_people"
+                  parent="menu_internship_communication"
                   action="action_internship_meeting_list"
                   sequence="70"
                   groups="group_internship_coordinator,group_internship_admin"/>

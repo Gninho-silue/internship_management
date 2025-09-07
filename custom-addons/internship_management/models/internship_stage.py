@@ -6,92 +6,168 @@ from odoo.exceptions import ValidationError
 
 class InternshipStage(models.Model):
     _name = 'internship.stage'
-    _description = 'Stage'
+    _description = 'Internship'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'start_date desc, name'
 
-    name = fields.Char(string='Sujet du stage', required=True, tracking=True)
-    reference = fields.Char(string='Référence', readonly=True, copy=False, default='Nouveau')
+    # ===============================
+    # CORE IDENTIFICATION FIELDS
+    # ===============================
 
-    # Type de stage
-    stage_type = fields.Selection([
-        ('pfe', 'PFE'),
-        ('stage_ete', 'Stage d\'été'),
-        ('stage_obs', 'Stage d\'observation')
-    ], string='Type de stage', required=True)
+    title = fields.Char(
+        string='Internship Title',
+        required=True,
+        tracking=True,
+        help="Main subject or title of the internship project"
+    )
 
-    # Relations
-    student_id = fields.Many2one('internship.student', string='Stagiaire', tracking=True)
-    supervisor_id = fields.Many2one('internship.supervisor', string='Encadrant', tracking=True)
+    reference_number = fields.Char(
+        string='Reference Number',
+        readonly=True,
+        copy=False,
+        default='New',
+        help="Unique reference number for this internship"
+    )
+
+    # ===============================
+    # TYPE AND CLASSIFICATION
+    # ===============================
+
+    internship_type = fields.Selection([
+        ('final_project', 'Final Year Project (PFE)'),
+        ('summer_internship', 'Summer Internship'),
+        ('observation_internship', 'Observation Internship'),
+        ('professional_internship', 'Professional Internship')
+    ], string='Internship Type', required=True, tracking=True)
+
+    # ===============================
+    # RELATIONSHIP FIELDS
+    # ===============================
+
+    student_id = fields.Many2one(
+        'internship.student',
+        string='Student',
+        tracking=True,
+        ondelete='restrict',
+        help="Student assigned to this internship"
+    )
+
+    supervisor_id = fields.Many2one(
+        'internship.supervisor',
+        string='Supervisor',
+        tracking=True,
+        ondelete='restrict',
+        help="Academic or professional supervisor"
+    )
+
     company_id = fields.Many2one(
         'res.company',
-        string='Entreprise',
+        string='Host Organization',
         required=True,
         tracking=True,
         default=lambda self: self.env.company,
+        help="Organization hosting the internship"
     )
 
-    # Dates
-    start_date = fields.Date(string='Date de début', required=True, tracking=True)
-    end_date = fields.Date(string='Date de fin', required=True, tracking=True)
-    duration = fields.Integer(string='Durée (jours)', compute='_compute_duration', store=True)
+    # ===============================
+    # TIMELINE FIELDS
+    # ===============================
 
-    # Description et objectifs
-    description = fields.Text(string='Description', required=True)
-    objectives = fields.Text(string='Objectifs')
-
-    # Suivi du stage
-    progress = fields.Float(string='Progression (%)', compute='_compute_progress', store=True, tracking=True)
-    next_meeting_date = fields.Datetime(string='Prochaine réunion')
-    todo_ids = fields.One2many('internship.todo', 'stage_id', string='Tâches à faire')
-
-    @api.depends(
-        'todo_ids.state',
-        'start_date',
-        'end_date',
-        'state',
-        'defense_status',
+    start_date = fields.Date(
+        string='Start Date',
+        required=True,
+        tracking=True,
+        help="Official start date of the internship"
     )
-    def _compute_progress(self):
+
+    end_date = fields.Date(
+        string='End Date',
+        required=True,
+        tracking=True,
+        help="Official end date of the internship"
+    )
+
+    @api.depends('start_date', 'end_date')
+    def _compute_duration_days(self):
+        """Calculate internship duration in days."""
         for stage in self:
-            # Completed/evaluated → 100%; cancelled → 0
-            if stage.state in ('completed', 'evaluated') or stage.defense_status == 'completed':
-                stage.progress = 100.0
+            if stage.start_date and stage.end_date:
+                if stage.end_date >= stage.start_date:
+                    delta = stage.end_date - stage.start_date
+                    stage.duration_days = delta.days + 1
+                else:
+                    stage.duration_days = 0
+            else:
+                stage.duration_days = 0
+
+    duration_days = fields.Integer(
+        string='Duration (Days)',
+        compute='_compute_duration_days',
+        store=True,
+        help="Total duration of internship in days"
+    )
+
+    # ===============================
+    # CONTENT FIELDS
+    # ===============================
+
+    project_description = fields.Html(
+        string='Project Description',
+        required=True,
+        help="Detailed description of the internship project and context"
+    )
+
+    learning_objectives = fields.Html(
+        string='Learning Objectives',
+        help="Educational and professional objectives to be achieved"
+    )
+
+    # ===============================
+    # PROGRESS TRACKING
+    # ===============================
+
+    @api.depends('task_ids.state', 'start_date', 'end_date', 'current_state')
+    def _compute_completion_percentage(self):
+        """Calculate completion percentage based on tasks and timeline."""
+        for stage in self:
+            if stage.current_state in ('completed', 'evaluated'):
+                stage.completion_percentage = 100.0
                 continue
-            if stage.state == 'cancelled':
-                stage.progress = 0.0
+            elif stage.current_state == 'cancelled':
+                stage.completion_percentage = 0.0
                 continue
 
             progress_value = 0.0
 
-            # If todos exist, use ratio done/total
-            total_todos = len(stage.todo_ids)
-            if total_todos:
-                done_todos = len(stage.todo_ids.filtered(lambda t: t.state == 'done'))
-                progress_value = (done_todos / total_todos) * 100.0
+            # Calculate based on completed tasks if available
+            total_tasks = len(stage.task_ids)
+            if total_tasks > 0:
+                completed_tasks = len(stage.task_ids.filtered(lambda t: t.state == 'completed'))
+                progress_value = (completed_tasks / total_tasks) * 100.0
             else:
-                # Fallback: time-based progress
+                # Fallback: time-based calculation
                 if stage.start_date and stage.end_date and stage.end_date >= stage.start_date:
-                    total_days = (stage.end_date - stage.start_date).days + 1
-                    if total_days > 0:
-                        # Use today for elapsed time within bounds
+                    total_duration = (stage.end_date - stage.start_date).days + 1
+                    if total_duration > 0:
                         today = fields.Date.context_today(stage)
-                        elapsed_days = 0
                         if today <= stage.start_date:
                             elapsed_days = 0
                         elif today >= stage.end_date:
-                            elapsed_days = total_days
+                            elapsed_days = total_duration
                         else:
                             elapsed_days = (today - stage.start_date).days
-                        progress_value = (elapsed_days / total_days) * 100.0
+                        progress_value = (elapsed_days / total_duration) * 100.0
 
-            # Clamp 0..100
-            if progress_value < 0:
-                progress_value = 0.0
-            if progress_value > 100:
-                progress_value = 100.0
+            # Ensure progress is within 0-100 range
+            stage.completion_percentage = max(0.0, min(100.0, round(progress_value, 2)))
 
-            stage.progress = round(progress_value, 2)
+    completion_percentage = fields.Float(
+        string='Completion %',
+        compute='_compute_completion_percentage',
+        store=True,
+        tracking=True,
+        help="Overall completion percentage of the internship"
+    )
 
     # État du stage
     state = fields.Selection([

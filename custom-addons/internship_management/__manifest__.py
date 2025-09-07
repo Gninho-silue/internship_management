@@ -1,60 +1,72 @@
 {
-    'name': 'Gestion des Stages',
+    'name': 'Internship Management System',
     'version': '17.0.1.0.0',
-    'category': 'Human Resources',
-    'summary': 'Plateforme complète de gestion des stages - Techpal',
+    'category': 'Human Resources/Education',
+    'summary': 'Complete internship management platform for educational institutions',
     'description': """
-Gestion des Stages - Plateforme Complète
-=========================================
+Internship Management System - Professional Platform
+==================================================
 
-Cette application permet une gestion complète des stages avec les fonctionnalités suivantes :
+A comprehensive solution for managing internships with the following features:
 
-**Gestion des Utilisateurs & Rôles :**
-* Authentification sécurisée avec rôles : Stagiaire, Encadrant, Entreprise, Administrateur
-* Profils utilisateurs détaillés avec informations académiques et professionnelles
+**Core Features:**
+* Complete internship lifecycle management
+* Student and supervisor management
+* Document management with automated PDF generation
+* Progress tracking with Kanban boards
+* Automated notifications and alerts
 
-**Gestion des Stages :**
-* Proposition et validation des sujets de stage
-* Affectation d'encadrants et suivi d'avancement
-* Gestion complète de documents (conventions, rapports, présentations)
-* Génération automatique de documents PDF
+**Advanced Features:**
+* Role-based security system
+* Email integration and templates
+* Meeting scheduling and management
+* Reporting and analytics dashboard
+* Mobile-responsive interface
 
-Développé dans le cadre d'un stage chez Techpal Casablanca.
+**Target Users:**
+* Educational institutions
+* Corporate HR departments  
+* Training organizations
+* Internship coordinators
+
+Developed as a professional-grade application following Odoo best practices.
     """,
-    'author': 'SILUE - Stagiaire Techpal',
+    'author': 'SILUE - Techpal Casablanca',
     'website': 'https://techpal.ma',
     'license': 'LGPL-3',
+    'support': 'internship@techpal.ma',
 
-    # Dépendances : modules Odoo requis
+    # Dependencies
     'depends': [
-        'base',  # Module de base Odoo (obligatoire)
-        'mail',  # Système de messagerie et notifications
-        'contacts',  # Gestion des contacts (entreprises)
-        'portal',        # Accès portail pour entreprises
-        'hr',            # Ressources humaines (pour les employés/encadrants)
-        'contacts',      # Gestion des contacts (entreprises)
-        'calendar',      # Gestion d'agenda
+        'base',
+        'mail',
+        'contacts',
+        'portal',
+        'hr',
+        'calendar',
+        'document',
     ],
 
-    # Fichiers de données à charger
+    # Data files
     'data': [
-        # Sécurité (ordre important !)
+        # Security (critical order!)
         'security/internship_security.xml',
         'security/ir.model.access.csv',
 
-        # Données
+        # Base data
         'data/sequences.xml',
+        'data/email_templates.xml',  # We'll create this
         'data/internship_demo_data.xml',
         'data/internship_cron.xml',
 
-        # Rapports (avant les vues pour que les actions soient disponibles)
+        # Reports
         'reports/defense_report_template.xml',
         'reports/convention_attestation_template.xml',
         'reports/evaluation_report_template.xml',
         'reports/stage_report_template.xml',
         'reports/internship_reports.xml',
 
-        # Vues principales
+        # Views
         'views/internship_stage_views.xml',
         'views/internship_student_views.xml',
         'views/internship_supervisor_views.xml',
@@ -63,21 +75,50 @@ Développé dans le cadre d'un stage chez Techpal Casablanca.
         'views/internship_notification_views.xml',
         'views/internship_meeting_views.xml',
 
-        # Dashboard
-        'views/dashboard_template.xml',
-
-        # Menus (en dernier)
+        # Menus (last)
         'views/internship_menus.xml',
     ],
 
+    # Demo data
     'demo': [
-        #'data/internship_demo_data.xml',
+        'demo/demo_students.xml',
+        'demo/demo_supervisors.xml',
+        'demo/demo_internships.xml',
     ],
 
-    # Configuration du module
-    'installable': True,  # Le module peut être installé
-    'application': True,  # C'est une application principale (apparaît dans le menu Apps)
-    'auto_install': False,  # Ne s'installe pas automatiquement
-    'sequence': 10,  # Ordre d'apparition dans la liste des apps
+    # Technical settings
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+    'sequence': 15,
 
+    # Web assets
+    'assets': {
+        'web.assets_backend': [
+            'internship_management/static/src/css/internship.css',
+            'internship_management/static/src/js/internship_dashboard.js',
+        ],
+        'web.assets_frontend': [
+            'internship_management/static/src/css/portal.css',
+        ],
+    },
+
+    # External dependencies
+    'external_dependencies': {
+        'python': ['python-dateutil', 'reportlab'],
+    },
+
+    # Images and screenshots
+    'images': [
+        'static/description/banner.png',
+        'static/description/screenshot_dashboard.png',
+        'static/description/screenshot_kanban.png',
+    ],
+
+    # Pricing (for Odoo Apps Store)
+    'price': 0.00,
+    'currency': 'EUR',
+
+    # Version info
+    'live_test_url': 'https://demo.techpal.ma/internship',
 }
