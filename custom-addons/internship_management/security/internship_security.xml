@@ -2,57 +2,55 @@
 <odoo>
     <data noupdate="0">
 
-        <!-- Catégories de sécurité -->
+        <!-- Security Categories -->
         <record id="module_category_internship" model="ir.module.category">
-            <field name="name">Gestion des Stages</field>
-            <field name="description">Gestion complète des stages et stagiaires</field>
+            <field name="name">Internship Management</field>
+            <field name="description">Complete internship and student management system</field>
             <field name="sequence">10</field>
         </record>
 
         <!-- =============================================== -->
-        <!-- GROUPES DE SÉCURITÉ -->
+        <!-- SECURITY GROUPS -->
         <!-- =============================================== -->
 
-        <!-- Groupe : Étudiant/Stagiaire -->
+        <!-- Group: Student/Intern -->
         <record id="group_internship_student" model="res.groups">
-            <field name="name">Étudiant/Stagiaire</field>
+            <field name="name">Student/Intern</field>
             <field name="category_id" ref="module_category_internship"/>
-            <field name="comment">Accès en lecture/écriture à ses propres stages et documents</field>
+            <field name="comment">Read/write access to own internships and documents</field>
         </record>
 
-        <!-- Groupe : Encadrant -->
+        <!-- Group: Supervisor -->
         <record id="group_internship_supervisor" model="res.groups">
-            <field name="name">Encadrant</field>
+            <field name="name">Supervisor</field>
             <field name="category_id" ref="module_category_internship"/>
             <field name="implied_ids" eval="[(4, ref('group_internship_student'))]"/>
-            <field name="comment">Gestion des étudiants assignés et validation des stages</field>
+            <field name="comment">Manage assigned students and validate internships</field>
         </record>
 
-        <!-- Groupe : Entreprise supprimé - nous utilisons res.company -->
-
-        <!-- Groupe : Coordinateur Stages -->
+        <!-- Group: Internship Coordinator -->
         <record id="group_internship_coordinator" model="res.groups">
-            <field name="name">Coordinateur Stages</field>
+            <field name="name">Internship Coordinator</field>
             <field name="category_id" ref="module_category_internship"/>
             <field name="implied_ids" eval="[(4, ref('group_internship_supervisor'))]"/>
-            <field name="comment">Coordination générale des stages et affectations</field>
+            <field name="comment">General coordination of internships and assignments</field>
         </record>
 
-        <!-- Groupe : Administrateur -->
+        <!-- Group: System Administrator -->
         <record id="group_internship_admin" model="res.groups">
-            <field name="name">Administrateur</field>
+            <field name="name">System Administrator</field>
             <field name="category_id" ref="module_category_internship"/>
             <field name="implied_ids" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="comment">Accès complet à tous les modules de gestion des stages</field>
+            <field name="comment">Full access to all internship management modules</field>
         </record>
 
         <!-- =============================================== -->
-        <!-- RÈGLES D'ENREGISTREMENT (RECORD RULES) -->
+        <!-- RECORD RULES (SECURITY POLICIES) -->
         <!-- =============================================== -->
 
-        <!-- Règle : Étudiants - Voir seulement ses propres données -->
+        <!-- Rule: Students - View only own data -->
         <record id="internship_student_rule_own" model="ir.rule">
-            <field name="name">Étudiant: propres données seulement</field>
+            <field name="name">Students: Own data only</field>
             <field name="model_id" ref="model_internship_student"/>
             <field name="domain_force">[('user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
@@ -62,9 +60,9 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Règle : Stages - Étudiants voient seulement leurs stages -->
+        <!-- Rule: Internships - Students see only their internships -->
         <record id="internship_stage_rule_student" model="ir.rule">
-            <field name="name">Stages: étudiant voit ses stages</field>
+            <field name="name">Internships: Student sees own internships</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
@@ -74,9 +72,9 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Règle : Stages - Encadrants voient leurs stages assignés -->
+        <!-- Rule: Internships - Supervisors see assigned internships -->
         <record id="internship_stage_rule_supervisor" model="ir.rule">
-            <field name="name">Stages: encadrant voit ses stages</field>
+            <field name="name">Internships: Supervisor sees assigned internships</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[('supervisor_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
@@ -86,11 +84,9 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Règle : Entreprises supprimée - nous utilisons res.company -->
-
-        <!-- Règle : Documents - Étudiants voient leurs propres documents -->
+        <!-- Rule: Documents - Students see their own documents -->
         <record id="internship_document_rule_student" model="ir.rule">
-            <field name="name">Documents: étudiant voit ses documents</field>
+            <field name="name">Documents: Student sees own documents</field>
             <field name="model_id" ref="model_internship_document"/>
             <field name="domain_force">['|', ('student_id.user_id', '=', user.id), ('stage_id.student_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
@@ -100,9 +96,57 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
-        <!-- Règle : Coordinateurs et Admins - Accès complet -->
+        <!-- Rule: Messages - Users see messages they send or receive -->
+        <record id="internship_message_rule_user" model="ir.rule">
+            <field name="name">Messages: User sees sent/received messages</field>
+            <field name="model_id" ref="model_internship_message"/>
+            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Notifications - Users see their own notifications -->
+        <record id="internship_notification_rule_user" model="ir.rule">
+            <field name="name">Notifications: User sees own notifications</field>
+            <field name="model_id" ref="model_internship_notification"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Meetings - Users see meetings they participate in -->
+        <record id="internship_meeting_rule_participant" model="ir.rule">
+            <field name="name">Meetings: Participant access</field>
+            <field name="model_id" ref="model_internship_meeting"/>
+            <field name="domain_force">['|', '|', ('organizer_id', '=', user.id), ('participant_ids', 'in', user.id), ('stage_id.student_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Supervisors - Full access to own data -->
+        <record id="internship_supervisor_rule_own" model="ir.rule">
+            <field name="name">Supervisors: Own profile access</field>
+            <field name="model_id" ref="model_internship_supervisor"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Coordinators and Admins - Full access -->
         <record id="internship_all_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinateur: accès complet</field>
+            <field name="name">Coordinator: Full access to internships</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -113,7 +157,7 @@
         </record>
 
         <record id="internship_student_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinateur: tous les étudiants</field>
+            <field name="name">Coordinator: All students access</field>
             <field name="model_id" ref="model_internship_student"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -123,10 +167,81 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
-        <!-- Règle : Documents - Coordinateurs et Admins ont accès complet -->
+        <record id="internship_supervisor_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinator: All supervisors access</field>
+            <field name="model_id" ref="model_internship_supervisor"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Documents - Coordinators and Admins have full access -->
         <record id="internship_document_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinateur: tous les documents</field>
+            <field name="name">Coordinator: All documents access</field>
             <field name="model_id" ref="model_internship_document"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Messages - Coordinators see all messages -->
+        <record id="internship_message_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinator: All messages access</field>
+            <field name="model_id" ref="model_internship_message"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Notifications - Coordinators see all notifications -->
+        <record id="internship_notification_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinator: All notifications access</field>
+            <field name="model_id" ref="model_internship_notification"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Meetings - Coordinators see all meetings -->
+        <record id="internship_meeting_rule_coordinator" model="ir.rule">
+            <field name="name">Coordinator: All meetings access</field>
+            <field name="model_id" ref="model_internship_meeting"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+       
+        <!-- Rule: User Profiles - Users see their own profile -->
+        <record id="internship_user_profile_rule_own" model="ir.rule">
+            <field name="name">User Profiles: Own profile only</field>
+            <field name="model_id" ref="model_internship_user_profile"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: User Profiles - Coordinators see all profiles -->
+        <record id="internship_user_profile_rule_coordinator" model="ir.rule">
+            <field name="name">User Profiles: Coordinator full access</field>
+            <field name="model_id" ref="model_internship_user_profile"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
             <field name="perm_read" eval="True"/>
@@ -137,3 +252,5 @@
 
     </data>
 </odoo>
+
+

@@ -226,7 +226,7 @@
                                         <div class="o_kanban_record_bottom">
                                             <div class="oe_kanban_bottom_left">
                                                 <field name="completion_percentage" widget="progressbar"/>
-                                            </div>
+                                        </div>
                                             <div class="oe_kanban_bottom_right">
                                                 <field name="state" widget="label_selection"
                                                        options="{'classes': {'draft': 'default', 'submitted': 'info', 'approved': 'warning', 'in_progress': 'primary', 'completed': 'success', 'evaluated': 'success', 'cancelled': 'muted'}}"/>

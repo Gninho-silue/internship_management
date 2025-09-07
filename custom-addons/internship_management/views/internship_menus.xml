@@ -189,10 +189,12 @@
                   sequence="40"
                   groups="group_internship_admin"/>
 
-        <!-- Security Settings -->
+
+        <!-- Security Settings Menu Action -->
         <menuitem id="menu_internship_security"
                   name="Security Settings"
                   parent="menu_internship_config"
+                  action="action_internship_security_settings"
                   sequence="50"
                   groups="group_internship_admin"/>
 

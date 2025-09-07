@@ -1,320 +1,782 @@
 # -*- coding: utf-8 -*-
+"""Internship Meeting Model"""
 
-from odoo import models, fields, api, _
+import logging
 from datetime import datetime, timedelta
-from odoo.exceptions import UserError
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class InternshipMeeting(models.Model):
+    """Meeting model for internship management system.
+
+    This model handles meeting scheduling, management, and tracking
+    for internships, providing a comprehensive meeting management
+    system with different types, participants, and follow-up tracking.
+
+    Key Features:
+    - Meeting scheduling and management
+    - Different meeting types (kickoff, follow-up, evaluation, defense)
+    - Participant management and attendance tracking
+    - Meeting minutes and action items
+    - Email notifications and reminders
+    - Integration with internships and documents
+    - Virtual and physical meeting support
+    """
     _name = 'internship.meeting'
-    _description = 'Réunion de Stage'
+    _description = 'Internship Meeting Management'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'date desc'
+    _order = 'date desc, name'
+    _rec_name = 'name'
 
-    # Champs de base
-    name = fields.Char(string='Titre', required=True, tracking=True)
-    stage_id = fields.Many2one('internship.stage', string='Stage', required=True, tracking=True)
-    date = fields.Datetime(string='Date et heure', required=True, tracking=True)
-    duration = fields.Float(string='Durée (heures)', default=1.0, tracking=True)
-    
-    # Type de réunion
-    type = fields.Selection([
-        ('kickoff', 'Réunion de lancement'),
-        ('followup', 'Suivi hebdomadaire'),
-        ('milestone', 'Point d\'étape'),
-        ('defense', 'Soutenance'),
-        ('evaluation', 'Évaluation'),
-        ('other', 'Autre')
-    ], string='Type', default='followup', tracking=True)
+    # ===============================
+    # CORE MEETING FIELDS
+    # ===============================
 
-    # Participants
-    organizer_id = fields.Many2one('res.users', string='Organisateur', 
-                                   default=lambda self: self.env.user, tracking=True)
-    participant_ids = fields.Many2many('res.users', string='Participants', tracking=True)
-    
-    # Lieu et modalité
-    location = fields.Char(string='Lieu', tracking=True)
+    name = fields.Char(
+        string='Meeting Title',
+        required=True,
+        tracking=True,
+        size=200,
+        help="Title or subject of the meeting"
+    )
+
     meeting_type = fields.Selection([
-        ('physical', 'Présentiel'),
-        ('virtual', 'Virtuel'),
-        ('hybrid', 'Hybride')
-    ], string='Modalité', default='virtual', tracking=True)
-    
-    # Contenu et suivi
-    agenda = fields.Html(string='Ordre du jour', tracking=True)
-    summary = fields.Html(string='Compte-rendu', tracking=True)
-    next_actions = fields.Html(string='Actions à suivre', tracking=True)
-    
-    # État
-    state = fields.Selection([
-        ('draft', 'Brouillon'),
-        ('confirmed', 'Confirmé'),
-        ('in_progress', 'En cours'),
-        ('completed', 'Terminé'),
-        ('cancelled', 'Annulé')
-    ], string='État', default='draft', tracking=True)
-    
-    # Notifications
-    reminder_sent = fields.Boolean(string='Rappel envoyé', default=False)
-    reminder_date = fields.Datetime(string='Date de rappel')
-    email_sent = fields.Boolean(string='Email envoyé', default=False)
-    
-    # Champs calculés
-    end_date = fields.Datetime(string='Fin', compute='_compute_end_date', store=True)
-    is_past = fields.Boolean(string='Passé', compute='_compute_is_past', store=True)
-    is_today = fields.Boolean(string='Aujourd\'hui', compute='_compute_is_today', store=True)
-    
-    # Relations
-    document_ids = fields.One2many('internship.document', 'meeting_id', string='Documents')
-    
-    # Champs techniques
-    active = fields.Boolean(default=True, string='Actif')
+        ('kickoff', 'Kick-off Meeting'),
+        ('follow_up', 'Follow-up Meeting'),
+        ('milestone', 'Milestone Review'),
+        ('defense', 'Defense Meeting'),
+        ('evaluation', 'Evaluation Meeting'),
+        ('emergency', 'Emergency Meeting'),
+        ('other', 'Other')
+    ], string='Meeting Type', default='follow_up', tracking=True, required=True,
+        help="Type of meeting being scheduled")
+
+    # ===============================
+    # RELATIONSHIP FIELDS
+    # ===============================
+
+    stage_id = fields.Many2one(
+        'internship.stage',
+        string='Related Internship',
+        required=True,
+        tracking=True,
+        ondelete='cascade',
+        help="Internship this meeting is related to"
+    )
+
+    student_id = fields.Many2one(
+        'internship.student',
+        string='Student',
+        related='stage_id.student_id',
+        store=True,
+        readonly=True,
+        help="Student involved in this meeting"
+    )
+
+    supervisor_id = fields.Many2one(
+        'internship.supervisor',
+        string='Supervisor',
+        related='stage_id.supervisor_id',
+        store=True,
+        readonly=True,
+        help="Supervisor involved in this meeting"
+    )
+
+    organizer_id = fields.Many2one(
+        'res.users',
+        string='Organizer',
+        default=lambda self: self.env.user,
+        tracking=True,
+        help="User who organized this meeting"
+    )
+
+    participant_ids = fields.Many2many(
+        'res.users',
+        string='Participants',
+        tracking=True,
+        help="Users who should attend this meeting"
+    )
+
+    # ===============================
+    # SCHEDULING FIELDS
+    # ===============================
+
+    date = fields.Datetime(
+        string='Meeting Date & Time',
+        required=True,
+        tracking=True,
+        help="Scheduled date and time for the meeting"
+    )
+
+    duration = fields.Float(
+        string='Duration (Hours)',
+        default=1.0,
+        tracking=True,
+        help="Expected duration of the meeting in hours"
+    )
 
     @api.depends('date', 'duration')
     def _compute_end_date(self):
+        """Calculate meeting end time."""
         for meeting in self:
             if meeting.date and meeting.duration:
                 meeting.end_date = meeting.date + timedelta(hours=meeting.duration)
             else:
                 meeting.end_date = False
 
+    end_date = fields.Datetime(
+        string='End Time',
+        compute='_compute_end_date',
+        store=True,
+        help="Calculated end time of the meeting"
+    )
+
+    # ===============================
+    # LOCATION AND MODALITY FIELDS
+    # ===============================
+
+    location = fields.Char(
+        string='Location',
+        tracking=True,
+        help="Physical location of the meeting"
+    )
+
+    meeting_url = fields.Char(
+        string='Meeting URL',
+        help="URL for virtual meetings (Zoom, Teams, etc.)"
+    )
+
+    meeting_type_modality = fields.Selection([
+        ('physical', 'Physical Meeting'),
+        ('virtual', 'Virtual Meeting'),
+        ('hybrid', 'Hybrid Meeting')
+    ], string='Meeting Modality', default='virtual', tracking=True,
+        help="How the meeting will be conducted")
+
+    # ===============================
+    # CONTENT AND TRACKING FIELDS
+    # ===============================
+
+    agenda = fields.Html(
+        string='Agenda',
+        help="Meeting agenda and topics to be discussed"
+    )
+
+    summary = fields.Html(
+        string='Meeting Summary',
+        help="Summary of what was discussed in the meeting"
+    )
+
+    next_actions = fields.Html(
+        string='Action Items',
+        help="Action items and follow-up tasks from the meeting"
+    )
+
+    decisions = fields.Html(
+        string='Decisions Made',
+        help="Key decisions made during the meeting"
+    )
+
+    # ===============================
+    # WORKFLOW AND STATUS FIELDS
+    # ===============================
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('scheduled', 'Scheduled'),
+        ('confirmed', 'Confirmed'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+        ('postponed', 'Postponed')
+    ], string='Status', default='draft', tracking=True, required=True,
+        help="Current status of the meeting")
+
+    # ===============================
+    # ATTENDANCE TRACKING FIELDS
+    # ===============================
+
+    attendee_ids = fields.One2many(
+        'internship.meeting.attendee',
+        'meeting_id',
+        string='Attendees',
+        help="List of attendees and their attendance status"
+    )
+
+    attendance_confirmed = fields.Boolean(
+        string='Attendance Confirmed',
+        default=False,
+        help="Whether attendance has been confirmed"
+    )
+
+    # ===============================
+    # NOTIFICATION FIELDS
+    # ===============================
+
+    reminder_sent = fields.Boolean(
+        string='Reminder Sent',
+        default=False,
+        help="Whether reminder has been sent"
+    )
+
+    reminder_date = fields.Datetime(
+        string='Reminder Date',
+        help="When the reminder was sent"
+    )
+
+    email_sent = fields.Boolean(
+        string='Email Sent',
+        default=False,
+        help="Whether invitation email has been sent"
+    )
+
+    # ===============================
+    # COMPUTED FIELDS
+    # ===============================
+
     @api.depends('date')
     def _compute_is_past(self):
+        """Check if meeting is in the past."""
         for meeting in self:
-            meeting.is_past = meeting.date and meeting.date < datetime.now()
+            meeting.is_past = meeting.date and meeting.date < fields.Datetime.now()
 
     @api.depends('date')
     def _compute_is_today(self):
+        """Check if meeting is today."""
         for meeting in self:
             if meeting.date:
-                meeting.is_today = meeting.date.date() == datetime.now().date()
+                meeting.is_today = meeting.date.date() == fields.Date.today()
             else:
                 meeting.is_today = False
 
+    @api.depends('date')
+    def _compute_is_upcoming(self):
+        """Check if meeting is upcoming (within next 7 days)."""
+        for meeting in self:
+            if meeting.date:
+                now = fields.Datetime.now()
+                week_from_now = now + timedelta(days=7)
+                meeting.is_upcoming = now <= meeting.date <= week_from_now
+            else:
+                meeting.is_upcoming = False
+
+    @api.depends('attendee_ids.attendance_status')
+    def _compute_attendance_stats(self):
+        """Calculate attendance statistics."""
+        for meeting in self:
+            total_attendees = len(meeting.attendee_ids)
+            confirmed_attendees = len(meeting.attendee_ids.filtered(lambda a: a.attendance_status == 'confirmed'))
+            meeting.attendance_count = total_attendees
+            meeting.confirmed_count = confirmed_attendees
+
+    is_past = fields.Boolean(
+        string='Past Meeting',
+        compute='_compute_is_past',
+        store=True,
+        help="Whether this meeting is in the past"
+    )
+
+    is_today = fields.Boolean(
+        string='Today',
+        compute='_compute_is_today',
+        store=True,
+        help="Whether this meeting is today"
+    )
+
+    is_upcoming = fields.Boolean(
+        string='Upcoming',
+        compute='_compute_is_upcoming',
+        store=True,
+        help="Whether this meeting is upcoming (within 7 days)"
+    )
+
+    attendance_count = fields.Integer(
+        string='Total Attendees',
+        compute='_compute_attendance_stats',
+        store=True,
+        help="Total number of attendees"
+    )
+
+    confirmed_count = fields.Integer(
+        string='Confirmed Attendees',
+        compute='_compute_attendance_stats',
+        store=True,
+        help="Number of confirmed attendees"
+    )
+
+    # ===============================
+    # RELATIONSHIP FIELDS
+    # ===============================
+
+    document_ids = fields.One2many(
+        'internship.document',
+        'meeting_id',
+        string='Related Documents',
+        help="Documents related to this meeting"
+    )
+
+    # ===============================
+    # TECHNICAL FIELDS
+    # ===============================
+
+    active = fields.Boolean(
+        default=True,
+        string='Active',
+        help="Whether this meeting is active"
+    )
+
+    # ===============================
+    # CONSTRAINTS AND VALIDATIONS
+    # ===============================
+
+    @api.constrains('date')
+    def _check_meeting_date(self):
+        """Ensure meeting date is in the future for new meetings."""
+        for meeting in self:
+            if meeting.date and meeting.state in ['draft', 'scheduled'] and meeting.date < fields.Datetime.now():
+                raise ValidationError(_("Meeting date must be in the future."))
+
+    @api.constrains('duration')
+    def _check_duration(self):
+        """Ensure duration is positive."""
+        for meeting in self:
+            if meeting.duration <= 0:
+                raise ValidationError(_("Meeting duration must be positive."))
+
+    @api.constrains('participant_ids')
+    def _check_participants(self):
+        """Ensure meeting has at least one participant."""
+        for meeting in self:
+            if not meeting.participant_ids:
+                raise ValidationError(_("Meeting must have at least one participant."))
+
+    # ===============================
+    # CRUD METHODS
+    # ===============================
+
     @api.model_create_multi
     def create(self, vals_list):
-        """Créer des réunions et envoyer des notifications"""
-        meetings = super().create(vals_list)
-        
-        for meeting in meetings:
-            # Ajouter automatiquement les participants principaux
-            if meeting.stage_id:
+        """Override create method with logging and validation."""
+        _logger.info(f"Creating {len(vals_list)} meeting record(s)")
+
+        for vals in vals_list:
+            # Auto-add main participants if not specified
+            if not vals.get('participant_ids') and vals.get('stage_id'):
+                stage = self.env['internship.stage'].browse(vals['stage_id'])
                 participants = []
-                if meeting.stage_id.student_id.user_id:
-                    participants.append(meeting.stage_id.student_id.user_id.id)
-                if meeting.stage_id.supervisor_id.user_id:
-                    participants.append(meeting.stage_id.supervisor_id.user_id.id)
-                
+                if stage.student_id and stage.student_id.user_id:
+                    participants.append(stage.student_id.user_id.id)
+                if stage.supervisor_id and stage.supervisor_id.user_id:
+                    participants.append(stage.supervisor_id.user_id.id)
                 if participants:
-                    meeting.participant_ids = [(6, 0, participants)]
-            
-            # Envoyer un email de notification
-            meeting._send_meeting_notification_email()
-        
+                    vals['participant_ids'] = [(6, 0, participants)]
+
+        meetings = super().create(vals_list)
+
+        for meeting in meetings:
+            _logger.info(f"Created meeting: {meeting.name} for {meeting.stage_id.title}")
+
+            # Create attendee records
+            meeting._create_attendee_records()
+
+            # Send invitation emails
+            meeting._send_meeting_invitation_email()
+
         return meetings
 
+    def write(self, vals):
+        """Override write method with logging."""
+        if 'state' in vals:
+            _logger.info(f"Meeting {self.name} status changed to {vals['state']}")
+
+        result = super().write(vals)
+
+        # Update attendee records if participants changed
+        if 'participant_ids' in vals:
+            for meeting in self:
+                meeting._create_attendee_records()
+
+        return result
+
+    # ===============================
+    # BUSINESS METHODS
+    # ===============================
+
+    def action_schedule(self):
+        """Schedule the meeting."""
+        self.write({'state': 'scheduled'})
+        self._send_meeting_invitation_email()
+
     def action_confirm(self):
-        """Confirmer la réunion"""
+        """Confirm the meeting."""
         self.write({'state': 'confirmed'})
-        # Envoyer un email de confirmation
         self._send_meeting_confirmation_email()
-        return True
 
     def action_start(self):
-        """Démarrer la réunion"""
+        """Start the meeting."""
         self.write({'state': 'in_progress'})
-        return True
+        self._send_meeting_start_notification()
 
     def action_complete(self):
-        """Terminer la réunion"""
+        """Complete the meeting."""
         self.write({'state': 'completed'})
-        # Envoyer un email de résumé
         self._send_meeting_summary_email()
-        return True
 
     def action_cancel(self):
-        """Annuler la réunion"""
+        """Cancel the meeting."""
         self.write({'state': 'cancelled'})
-        # Envoyer un email d'annulation
         self._send_meeting_cancellation_email()
-        return True
+
+    def action_postpone(self):
+        """Postpone the meeting."""
+        self.write({'state': 'postponed'})
+        self._send_meeting_postponement_email()
 
     def action_send_reminder(self):
-        """Envoyer un rappel aux participants"""
+        """Send reminder to participants."""
         for meeting in self:
             meeting._send_meeting_reminder_email()
             meeting.reminder_sent = True
-            meeting.reminder_date = datetime.now()
-        return True
+            meeting.reminder_date = fields.Datetime.now()
 
-    def _send_meeting_notification_email(self):
-        """Envoyer un email de notification de nouvelle réunion"""
+    def action_generate_minutes(self):
+        """Generate meeting minutes document."""
+        self.ensure_one()
+        if not self.summary:
+            raise UserError(_("Please add a meeting summary before generating minutes."))
+
+        # Create document record for meeting minutes
+        document = self.env['internship.document'].create({
+            'name': f'Meeting Minutes - {self.name}',
+            'document_type': 'other',
+            'stage_id': self.stage_id.id,
+            'meeting_id': self.id,
+            'description': self.summary,
+            'state': 'draft',
+        })
+
+        return {
+            'name': 'Meeting Minutes Generated',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.document',
+            'res_id': document.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    # ===============================
+    # ATTENDEE MANAGEMENT METHODS
+    # ===============================
+
+    def _create_attendee_records(self):
+        """Create attendee records for all participants."""
         for meeting in self:
-            if not meeting.email_sent and meeting.participant_ids:
-                subject = f"Nouvelle réunion planifiée : {meeting.name}"
-                body = self._get_meeting_email_template('notification', meeting)
-                
-                # Envoyer l'email à tous les participants
+            # Remove existing attendee records
+            meeting.attendee_ids.unlink()
+
+            # Create new attendee records
+            attendee_vals = []
+            for participant in meeting.participant_ids:
+                attendee_vals.append({
+                    'meeting_id': meeting.id,
+                    'user_id': participant.id,
+                    'attendance_status': 'pending',
+                })
+
+            if attendee_vals:
+                self.env['internship.meeting.attendee'].create(attendee_vals)
+
+    # ===============================
+    # EMAIL NOTIFICATION METHODS
+    # ===============================
+
+    def _send_meeting_invitation_email(self):
+        """Send meeting invitation email to participants."""
+        for meeting in self:
+            if meeting.participant_ids and not meeting.email_sent:
+                subject = f"Meeting Invitation: {meeting.name}"
+                body = self._get_email_template('invitation', meeting)
+
                 for participant in meeting.participant_ids:
                     if participant.email:
                         self.env['mail.mail'].create({
                             'subject': subject,
                             'body_html': body,
-                            'email_from': self.env.user.email,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
                             'email_to': participant.email,
                             'auto_delete': True,
                         }).send()
-                
+
                 meeting.email_sent = True
 
     def _send_meeting_confirmation_email(self):
-        """Envoyer un email de confirmation de réunion"""
+        """Send meeting confirmation email."""
         for meeting in self:
             if meeting.participant_ids:
-                subject = f"Réunion confirmée : {meeting.name}"
-                body = self._get_meeting_email_template('confirmation', meeting)
-                
+                subject = f"Meeting Confirmed: {meeting.name}"
+                body = self._get_email_template('confirmation', meeting)
+
                 for participant in meeting.participant_ids:
                     if participant.email:
                         self.env['mail.mail'].create({
                             'subject': subject,
                             'body_html': body,
-                            'email_from': self.env.user.email,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
                             'email_to': participant.email,
                             'auto_delete': True,
                         }).send()
 
     def _send_meeting_reminder_email(self):
-        """Envoyer un email de rappel de réunion"""
+        """Send meeting reminder email."""
         for meeting in self:
             if meeting.participant_ids:
-                subject = f"Rappel : Réunion {meeting.name} - {meeting.date.strftime('%d/%m/%Y à %H:%M')}"
-                body = self._get_meeting_email_template('reminder', meeting)
-                
+                subject = f"Meeting Reminder: {meeting.name} - {meeting.date.strftime('%d/%m/%Y at %H:%M')}"
+                body = self._get_email_template('reminder', meeting)
+
                 for participant in meeting.participant_ids:
                     if participant.email:
                         self.env['mail.mail'].create({
                             'subject': subject,
                             'body_html': body,
-                            'email_from': self.env.user.email,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
+                            'email_to': participant.email,
+                            'auto_delete': True,
+                        }).send()
+
+    def _send_meeting_start_notification(self):
+        """Send meeting start notification."""
+        for meeting in self:
+            if meeting.participant_ids:
+                subject = f"Meeting Started: {meeting.name}"
+                body = self._get_email_template('start', meeting)
+
+                for participant in meeting.participant_ids:
+                    if participant.email:
+                        self.env['mail.mail'].create({
+                            'subject': subject,
+                            'body_html': body,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
                             'email_to': participant.email,
                             'auto_delete': True,
                         }).send()
 
     def _send_meeting_summary_email(self):
-        """Envoyer un email de résumé de réunion"""
+        """Send meeting summary email."""
         for meeting in self:
             if meeting.participant_ids:
-                subject = f"Résumé de la réunion : {meeting.name}"
-                body = self._get_meeting_email_template('summary', meeting)
-                
+                subject = f"Meeting Summary: {meeting.name}"
+                body = self._get_email_template('summary', meeting)
+
                 for participant in meeting.participant_ids:
                     if participant.email:
                         self.env['mail.mail'].create({
                             'subject': subject,
                             'body_html': body,
-                            'email_from': self.env.user.email,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
                             'email_to': participant.email,
                             'auto_delete': True,
                         }).send()
 
     def _send_meeting_cancellation_email(self):
-        """Envoyer un email d'annulation de réunion"""
+        """Send meeting cancellation email."""
         for meeting in self:
             if meeting.participant_ids:
-                subject = f"Réunion annulée : {meeting.name}"
-                body = self._get_meeting_email_template('cancellation', meeting)
-                
+                subject = f"Meeting Cancelled: {meeting.name}"
+                body = self._get_email_template('cancellation', meeting)
+
                 for participant in meeting.participant_ids:
                     if participant.email:
                         self.env['mail.mail'].create({
                             'subject': subject,
                             'body_html': body,
-                            'email_from': self.env.user.email,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
                             'email_to': participant.email,
                             'auto_delete': True,
                         }).send()
 
-    def _get_meeting_email_template(self, template_type, meeting):
-        """Générer le contenu de l'email selon le type"""
+    def _send_meeting_postponement_email(self):
+        """Send meeting postponement email."""
+        for meeting in self:
+            if meeting.participant_ids:
+                subject = f"Meeting Postponed: {meeting.name}"
+                body = self._get_email_template('postponement', meeting)
+
+                for participant in meeting.participant_ids:
+                    if participant.email:
+                        self.env['mail.mail'].create({
+                            'subject': subject,
+                            'body_html': body,
+                            'email_from': meeting.organizer_id.email or self.env.user.email,
+                            'email_to': participant.email,
+                            'auto_delete': True,
+                        }).send()
+
+    def _get_email_template(self, template_type, meeting):
+        """Generate email template based on type."""
         base_html = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
-                <h2 style="color: #2c3e50; margin-bottom: 20px;">Gestion des Stages - Techpal</h2>
+                <h2 style="color: #2c3e50; margin-bottom: 20px;">Internship Management System</h2>
         """
-        
-        if template_type == 'notification':
+
+        if template_type == 'invitation':
             base_html += f"""
-                <h3 style="color: #3498db;">Nouvelle réunion planifiée</h3>
-                <p>Bonjour,</p>
-                <p>Une nouvelle réunion a été planifiée :</p>
-                <ul>
-                    <li><strong>Titre :</strong> {meeting.name}</li>
-                    <li><strong>Date :</strong> {meeting.date.strftime('%d/%m/%Y à %H:%M')}</li>
-                    <li><strong>Durée :</strong> {meeting.duration} heure(s)</li>
-                    <li><strong>Type :</strong> {dict(meeting._fields['type'].selection).get(meeting.type)}</li>
-                    <li><strong>Modalité :</strong> {dict(meeting._fields['meeting_type'].selection).get(meeting.meeting_type)}</li>
-                </ul>
-                <p>Vous recevrez une confirmation une fois la réunion validée.</p>
+                <h3 style="color: #3498db;">Meeting Invitation</h3>
+                <p>You are invited to attend the following meeting:</p>
+                <div style="background-color: white; padding: 15px; border-radius: 3px; margin: 10px 0;">
+                    <p><strong>Title:</strong> {meeting.name}</p>
+                    <p><strong>Date:</strong> {meeting.date.strftime('%A, %B %d, %Y at %H:%M')}</p>
+                    <p><strong>Duration:</strong> {meeting.duration} hour(s)</p>
+                    <p><strong>Type:</strong> {dict(meeting._fields['meeting_type'].selection).get(meeting.meeting_type)}</p>
+                    <p><strong>Modality:</strong> {dict(meeting._fields['meeting_type_modality'].selection).get(meeting.meeting_type_modality)}</p>
+                    {f'<p><strong>Location:</strong> {meeting.location}</p>' if meeting.location else ''}
+                    {f'<p><strong>Meeting URL:</strong> <a href="{meeting.meeting_url}">{meeting.meeting_url}</a></p>' if meeting.meeting_url else ''}
+                </div>
+                {f'<div style="background-color: #e8f4fd; padding: 15px; border-radius: 3px; margin: 10px 0;"><h4>Agenda:</h4>{meeting.agenda or "No agenda provided"}</div>' if meeting.agenda else ''}
             """
         elif template_type == 'confirmation':
             base_html += f"""
-                <h3 style="color: #27ae60;">Réunion confirmée</h3>
-                <p>Bonjour,</p>
-                <p>La réunion suivante a été confirmée :</p>
-                <ul>
-                    <li><strong>Titre :</strong> {meeting.name}</li>
-                    <li><strong>Date :</strong> {meeting.date.strftime('%d/%m/%Y à %H:%M')}</li>
-                    <li><strong>Durée :</strong> {meeting.duration} heure(s)</li>
-                    <li><strong>Lieu :</strong> {meeting.location or 'À définir'}</li>
-                </ul>
-                <p>Merci de confirmer votre présence.</p>
+                <h3 style="color: #27ae60;">Meeting Confirmed</h3>
+                <p>The following meeting has been confirmed:</p>
+                <div style="background-color: white; padding: 15px; border-radius: 3px; margin: 10px 0;">
+                    <p><strong>Title:</strong> {meeting.name}</p>
+                    <p><strong>Date:</strong> {meeting.date.strftime('%A, %B %d, %Y at %H:%M')}</p>
+                    <p><strong>Duration:</strong> {meeting.duration} hour(s)</p>
+                    {f'<p><strong>Location:</strong> {meeting.location}</p>' if meeting.location else ''}
+                    {f'<p><strong>Meeting URL:</strong> <a href="{meeting.meeting_url}">{meeting.meeting_url}</a></p>' if meeting.meeting_url else ''}
+                </div>
+                <p>Please confirm your attendance.</p>
             """
         elif template_type == 'reminder':
             base_html += f"""
-                <h3 style="color: #e74c3c;">Rappel de réunion</h3>
-                <p>Bonjour,</p>
-                <p>Rappel : Vous avez une réunion prévue :</p>
-                <ul>
-                    <li><strong>Titre :</strong> {meeting.name}</li>
-                    <li><strong>Date :</strong> {meeting.date.strftime('%d/%m/%Y à %H:%M')}</li>
-                    <li><strong>Lieu :</strong> {meeting.location or 'À définir'}</li>
-                </ul>
-                <p>N'oubliez pas de vous préparer !</p>
+                <h3 style="color: #f39c12;">Meeting Reminder</h3>
+                <p>This is a reminder for your upcoming meeting:</p>
+                <div style="background-color: white; padding: 15px; border-radius: 3px; margin: 10px 0;">
+                    <p><strong>Title:</strong> {meeting.name}</p>
+                    <p><strong>Date:</strong> {meeting.date.strftime('%A, %B %d, %Y at %H:%M')}</p>
+                    <p><strong>Duration:</strong> {meeting.duration} hour(s)</p>
+                    {f'<p><strong>Location:</strong> {meeting.location}</p>' if meeting.location else ''}
+                    {f'<p><strong>Meeting URL:</strong> <a href="{meeting.meeting_url}">{meeting.meeting_url}</a></p>' if meeting.meeting_url else ''}
+                </div>
+                <p>Please prepare for the meeting!</p>
             """
         elif template_type == 'summary':
             base_html += f"""
-                <h3 style="color: #9b59b6;">Résumé de la réunion</h3>
-                <p>Bonjour,</p>
-                <p>La réunion "{meeting.name}" s'est terminée.</p>
-                <p><strong>Compte-rendu :</strong></p>
-                <div style="background-color: white; padding: 15px; border-radius: 3px; margin: 10px 0;">
-                    {meeting.summary or 'Aucun compte-rendu disponible'}
-                </div>
-                <p><strong>Actions à suivre :</strong></p>
-                <div style="background-color: white; padding: 15px; border-radius: 3px; margin: 10px 0;">
-                    {meeting.next_actions or 'Aucune action définie'}
-                </div>
+                <h3 style="color: #9b59b6;">Meeting Summary</h3>
+                <p>The meeting "{meeting.name}" has been completed.</p>
+                {f'<div style="background-color: white; padding: 15px; border-radius: 3px; margin: 10px 0;"><h4>Summary:</h4>{meeting.summary or "No summary provided"}</div>' if meeting.summary else ''}
+                {f'<div style="background-color: #f0f8ff; padding: 15px; border-radius: 3px; margin: 10px 0;"><h4>Action Items:</h4>{meeting.next_actions or "No action items"}</div>' if meeting.next_actions else ''}
+                {f'<div style="background-color: #f0fff0; padding: 15px; border-radius: 3px; margin: 10px 0;"><h4>Decisions Made:</h4>{meeting.decisions or "No decisions recorded"}</div>' if meeting.decisions else ''}
             """
         elif template_type == 'cancellation':
             base_html += f"""
-                <h3 style="color: #e74c3c;">Réunion annulée</h3>
-                <p>Bonjour,</p>
-                <p>La réunion "{meeting.name}" prévue le {meeting.date.strftime('%d/%m/%Y à %H:%M')} a été annulée.</p>
-                <p>Une nouvelle date sera proposée prochainement.</p>
+                <h3 style="color: #e74c3c;">Meeting Cancelled</h3>
+                <p>The meeting "{meeting.name}" scheduled for {meeting.date.strftime('%A, %B %d, %Y at %H:%M')} has been cancelled.</p>
+                <p>A new meeting will be scheduled soon.</p>
             """
-        
+        elif template_type == 'postponement':
+            base_html += f"""
+                <h3 style="color: #f39c12;">Meeting Postponed</h3>
+                <p>The meeting "{meeting.name}" scheduled for {meeting.date.strftime('%A, %B %d, %Y at %H:%M')} has been postponed.</p>
+                <p>A new date will be communicated soon.</p>
+            """
+
         base_html += """
             </div>
             <div style="text-align: center; margin-top: 20px; color: #7f8c8d; font-size: 12px;">
-                <p>Cet email a été envoyé automatiquement par le système de gestion des stages Techpal</p>
+                <p>This email was sent automatically by the Internship Management System</p>
             </div>
         </div>
         """
-        
+
         return base_html
 
-    def action_generate_report(self):
-        """Générer un rapport de réunion"""
-        # Logique de génération de rapport
-        return True
+    # ===============================
+    # UTILITY METHODS
+    # ===============================
+
+    def name_get(self):
+        """Custom name display: Name (Date)."""
+        result = []
+        for meeting in self:
+            name = meeting.name
+            if meeting.date:
+                date_str = meeting.date.strftime('%Y-%m-%d %H:%M')
+                name = f"{name} ({date_str})"
+            result.append((meeting.id, name))
+        return result
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        """Custom search: search by name, type, or participants."""
+        args = args or []
+        domain = []
+
+        if name:
+            domain = ['|', '|', '|',
+                      ('name', operator, name),
+                      ('meeting_type', operator, name),
+                      ('participant_ids.name', operator, name),
+                      ('agenda', operator, name)]
+
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+
+    def get_meeting_statistics(self):
+        """Return statistical data for this meeting."""
+        self.ensure_one()
+        return {
+            'days_to_meeting': (self.date - fields.Datetime.now()).days if self.date else None,
+            'is_past': self.is_past,
+            'is_today': self.is_today,
+            'is_upcoming': self.is_upcoming,
+            'attendance_rate': (self.confirmed_count / self.attendance_count * 100) if self.attendance_count > 0 else 0,
+            'has_documents': len(self.document_ids) > 0,
+            'has_summary': bool(self.summary),
+            'has_action_items': bool(self.next_actions),
+        }
+
+
+class InternshipMeetingAttendee(models.Model):
+    """Meeting attendee model for tracking attendance."""
+    _name = 'internship.meeting.attendee'
+    _description = 'Meeting Attendee'
+    _rec_name = 'user_id'
+
+    meeting_id = fields.Many2one(
+        'internship.meeting',
+        string='Meeting',
+        required=True,
+        ondelete='cascade'
+    )
+
+    user_id = fields.Many2one(
+        'res.users',
+        string='Attendee',
+        required=True
+    )
+
+    attendance_status = fields.Selection([
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('attended', 'Attended'),
+        ('absent', 'Absent'),
+        ('excused', 'Excused')
+    ], string='Attendance Status', default='pending')
+
+    attendance_confirmed = fields.Boolean(
+        string='Attendance Confirmed',
+        default=False
+    )
+
+    notes = fields.Text(
+        string='Notes',
+        help="Additional notes about attendance"
+    )
+
+    _sql_constraints = [
+        ('unique_attendee_per_meeting', 'UNIQUE(meeting_id, user_id)',
+         'Each user can only be listed once per meeting.'),
+    ]

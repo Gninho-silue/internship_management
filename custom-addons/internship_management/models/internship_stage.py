@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Internship Stage Model - Professional Implementation"""
+"""Internship Stage Model"""
 
 import logging
 
@@ -165,7 +165,7 @@ class InternshipStage(models.Model):
                             elapsed_days = 0
                         elif today >= stage.end_date:
                             elapsed_days = total_duration
-                        else:
+                else:
                             elapsed_days = (today - stage.start_date).days
                         progress_value = (elapsed_days / total_duration) * 100.0
 

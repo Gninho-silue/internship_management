@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- SECURITY GROUPS MANAGEMENT -->
+        <!-- ================================= -->
+
+        <!-- Security Groups Tree View -->
+        <record id="view_security_groups_tree" model="ir.ui.view">
+            <field name="name">res.groups.tree.internship</field>
+            <field name="model">res.groups</field>
+            <field name="arch" type="xml">
+                <tree string="Security Groups">
+                    <field name="name"/>
+                    <field name="category_id"/>
+                    <field name="comment"/>
+                    <field name="users" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Security Groups Form View -->
+        <record id="view_security_groups_form" model="ir.ui.view">
+            <field name="name">res.groups.form.internship</field>
+            <field name="model">res.groups</field>
+            <field name="arch" type="xml">
+                <form string="Security Group">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Group Name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="category_id"/>
+                                <field name="implied_ids" widget="many2many_tags"/>
+                            </group>
+                            <group>
+                                <field name="trans_implied_ids" widget="many2many_tags" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Description">
+                            <field name="comment" nolabel="1" placeholder="Group description and purpose..."/>
+                        </group>
+                        <notebook>
+                            <page string="Users">
+                                <field name="users">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="login"/>
+                                        <field name="email"/>
+                                        <field name="active"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Access Rights">
+                                <field name="model_access">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="model_id"/>
+                                        <field name="perm_read"/>
+                                        <field name="perm_write"/>
+                                        <field name="perm_create"/>
+                                        <field name="perm_unlink"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Record Rules">
+                                <field name="rule_groups">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="model_id"/>
+                                        <field name="perm_read"/>
+                                        <field name="perm_write"/>
+                                        <field name="perm_create"/>
+                                        <field name="perm_unlink"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Security Groups Action -->
+        <record id="action_internship_security_groups" model="ir.actions.act_window">
+            <field name="name">Security Groups</field>
+            <field name="res_model">res.groups</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('category_id.name', '=', 'Internship Management')]</field>
+            <field name="context">{'default_category_id': ref('module_category_internship')}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Manage security groups
+                </p>
+                <p>
+                    Configure access rights and permissions for different user roles.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- RECORD RULES MANAGEMENT -->
+        <!-- ================================= -->
+
+        <!-- Record Rules Tree View -->
+        <record id="view_record_rules_tree" model="ir.ui.view">
+            <field name="name">ir.rule.tree.internship</field>
+            <field name="model">ir.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Record Rules">
+                    <field name="name"/>
+                    <field name="model_id"/>
+                    <field name="groups" widget="many2many_tags"/>
+                    <field name="perm_read"/>
+                    <field name="perm_write"/>
+                    <field name="perm_create"/>
+                    <field name="perm_unlink"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Record Rules Form View -->
+        <record id="view_record_rules_form" model="ir.ui.view">
+            <field name="name">ir.rule.form.internship</field>
+            <field name="model">ir.rule</field>
+            <field name="arch" type="xml">
+                <form string="Record Rule">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Rule Name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="model_id"/>
+                                <field name="groups" widget="many2many_tags"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Permissions">
+                                <field name="perm_read"/>
+                                <field name="perm_write"/>
+                                <field name="perm_create"/>
+                                <field name="perm_unlink"/>
+                            </group>
+                        </group>
+                        <group string="Domain Filter">
+                            <field name="domain_force" nolabel="1"
+                                   placeholder="[('field', '=', value)]"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Record Rules Action -->
+        <record id="action_internship_record_rules" model="ir.actions.act_window">
+            <field name="name">Record Rules</field>
+            <field name="res_model">ir.rule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('name', 'ilike', 'internship')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Configure record rules
+                </p>
+                <p>
+                    Set up data access policies based on user roles and conditions.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- ACCESS RIGHTS MANAGEMENT -->
+        <!-- ================================= -->
+
+        <!-- Access Rights Tree View -->
+        <record id="view_access_rights_tree" model="ir.ui.view">
+            <field name="name">ir.model.access.tree.internship</field>
+            <field name="model">ir.model.access</field>
+            <field name="arch" type="xml">
+                <tree string="Access Rights" editable="bottom">
+                    <field name="name"/>
+                    <field name="model_id"/>
+                    <field name="group_id"/>
+                    <field name="perm_read"/>
+                    <field name="perm_write"/>
+                    <field name="perm_create"/>
+                    <field name="perm_unlink"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Access Rights Action -->
+        <record id="action_internship_access_rights" model="ir.actions.act_window">
+            <field name="name">Access Rights</field>
+            <field name="res_model">ir.model.access</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[('model_id.model', 'ilike', 'internship')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Configure access rights
+                </p>
+                <p>
+                    Manage CRUD permissions for different user groups on internship models.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- SECURITY DASHBOARD -->
+        <!-- ================================= -->
+
+        <!-- Security Dashboard Kanban -->
+        <record id="view_security_dashboard_kanban" model="ir.ui.view">
+            <field name="name">security.dashboard.kanban</field>
+            <field name="model">res.groups</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard">
+                    <field name="name"/>
+                    <field name="users"/>
+                    <field name="comment"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_primary_left">
+                                        <div class="o_primary">
+                                            <strong><field name="name"/></strong>
+                                        </div>
+                                        <div class="o_secondary">
+                                            <field name="comment"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_primary_right">
+                                        <div class="badge badge-info">
+                                            <i class="fa fa-users"/> <t t-esc="record.users.raw_value.length"/> users
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Security Settings Action (Main Entry Point) -->
+        <record id="action_internship_security_settings" model="ir.actions.act_window">
+            <field name="name">Security Settings</field>
+            <field name="res_model">res.groups</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_id" ref="view_security_dashboard_kanban"/>
+            <field name="domain">[('category_id.name', '=', 'Internship Management')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Manage Security Settings
+                </p>
+                <p>
+                    Configure user groups, access rights, and security policies for the internship system.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

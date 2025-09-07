@@ -6,20 +6,22 @@
         <!-- USER PROFILE MANAGEMENT VIEWS -->
         <!-- ================================= -->
 
-        <!-- User Profiles List View -->
+        <!-- User Profiles Tree View -->
         <record id="view_internship_user_profile_tree" model="ir.ui.view">
             <field name="name">internship.user.profile.tree</field>
             <field name="model">internship.user.profile</field>
             <field name="arch" type="xml">
-                <tree string="User Profiles">
+                <tree string="User Profiles" decoration-muted="not is_active">
                     <field name="user_id"/>
-                    <field name="profile_type"/>
+                    <field name="profile_type" widget="badge"/>
                     <field name="company_id"/>
                     <field name="department"/>
                     <field name="position"/>
-                    <field name="is_active"/>
+                    <field name="education_level"/>
+                    <field name="experience_years"/>
                     <field name="last_login"/>
                     <field name="login_count"/>
+                    <field name="is_active"/>
                 </tree>
             </field>
         </record>
@@ -31,6 +33,8 @@
             <field name="arch" type="xml">
                 <form string="User Profile">
                     <header>
+                        <button name="action_update_last_login" string="Update Login Stats"
+                                type="object" class="btn-secondary"/>
                         <field name="is_active" widget="boolean_toggle"/>
                     </header>
                     <sheet>
@@ -78,11 +82,11 @@
                             </page>
 
                             <page name="skills_languages" string="Skills and Languages">
-                                <group string="Skills">
+                                <group string="Technical and Soft Skills">
                                     <field name="skills" widget="many2many_tags"
                                            options="{'color_field': 'category', 'no_create': True}"/>
                                 </group>
-                                <group string="Languages">
+                                <group string="Language Proficiency">
                                     <field name="languages" widget="many2many_tags"
                                            options="{'no_create': True}"/>
                                 </group>
@@ -90,12 +94,12 @@
 
                             <page name="bio" string="Biography">
                                 <field name="bio" nolabel="1"
-                                       placeholder="Write a brief professional biography..."/>
+                                       placeholder="Write a brief professional biography including background, interests, and career objectives..."/>
                             </page>
 
                             <page name="address" string="Address Details">
                                 <field name="address" nolabel="1"
-                                       placeholder="Complete address information..."/>
+                                       placeholder="Complete address including street, city, postal code, and any relevant location details..."/>
                             </page>
                         </notebook>
                     </sheet>
@@ -120,8 +124,11 @@
                     <field name="company_id"/>
                     <field name="department"/>
                     <field name="position"/>
+                    <field name="education_level"/>
+                    <field name="experience_years"/>
                     <field name="avatar"/>
                     <field name="is_active"/>
+                    <field name="last_login"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_card oe_kanban_global_click #{record.is_active.raw_value ? '' : 'o_kanban_color_muted'}">
@@ -143,8 +150,19 @@
                                         <div t-if="record.company_id.raw_value">
                                             <i class="fa fa-institution"/> <field name="company_id"/>
                                         </div>
+                                        <div t-if="record.education_level.raw_value">
+                                            <i class="fa fa-graduation-cap"/> <field name="education_level"/>
+                                        </div>
+                                        <div t-if="record.experience_years.raw_value">
+                                            <i class="fa fa-clock-o"/> <field name="experience_years"/> years exp.
+                                        </div>
                                     </div>
                                     <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <small class="text-muted">
+                                                Last login: <field name="last_login"/>
+                                            </small>
+                                        </div>
                                         <div class="oe_kanban_bottom_right">
                                             <span t-if="!record.is_active.raw_value"
                                                   class="badge badge-secondary">Inactive</span>
@@ -170,7 +188,75 @@
                     Create your first user profile
                 </p>
                 <p>
-                    Manage detailed user profiles for enhanced internship management.
+                    Manage detailed user profiles for enhanced internship management and personalization.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- USER PROFILE STATISTICS VIEWS -->
+        <!-- ================================= -->
+
+        <!-- User Profile Statistics Dashboard -->
+        <record id="view_user_profile_stats_kanban" model="ir.ui.view">
+            <field name="name">user.profile.stats.kanban</field>
+            <field name="model">internship.user.profile</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard" default_group_by="profile_type">
+                    <field name="user_id"/>
+                    <field name="profile_type"/>
+                    <field name="login_count"/>
+                    <field name="last_login"/>
+                    <field name="is_active"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_primary_left">
+                                        <div class="o_primary">
+                                            <strong><field name="user_id"/></strong>
+                                        </div>
+                                        <div class="o_secondary">
+                                            Profile Type: <field name="profile_type"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_primary_right">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="o_kanban_gauge">
+                                                    <field name="login_count" widget="gauge"
+                                                           options="{'max_value': 100, 'style': 'width:120px; height:90px;'}"/>
+                                                    <div class="o_gauge_value">Logins</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <span t-if="record.is_active.raw_value"
+                                                      class="badge badge-success">Active</span>
+                                                <span t-if="!record.is_active.raw_value"
+                                                      class="badge badge-secondary">Inactive</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- User Profile Analytics Action -->
+        <record id="action_user_profile_analytics" model="ir.actions.act_window">
+            <field name="name">User Profile Analytics</field>
+            <field name="res_model">internship.user.profile</field>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="view_user_profile_stats_kanban"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No user profiles found
+                </p>
+                <p>
+                    User engagement and activity statistics will appear here.
                 </p>
             </field>
         </record>
