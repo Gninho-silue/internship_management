@@ -155,7 +155,7 @@ class InternshipStage(models.Model):
             if total_tasks > 0:
                 completed_tasks = len(stage.task_ids.filtered(lambda t: t.state == 'completed'))
                 progress_value = (completed_tasks / total_tasks) * 100.0
-            else:
+                else:
                 # Fallback: time-based calculation
                 if stage.start_date and stage.end_date and stage.end_date >= stage.start_date:
                     total_duration = (stage.end_date - stage.start_date).days + 1
@@ -165,7 +165,7 @@ class InternshipStage(models.Model):
                             elapsed_days = 0
                         elif today >= stage.end_date:
                             elapsed_days = total_duration
-                else:
+            else:
                             elapsed_days = (today - stage.start_date).days
                         progress_value = (elapsed_days / total_duration) * 100.0
 
