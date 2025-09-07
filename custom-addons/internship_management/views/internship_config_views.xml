@@ -3,15 +3,15 @@
     <data>
 
         <!-- ===============================
-             VUES COMPÉTENCES (Skills)
+             SKILLS MANAGEMENT VIEWS
         =============================== -->
 
-        <!-- Vue liste des compétences -->
+        <!-- Skills List View -->
         <record id="view_internship_skill_tree" model="ir.ui.view">
             <field name="name">internship.skill.tree</field>
             <field name="model">internship.skill</field>
             <field name="arch" type="xml">
-                <tree string="Compétences">
+                <tree string="Skills">
                     <field name="name"/>
                     <field name="category"/>
                     <field name="level_required"/>
@@ -19,15 +19,17 @@
             </field>
         </record>
 
-        <!-- Vue formulaire des compétences -->
+        <!-- Skills Form View -->
         <record id="view_internship_skill_form" model="ir.ui.view">
             <field name="name">internship.skill.form</field>
             <field name="model">internship.skill</field>
             <field name="arch" type="xml">
-                <form string="Compétence">
+                <form string="Skill">
                     <sheet>
                         <div class="oe_title">
-                            <h1><field name="name" placeholder="Nom de la compétence"/></h1>
+                            <h1>
+                                <field name="name" placeholder="Skill name"/>
+                            </h1>
                         </div>
                         <group>
                             <group>
@@ -43,46 +45,48 @@
             </field>
         </record>
 
-        <!-- Action pour les compétences -->
+        <!-- Skills Action -->
         <record id="action_internship_skill_list" model="ir.actions.act_window">
-            <field name="name">Compétences</field>
+            <field name="name">Skills</field>
             <field name="res_model">internship.skill</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Créer une nouvelle compétence
+                    Create your first skill
                 </p>
                 <p>
-                    Gérez ici toutes les compétences disponibles pour les stages.
+                    Manage all available skills for internship programs.
                 </p>
             </field>
         </record>
 
         <!-- ===============================
-             VUES DOMAINES D'EXPERTISE
+             EXPERTISE AREAS MANAGEMENT
         =============================== -->
 
-        <!-- Vue liste des domaines -->
+        <!-- Areas List View -->
         <record id="view_internship_area_tree" model="ir.ui.view">
             <field name="name">internship.area.tree</field>
             <field name="model">internship.area</field>
             <field name="arch" type="xml">
-                <tree string="Domaines d'Expertise">
+                <tree string="Areas of Expertise">
                     <field name="name"/>
                     <field name="parent_id"/>
                 </tree>
             </field>
         </record>
 
-        <!-- Vue formulaire des domaines -->
+        <!-- Areas Form View -->
         <record id="view_internship_area_form" model="ir.ui.view">
             <field name="name">internship.area.form</field>
             <field name="model">internship.area</field>
             <field name="arch" type="xml">
-                <form string="Domaine d'Expertise">
+                <form string="Area of Expertise">
                     <sheet>
                         <div class="oe_title">
-                            <h1><field name="name" placeholder="Nom du domaine"/></h1>
+                            <h1>
+                                <field name="name" placeholder="Area name"/>
+                            </h1>
                         </div>
                         <group>
                             <field name="parent_id"/>
@@ -91,7 +95,7 @@
                             <field name="description" nolabel="1"/>
                         </group>
                         <notebook>
-                            <page name="subdomains" string="Sous-domaines">
+                            <page name="subdomains" string="Sub-areas">
                                 <field name="child_ids">
                                     <tree>
                                         <field name="name"/>
@@ -104,19 +108,150 @@
             </field>
         </record>
 
-        <!-- Action pour les domaines -->
+        <!-- Areas Action -->
         <record id="action_internship_area_list" model="ir.actions.act_window">
-            <field name="name">Domaines d'Expertise</field>
+            <field name="name">Areas of Expertise</field>
             <field name="res_model">internship.area</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Créer un nouveau domaine
+                    Create your first expertise area
                 </p>
                 <p>
-                    Gérez ici tous les domaines d'expertise disponibles.
+                    Manage all available areas of expertise for your organization.
                 </p>
             </field>
+        </record>
+
+        <!-- ===============================
+             LANGUAGE MANAGEMENT VIEWS
+        =============================== -->
+
+        <!-- Languages List View -->
+        <record id="view_internship_language_tree" model="ir.ui.view">
+            <field name="name">internship.language.tree</field>
+            <field name="model">internship.language</field>
+            <field name="arch" type="xml">
+                <tree string="Languages">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Languages Form View -->
+        <record id="view_internship_language_form" model="ir.ui.view">
+            <field name="name">internship.language.form</field>
+            <field name="model">internship.language</field>
+            <field name="arch" type="xml">
+                <form string="Language">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Language name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="code"/>
+                            <field name="active"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Languages Action -->
+        <record id="action_internship_language_list" model="ir.actions.act_window">
+            <field name="name">Languages</field>
+            <field name="res_model">internship.language</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first language
+                </p>
+                <p>
+                    Manage languages available in your internship program.
+                </p>
+            </field>
+        </record>
+
+        <!-- ===============================
+             ADVANCED SKILL VIEWS (BONUS)
+        =============================== -->
+
+        <!-- Skills Kanban View for better UX -->
+        <record id="view_internship_skill_kanban" model="ir.ui.view">
+            <field name="name">internship.skill.kanban</field>
+            <field name="model">internship.skill</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="category" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="category"/>
+                    <field name="level_required"/>
+                    <field name="description"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="name"/></strong>
+                                        <div>
+                                            <span class="badge badge-primary">
+                                                <field name="level_required"/>
+                                            </span>
+                                        </div>
+                                        <div class="text-muted">
+                                            <field name="description"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Areas Kanban View -->
+        <record id="view_internship_area_kanban" model="ir.ui.view">
+            <field name="name">internship.area.kanban</field>
+            <field name="model">internship.area</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="parent_id"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="name"/></strong>
+                                        <div t-if="record.parent_id.raw_value">
+                                            <small class="text-muted">
+                                                Sub-area of: <field name="parent_id"/>
+                                            </small>
+                                        </div>
+                                        <div class="text-muted mt-2">
+                                            <field name="description"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Update actions to include kanban view -->
+        <record id="action_internship_skill_list" model="ir.actions.act_window">
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <record id="action_internship_area_list" model="ir.actions.act_window">
+            <field name="view_mode">kanban,tree,form</field>
         </record>
 
     </data>

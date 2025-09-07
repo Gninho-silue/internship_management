@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Common Languages for Morocco Context -->
+        <record id="lang_arabic" model="internship.language">
+            <field name="name">Arabic</field>
+            <field name="code">ar</field>
+        </record>
+
+        <record id="lang_french" model="internship.language">
+            <field name="name">French</field>
+            <field name="code">fr</field>
+        </record>
+
+        <record id="lang_english" model="internship.language">
+            <field name="name">English</field>
+            <field name="code">en</field>
+        </record>
+
+        <record id="lang_spanish" model="internship.language">
+            <field name="name">Spanish</field>
+            <field name="code">es</field>
+        </record>
+
+        <record id="lang_german" model="internship.language">
+            <field name="name">German</field>
+            <field name="code">de</field>
+        </record>
+
+    </data>
+</odoo>

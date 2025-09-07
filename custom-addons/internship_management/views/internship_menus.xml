@@ -2,124 +2,199 @@
 <odoo>
     <data>
 
-        <!-- Menu racine principal -->
+        <!-- Root Menu -->
         <menuitem id="menu_internship_root"
-                  name="Gestion Stages"
-                  sequence="10"/>
+                  name="Internship Management"
+                  sequence="10"
+                  web_icon="internship_management,static/description/icon.png"/>
 
         <!-- ================================= -->
-        <!-- MENUS PRINCIPAUX -->
+        <!-- MAIN SECTIONS -->
         <!-- ================================= -->
 
-        <!-- Menu Stages -->
+        <!-- Internships Section -->
         <menuitem id="menu_internship_stages"
-                  name="Stages"
+                  name="Internships"
                   parent="menu_internship_root"
                   sequence="10"/>
 
-        <!-- Menu Personnes -->
+        <!-- People Section -->
         <menuitem id="menu_internship_people"
-                  name="Personnes"
+                  name="People"
                   parent="menu_internship_root"
                   sequence="20"/>
 
-        <!-- Menu Communications -->
+        <!-- Communication Section -->
         <menuitem id="menu_internship_communication"
                   name="Communication"
                   parent="menu_internship_root"
-                  sequence="20"/>
-
-        <!-- Étudiants -->
-        <menuitem id="menu_internship_students"
-                  name="Étudiants"
-                  parent="menu_internship_people"
-                  action="action_internship_student_list"
-                  sequence="10"/>
-
-        <!-- Encadrants -->
-        <menuitem id="menu_internship_supervisors"
-                  name="Encadrants"
-                  parent="menu_internship_people"
-                  action="action_internship_supervisor_list"
-                  sequence="20"/>
-
-        <!-- Messages -->
-        <menuitem id="menu_internship_message"
-                  name="Messages"
-                  parent="menu_internship_communication"
-                  action="action_internship_message_list"
                   sequence="30"/>
 
-        <!-- Notifications -->
-        <menuitem id="menu_internship_notification"
-                  name="Notifications"
-                  parent="menu_internship_communication"
-                  action="action_internship_notification_my"
+        <!-- Reports Section -->
+        <menuitem id="menu_internship_reports"
+                  name="Reports"
+                  parent="menu_internship_root"
                   sequence="40"/>
 
-        <!-- Toutes les notifications (admin) -->
-        <menuitem id="menu_internship_notification_all"
-                  name="Toutes les Notifications"
-                  parent="menu_internship_communication"
-                  action="action_internship_notification_list"
-                  sequence="50"
-                  groups="group_internship_coordinator,group_internship_admin"/>
-
-        <!-- Réunions -->
-        <menuitem id="menu_internship_meeting"
-                  name="Réunions"
-                  parent="menu_internship_communication"
-                  action="action_internship_meeting_my"
-                  sequence="60"/>
-
-        <!-- Toutes les réunions (admin) -->
-        <menuitem id="menu_internship_meeting_all"
-                  name="Toutes les Réunions"
-                  parent="menu_internship_communication"
-                  action="action_internship_meeting_list"
-                  sequence="70"
-                  groups="group_internship_coordinator,group_internship_admin"/>
-
-
-
-        <!-- Menu Entreprises removed: using res.company internally -->
+        <!-- Configuration Section -->
+        <menuitem id="menu_internship_config"
+                  name="Configuration"
+                  parent="menu_internship_root"
+                  sequence="50"/>
 
         <!-- ================================= -->
-        <!-- SOUS-MENUS - STAGES -->
+        <!-- INTERNSHIPS SUBMENU -->
         <!-- ================================= -->
 
-        <!-- Tous les stages -->
+        <!-- Dashboard -->
+        <menuitem id="menu_internship_dashboard"
+                  name="Dashboard"
+                  parent="menu_internship_stages"
+                  action="action_internship_stage_dashboard"
+                  sequence="5"/>
+
+        <!-- All Internships -->
         <menuitem id="menu_internship_stage_all"
-                  name="Tous les Stages"
+                  name="All Internships"
                   parent="menu_internship_stages"
                   action="action_internship_stage_list"
                   sequence="10"/>
 
-        <!-- Mes stages (pour étudiants) -->
+        <!-- My Internships (for students) -->
         <menuitem id="menu_internship_stage_my"
-                  name="Mes Stages"
+                  name="My Internships"
                   parent="menu_internship_stages"
                   action="action_internship_stage_my"
                   sequence="20"
                   groups="group_internship_student"/>
 
-        <!-- Stages à encadrer (pour encadrants) -->
+        <!-- Supervised Internships (for supervisors) -->
         <menuitem id="menu_internship_stage_supervise"
-                  name="Stages à Encadrer"
+                  name="Supervised Internships"
                   parent="menu_internship_stages"
                   action="action_internship_stage_supervise"
                   sequence="30"
                   groups="group_internship_supervisor"/>
 
         <!-- ================================= -->
-        <!-- MENU CONFIGURATION -->
+        <!-- PEOPLE SUBMENU -->
         <!-- ================================= -->
 
-        <!-- Menu configuration -->
-        <menuitem id="menu_internship_config"
-                  name="Configuration"
-                  parent="menu_internship_root"
-                  sequence="40"/>
+        <!-- Students -->
+        <menuitem id="menu_internship_students"
+                  name="Students"
+                  parent="menu_internship_people"
+                  action="action_internship_student_list"
+                  sequence="10"/>
+
+        <!-- Supervisors -->
+        <menuitem id="menu_internship_supervisors"
+                  name="Supervisors"
+                  parent="menu_internship_people"
+                  action="action_internship_supervisor_list"
+                  sequence="20"/>
+
+        <!-- ================================= -->
+        <!-- COMMUNICATION SUBMENU -->
+        <!-- ================================= -->
+
+        <!-- My Meetings -->
+        <menuitem id="menu_internship_meeting_my"
+                  name="My Meetings"
+                  parent="menu_internship_communication"
+                  action="action_internship_meeting_my"
+                  sequence="10"/>
+
+        <!-- All Meetings (admin/coordinator) -->
+        <menuitem id="menu_internship_meeting_all"
+                  name="All Meetings"
+                  parent="menu_internship_communication"
+                  action="action_internship_meeting_list"
+                  sequence="15"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+        <!-- Messages -->
+        <menuitem id="menu_internship_message"
+                  name="Messages"
+                  parent="menu_internship_communication"
+                  action="action_internship_message_list"
+                  sequence="20"/>
+
+        <!-- My Notifications -->
+        <menuitem id="menu_internship_notification"
+                  name="My Notifications"
+                  parent="menu_internship_communication"
+                  action="action_internship_notification_my"
+                  sequence="30"/>
+
+        <!-- All Notifications (admin) -->
+        <menuitem id="menu_internship_notification_all"
+                  name="All Notifications"
+                  parent="menu_internship_communication"
+                  action="action_internship_notification_list"
+                  sequence="35"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+        <!-- ================================= -->
+        <!-- REPORTS SUBMENU -->
+        <!-- ================================= -->
+
+        <!-- Performance Analytics -->
+        <menuitem id="menu_internship_analytics"
+                  name="Performance Analytics"
+                  parent="menu_internship_reports"
+                  sequence="10"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+        <!-- Document Templates -->
+        <menuitem id="menu_internship_templates"
+                  name="Document Templates"
+                  parent="menu_internship_reports"
+                  sequence="20"
+                  groups="group_internship_admin"/>
+
+        <!-- ================================= -->
+        <!-- CONFIGURATION SUBMENU -->
+        <!-- ================================= -->
+
+        <!-- Skills -->
+        <menuitem id="menu_internship_skills"
+                  name="Skills"
+                  parent="menu_internship_config"
+                  action="action_internship_skill_list"
+                  sequence="10"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+        <!-- Areas of Expertise -->
+        <menuitem id="menu_internship_areas"
+                  name="Areas of Expertise"
+                  parent="menu_internship_config"
+                  action="action_internship_area_list"
+                  sequence="20"
+                  groups="group_internship_coordinator,group_internship_admin"/>
+
+        <!-- Languages -->
+        <menuitem id="menu_internship_languages"
+                  name="Languages"
+                  parent="menu_internship_config"
+                  action="action_internship_language_list"
+                  sequence="30"
+                  groups="group_internship_admin"/>
+
+        <!-- User Profiles -->
+        <menuitem id="menu_internship_user_profiles"
+                  name="User Profiles"
+                  parent="menu_internship_config"
+                  action="action_internship_user_profile_list"
+                  sequence="40"
+                  groups="group_internship_admin"/>
+
+        <!-- Security Settings -->
+        <menuitem id="menu_internship_security"
+                  name="Security Settings"
+                  parent="menu_internship_config"
+                  sequence="50"
+                  groups="group_internship_admin"/>
 
     </data>
 </odoo>

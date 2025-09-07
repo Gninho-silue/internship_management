@@ -6,7 +6,7 @@
             <field name="name">internship.supervisor.tree</field>
             <field name="model">internship.supervisor</field>
             <field name="arch" type="xml">
-                <tree string="Encadrants de Stage">
+                <tree string="Internship Supervisors">
                     <field name="name"/>
                     <field name="company_id"/>
                     <field name="department"/>
@@ -26,7 +26,7 @@
             <field name="name">internship.supervisor.form</field>
             <field name="model">internship.supervisor</field>
             <field name="arch" type="xml">
-                <form string="Encadrant de Stage">
+                <form string="Internship Supervisor">
                     <header>
                         <field name="availability" widget="statusbar"/>
                     </header>
@@ -34,7 +34,7 @@
                         <field name="image" widget="image" class="oe_avatar"/>
                         <div class="oe_title">
                             <h1>
-                                <field name="name" placeholder="Nom complet"/>
+                                <field name="name" placeholder="Full Name"/>
                             </h1>
                         </div>
                         <group>
@@ -61,10 +61,10 @@
                         </group>
                         <field name="expertise" widget="many2many_tags"/>
                         <notebook>
-                            <page string="Stages encadrés">
+                            <page string="Supervised Internships">
                                 <field name="stage_ids">
                                     <tree>
-                                        <field name="name"/>
+                                        <field name="title"/>
                                         <field name="student_id"/>
                                         <field name="start_date"/>
                                         <field name="end_date"/>
@@ -89,15 +89,15 @@
 
         <!-- Action liste superviseurs -->
         <record id="action_internship_supervisor_list" model="ir.actions.act_window">
-            <field name="name">Encadrants</field>
+            <field name="name">Supervisors</field>
             <field name="res_model">internship.supervisor</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Ajouter votre premier encadrant !
+                    Add your first supervisor!
                 </p>
                 <p>
-                    Gérez les profils des encadrants, leurs domaines d'expertise et leur disponibilité.
+                    Manage supervisor profiles, their expertise areas and availability.
                 </p>
             </field>
         </record>
@@ -127,11 +127,11 @@
                                     <div class="oe_kanban_details">
                                         <strong><field name="name"/></strong>
                                         <div><i class="fa fa-envelope" title="Email"/> <field name="email"/></div>
-                                        <div><i class="fa fa-briefcase" title="Entreprise"/> <field name="company_id"/></div>
-                                        <div><i class="fa fa-building" title="Département"/> <field name="department"/> - <field name="position"/></div>
+                                        <div><i class="fa fa-briefcase" title="Company"/> <field name="company_id"/></div>
+                                        <div><i class="fa fa-building" title="Department"/> <field name="department"/> - <field name="position"/></div>
                                         <div class="o_kanban_record_bottom">
                                             <div class="oe_kanban_bottom_left">
-                                                <i class="fa fa-users" title="Étudiants max"/> <field name="max_students"/>
+                                                <i class="fa fa-users" title="Max Students"/> <field name="max_students"/>
                                             </div>
                                             <div class="oe_kanban_bottom_right">
                                                 <field name="availability" widget="label_selection"
@@ -144,22 +144,6 @@
                         </t>
                     </templates>
                 </kanban>
-            </field>
-        </record>
-
-        <!-- Action pour la liste des superviseurs -->
-        <record id="action_internship_supervisor_list" model="ir.actions.act_window">
-            <field name="name">Encadrants</field>
-            <field name="res_model">internship.supervisor</field>
-            <field name="view_mode">kanban,tree,form</field>
-            <field name="context">{}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Créer un nouvel encadrant
-                </p>
-                <p>
-                    Gérez ici tous les encadrants de stage de votre organisation.
-                </p>
             </field>
         </record>
 

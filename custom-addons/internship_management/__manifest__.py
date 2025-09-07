@@ -54,8 +54,7 @@ Developed as a professional-grade application following Odoo best practices.
 
         # Base data
         'data/sequences.xml',
-        'data/email_templates.xml',  # We'll create this
-        'data/internship_demo_data.xml',
+        'data/internship_language_data.xml',
         'data/internship_cron.xml',
 
         # Reports
@@ -73,6 +72,7 @@ Developed as a professional-grade application following Odoo best practices.
         'views/internship_message_views.xml',
         'views/internship_notification_views.xml',
         'views/internship_meeting_views.xml',
+        'views/internship_user_profile_views.xml',
 
         # Menus (last)
         'views/internship_menus.xml',
@@ -80,9 +80,10 @@ Developed as a professional-grade application following Odoo best practices.
 
     # Demo data
     'demo': [
-        'demo/demo_students.xml',
-        'demo/demo_supervisors.xml',
-        'demo/demo_internships.xml',
+        # 'demo/demo_students.xml',
+        # 'demo/demo_supervisors.xml',
+        # 'demo/demo_internships.xml',
+        'data/internship_demo_data.xml',
     ],
 
     # Technical settings
@@ -90,17 +91,6 @@ Developed as a professional-grade application following Odoo best practices.
     'application': True,
     'auto_install': False,
     'sequence': 15,
-
-    # Web assets
-    'assets': {
-        'web.assets_backend': [
-            'internship_management/static/src/css/internship.css',
-            'internship_management/static/src/js/internship_dashboard.js',
-        ],
-        'web.assets_frontend': [
-            'internship_management/static/src/css/portal.css',
-        ],
-    },
 
     # External dependencies
     'external_dependencies': {

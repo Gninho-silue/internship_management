@@ -3,67 +3,98 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
+class InternshipLanguage(models.Model):
+    """Language proficiency model for international internships."""
+    _name = 'internship.language'
+    _description = 'Language Proficiency'
+    _order = 'name'
+
+    name = fields.Char(
+        string='Language',
+        required=True,
+        help="Language name (e.g., English, French, Arabic)"
+    )
+
+    code = fields.Char(
+        string='Language Code',
+        size=5,
+        help="ISO language code (e.g., en, fr, ar)"
+    )
+
+    active = fields.Boolean(default=True)
+
+
 class InternshipUserProfile(models.Model):
+    """Advanced user profile for internship management system."""
     _name = 'internship.user.profile'
-    _description = 'Profil utilisateur avancé'
+    _description = 'Advanced User Profile'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    # Informations de base
-    user_id = fields.Many2one('res.users', string='Utilisateur', required=True, ondelete='cascade')
+    # Basic Information
+    user_id = fields.Many2one(
+        'res.users',
+        string='User Account',
+        required=True,
+        ondelete='cascade'
+    )
+
     profile_type = fields.Selection([
-        ('student', 'Étudiant'),
-        ('supervisor', 'Encadrant'),
-        ('company', 'Entreprise'),
-        ('admin', 'Administrateur')
-    ], string='Type de profil', required=True)
+        ('student', 'Student'),
+        ('supervisor', 'Supervisor'),
+        ('company', 'Company Representative'),
+        ('admin', 'Administrator')
+    ], string='Profile Type', required=True)
 
-    # Informations personnelles avancées
-    avatar = fields.Binary(string='Photo de profil')
-    bio = fields.Text(string='Biographie')
-    skills = fields.Many2many('internship.skill', string='Compétences')
-    languages = fields.Many2many('internship.language', string='Langues')
-    
-    # Informations de contact
-    phone_mobile = fields.Char(string='Téléphone mobile')
-    phone_work = fields.Char(string='Téléphone travail')
-    address = fields.Text(string='Adresse')
-    city = fields.Char(string='Ville')
-    country_id = fields.Many2one('res.country', string='Pays')
-    
-    # Informations professionnelles
-    company_id = fields.Many2one('res.company', string='Entreprise')
-    department = fields.Char(string='Département')
-    position = fields.Char(string='Poste')
-    experience_years = fields.Integer(string='Années d\'expérience')
-    
-    # Informations académiques
+    # Personal Information
+    avatar = fields.Binary(string='Profile Photo')
+    bio = fields.Text(string='Biography')
+    skills = fields.Many2many('internship.skill', string='Skills')
+    languages = fields.Many2many('internship.language', string='Languages')
+
+    # Contact Information
+    phone_mobile = fields.Char(string='Mobile Phone')
+    phone_work = fields.Char(string='Work Phone')
+    address = fields.Text(string='Address')
+    city = fields.Char(string='City')
+    country_id = fields.Many2one('res.country', string='Country')
+
+    # Professional Information
+    company_id = fields.Many2one('res.company', string='Company')
+    department = fields.Char(string='Department')
+    position = fields.Char(string='Position')
+    experience_years = fields.Integer(string='Years of Experience')
+
+    # Academic Information
     education_level = fields.Selection([
-        ('bac', 'Baccalauréat'),
-        ('bac+2', 'Bac+2'),
-        ('bac+3', 'Bac+3'),
-        ('bac+4', 'Bac+4'),
-        ('bac+5', 'Bac+5'),
-        ('doctorat', 'Doctorat')
-    ], string='Niveau d\'éducation')
-    school = fields.Char(string='École/Université')
-    graduation_year = fields.Integer(string='Année de diplôme')
-    
-    # Préférences
-    notification_preferences = fields.Selection([
-        ('email', 'Email'),
-        ('sms', 'SMS'),
-        ('push', 'Notifications push'),
-        ('all', 'Toutes')
-    ], string='Préférences de notification', default='email')
-    
-    # Statut
-    is_active = fields.Boolean(string='Profil actif', default=True)
-    last_login = fields.Datetime(string='Dernière connexion', readonly=True)
-    login_count = fields.Integer(string='Nombre de connexions', readonly=True)
+        ('high_school', 'High School'),
+        ('bachelor_1', 'Bachelor Year 1'),
+        ('bachelor_2', 'Bachelor Year 2'),
+        ('bachelor_3', 'Bachelor Year 3'),
+        ('master_1', 'Master Year 1'),
+        ('master_2', 'Master Year 2'),
+        ('phd', 'PhD')
+    ], string='Education Level')
 
-    # Contraintes
+    school = fields.Char(string='School/University')
+    graduation_year = fields.Integer(string='Graduation Year')
+
+    # Preferences
+    notification_preferences = fields.Selection([
+        ('email', 'Email Only'),
+        ('sms', 'SMS Only'),
+        ('push', 'Push Notifications'),
+        ('all', 'All Notifications')
+    ], string='Notification Preferences', default='email')
+
+    # Status
+    is_active = fields.Boolean(string='Profile Active', default=True)
+    last_login = fields.Datetime(string='Last Login', readonly=True)
+    login_count = fields.Integer(string='Login Count', readonly=True)
+
+    # Constraints
     @api.constrains('user_id', 'profile_type')
     def _check_unique_profile_per_user(self):
+        """Ensure one profile per user per type."""
         for profile in self:
             existing = self.search([
                 ('user_id', '=', profile.user_id.id),
@@ -71,16 +102,16 @@ class InternshipUserProfile(models.Model):
                 ('id', '!=', profile.id)
             ])
             if existing:
-                raise ValidationError(_("Un utilisateur ne peut avoir qu'un seul profil par type."))
+                raise ValidationError(_("A user can only have one profile per type."))
 
-    # Méthodes
+    # Methods
     def action_update_last_login(self):
-        """Mettre à jour les statistiques de connexion"""
+        """Update login statistics."""
         self.write({
             'last_login': fields.Datetime.now(),
             'login_count': self.login_count + 1
         })
 
     def get_full_name(self):
-        """Retourner le nom complet avec le type de profil"""
-        return f"{self.user_id.name} ({self.profile_type})"
+        """Return full name with profile type."""
+        return f"{self.user_id.name} ({dict(self._fields['profile_type'].selection).get(self.profile_type)})"

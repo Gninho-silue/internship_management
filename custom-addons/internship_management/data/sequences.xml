@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Séquence pour les références de stage -->
+        <!-- Sequence for internship references -->
         <record id="seq_internship_stage" model="ir.sequence">
-            <field name="name">Référence Stage</field>
+            <field name="name">Internship Reference</field>
             <field name="code">internship.stage</field>
             <field name="prefix">STG</field>
             <field name="padding">4</field>

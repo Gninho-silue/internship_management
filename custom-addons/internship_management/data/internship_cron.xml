@@ -2,9 +2,9 @@
 <odoo>
     <data noupdate="1">
         
-        <!-- Cron pour les alertes automatiques -->
+        <!-- Cron for automatic alerts -->
         <record id="ir_cron_internship_alerts" model="ir.cron">
-            <field name="name">Vérifier les retards et blocages des stages</field>
+            <field name="name">Check internship delays and stagnation</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="state">code</field>
             <field name="code">model._check_delays_and_stagnation()</field>
