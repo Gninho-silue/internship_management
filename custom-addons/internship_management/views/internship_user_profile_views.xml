@@ -142,19 +142,19 @@
                                     </strong>
                                     <div class="o_kanban_tags_section">
                                         <div t-if="record.position.raw_value">
-                                            <i class="fa fa-briefcase"/> <field name="position"/>
+                                            <i class="fa fa-briefcase" title="Position"/> <field name="position"/>
                                         </div>
                                         <div t-if="record.department.raw_value">
-                                            <i class="fa fa-building"/> <field name="department"/>
+                                            <i class="fa fa-building" title="Department"/> <field name="department"/>
                                         </div>
                                         <div t-if="record.company_id.raw_value">
-                                            <i class="fa fa-institution"/> <field name="company_id"/>
+                                            <i class="fa fa-institution" title="Company"/> <field name="company_id"/>
                                         </div>
                                         <div t-if="record.education_level.raw_value">
-                                            <i class="fa fa-graduation-cap"/> <field name="education_level"/>
+                                            <i class="fa fa-graduation-cap" title="Education"/> <field name="education_level"/>
                                         </div>
                                         <div t-if="record.experience_years.raw_value">
-                                            <i class="fa fa-clock-o"/> <field name="experience_years"/> years exp.
+                                            <i class="fa fa-clock-o" title="Experience"/> <field name="experience_years"/> years exp.
                                         </div>
                                     </div>
                                     <div class="o_kanban_record_bottom">

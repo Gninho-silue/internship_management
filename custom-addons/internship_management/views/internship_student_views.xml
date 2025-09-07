@@ -87,7 +87,7 @@
                                 <field name="document_ids">
                                     <tree>
                                         <field name="name"/>
-                                        <field name="type"/>
+                                        <field name="document_type"/>
                                         <field name="date_upload"/>
                                         <field name="state"/>
                                     </tree>

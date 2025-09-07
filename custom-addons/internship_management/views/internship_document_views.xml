@@ -36,6 +36,7 @@
                     <!-- File Details -->
                     <field name="file_size" widget="progressbar"/>
                     <field name="version"/>
+                    <field name="file" invisible="1"/>
 
                     <!-- Actions -->
                     <button name="action_download" type="object" icon="fa-download"
@@ -47,11 +48,11 @@
                     <button name="action_approve" type="object" icon="fa-check"
                             title="Approve" class="btn-link text-success"
                             invisible="state != 'under_review'"
-                            groups="internship_management.group_supervisor" aria-label="Approve"/>
+                             aria-label="Approve"/>
                     <button name="action_reject" type="object" icon="fa-times"
                             title="Reject" class="btn-link text-danger"
                             invisible="state != 'under_review'"
-                            groups="internship_management.group_supervisor" aria-label="Reject"/>
+                             aria-label="Reject"/>
                     <button name="action_archive" type="object" icon="fa-archive"
                             title="Archive" class="btn-link text-secondary"
                             invisible="state not in ['approved','rejected']" aria-label="Archive"/>
@@ -75,6 +76,7 @@
                     <field name="review_deadline"/>
                     <field name="file_size"/>
                     <field name="version"/>
+                    <field name="file" invisible="1"/>
                     <field name="review_required"/>
                     <field name="reviewed_by"/>
                     <field name="review_date"/>
@@ -205,15 +207,15 @@
                         <button name="action_start_review" string="Start Review" type="object"
                                 class="btn-info" icon="fa-eye"
                                 invisible="state != 'submitted'"
-                                groups="internship_management.group_supervisor"/>
+                                />
                         <button name="action_approve" string="Approve" type="object"
                                 class="btn-success" icon="fa-check"
                                 invisible="state != 'under_review'"
-                                groups="internship_management.group_supervisor"/>
+                                />
                         <button name="action_reject" string="Reject" type="object"
                                 class="btn-danger" icon="fa-times"
                                 invisible="state != 'under_review'"
-                                groups="internship_management.group_supervisor"/>
+                                />
                         <button name="action_archive" string="Archive" type="object"
                                 class="btn-secondary" icon="fa-archive"
                                 invisible="state not in ['approved','rejected']"/>

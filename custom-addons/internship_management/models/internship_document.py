@@ -85,6 +85,12 @@ class InternshipDocument(models.Model):
         help="Supervisor responsible for reviewing this document"
     )
 
+    meeting_id = fields.Many2one(
+        'internship.meeting',
+        string='Related Meeting',
+        help="Meeting this document is related to"
+    )
+
     uploaded_by = fields.Many2one(
         'res.users',
         string='Uploaded By',

@@ -51,6 +51,8 @@ class InternshipStage(models.Model):
         ('professional_internship', 'Professional Internship')
     ], string='Internship Type', required=True, tracking=True)
 
+
+
     # ===============================
     # RELATIONSHIP FIELDS
     # ===============================
@@ -69,6 +71,12 @@ class InternshipStage(models.Model):
         tracking=True,
         ondelete='restrict',
         help="Academic or professional supervisor"
+    )
+    
+    area_id = fields.Many2one(
+        'internship.area',
+        string='Area of Expertise',
+        help="Area of expertise for this internship"
     )
 
     company_id = fields.Many2one(
@@ -155,7 +163,7 @@ class InternshipStage(models.Model):
             if total_tasks > 0:
                 completed_tasks = len(stage.task_ids.filtered(lambda t: t.state == 'completed'))
                 progress_value = (completed_tasks / total_tasks) * 100.0
-                else:
+            else:
                 # Fallback: time-based calculation
                 if stage.start_date and stage.end_date and stage.end_date >= stage.start_date:
                     total_duration = (stage.end_date - stage.start_date).days + 1
@@ -165,9 +173,9 @@ class InternshipStage(models.Model):
                             elapsed_days = 0
                         elif today >= stage.end_date:
                             elapsed_days = total_duration
-            else:
+                        else:
                             elapsed_days = (today - stage.start_date).days
-                        progress_value = (elapsed_days / total_duration) * 100.0
+                            progress_value = (elapsed_days / total_duration) * 100.0
 
             # Ensure progress is within 0-100 range
             stage.completion_percentage = max(0.0, min(100.0, round(progress_value, 2)))

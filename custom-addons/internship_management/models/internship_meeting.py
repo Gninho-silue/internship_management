@@ -96,7 +96,7 @@ class InternshipMeeting(models.Model):
     participant_ids = fields.Many2many(
         'res.users',
         string='Participants',
-        tracking=True,
+        #tracking=True,
         help="Users who should attend this meeting"
     )
 

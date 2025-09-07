@@ -33,7 +33,6 @@ class InternshipSkill(models.Model):
     name = fields.Char(
         string='Skill Name',
         required=True,
-        tracking=True,
         size=100,
         help="Name of the skill (e.g., Python, Communication, English)"
     )
@@ -54,7 +53,7 @@ class InternshipSkill(models.Model):
         ('language', 'Languages'),
         ('certification', 'Certifications'),
         ('other', 'Other')
-    ], string='Category', required=True, tracking=True,
+    ], string='Category', required=True,
        help="Category this skill belongs to")
 
     subcategory = fields.Char(
@@ -231,7 +230,6 @@ class InternshipArea(models.Model):
     name = fields.Char(
         string='Area Name',
         required=True,
-        tracking=True,
         size=100,
         help="Name of the expertise area (e.g., Software Development, Marketing)"
     )
@@ -263,6 +261,7 @@ class InternshipArea(models.Model):
     level = fields.Integer(
         string='Level',
         compute='_compute_level',
+        recursive=True,
         store=True,
         help="Hierarchy level (0 for root areas)"
     )
@@ -466,7 +465,6 @@ class InternshipTodo(models.Model):
     assigned_to = fields.Many2one(
         'res.users',
         string='Assigned To',
-        tracking=True,
         help="User responsible for completing this task"
     )
 
