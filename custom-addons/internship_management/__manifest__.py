@@ -44,7 +44,6 @@ Developed as a professional-grade application following Odoo best practices.
         'portal',
         'hr',
         'calendar',
-        'document',
     ],
 
     # Data files
