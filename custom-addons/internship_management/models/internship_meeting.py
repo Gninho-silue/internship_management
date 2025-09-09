@@ -356,9 +356,6 @@ class InternshipMeeting(models.Model):
     # CRUD METHODS
     # ===============================
 
-    # File: models/internship_meeting.py
-    # Replace the create method with this improved version
-
     @api.model_create_multi
     def create(self, vals_list):
         """Override create method with logging and validation."""
@@ -524,57 +521,82 @@ class InternshipMeeting(models.Model):
     # ===============================
 
     def _send_meeting_invitation_email(self):
-        """Send meeting invitation email to participants."""
+        """Send meeting invitation email to participants using proper Odoo methods."""
         for meeting in self:
             if meeting.participant_ids and not meeting.email_sent:
-                subject = f"Meeting Invitation: {meeting.name}"
-                body = self._get_email_template('invitation', meeting)
+                try:
+                    # Use message_post instead of direct mail.mail creation
+                    meeting.message_post(
+                        body=meeting._get_email_template('invitation', meeting),
+                        subject=f"Meeting Invitation: {meeting.name}",
+                        partner_ids=meeting.participant_ids.mapped('partner_id').ids,
+                        email_layout_xmlid='mail.mail_notification_layout_with_responsible_signature',
+                        subtype_xmlid='mail.mt_comment',
+                        message_type='email',
+                    )
 
-                for participant in meeting.participant_ids:
-                    if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+                    meeting.email_sent = True
+                    _logger.info(f"Meeting invitation sent for: {meeting.name}")
 
-                meeting.email_sent = True
+                except Exception as e:
+                    _logger.error(f"Failed to send meeting invitation for {meeting.name}: {str(e)}")
+                    # Fallback: use sudo() for mail creation
+                    meeting._send_email_with_sudo('invitation')
 
     def _send_meeting_confirmation_email(self):
-        """Send meeting confirmation email."""
+        """Send meeting confirmation email using proper methods."""
         for meeting in self:
             if meeting.participant_ids:
-                subject = f"Meeting Confirmed: {meeting.name}"
-                body = self._get_email_template('confirmation', meeting)
+                try:
+                    meeting.message_post(
+                        body=meeting._get_email_template('confirmation', meeting),
+                        subject=f"Meeting Confirmed: {meeting.name}",
+                        partner_ids=meeting.participant_ids.mapped('partner_id').ids,
+                        email_layout_xmlid='mail.mail_notification_layout_with_responsible_signature',
+                        subtype_xmlid='mail.mt_comment',
+                        message_type='email',
+                    )
+                except Exception as e:
+                    _logger.error(f"Failed to send meeting confirmation: {str(e)}")
+                    meeting._send_email_with_sudo('confirmation')
+
+    def _send_email_with_sudo(self, template_type):
+        """Fallback method using sudo() for email creation."""
+        for meeting in self:
+            if meeting.participant_ids:
+                subject = f"Meeting {template_type.title()}: {meeting.name}"
+                body = meeting._get_email_template(template_type, meeting)
 
                 for participant in meeting.participant_ids:
                     if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+                        try:
+                            # Use sudo() for mail creation as fallback
+                            self.env['mail.mail'].sudo().create({
+                                'subject': subject,
+                                'body_html': body,
+                                'email_from': meeting.organizer_id.email or self.env.user.email,
+                                'email_to': participant.email,
+                                'auto_delete': True,
+                            }).send()
+
+                            _logger.info(f"Email sent via sudo to {participant.email}")
+
+                        except Exception as e:
+                            _logger.error(f"Failed to send email to {participant.email}: {str(e)}")
 
     def _send_meeting_reminder_email(self):
         """Send meeting reminder email."""
         for meeting in self:
-            if meeting.participant_ids:
-                subject = f"Meeting Reminder: {meeting.name} - {meeting.date.strftime('%d/%m/%Y at %H:%M')}"
-                body = self._get_email_template('reminder', meeting)
-
-                for participant in meeting.participant_ids:
-                    if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+            try:
+                meeting.message_post(
+                    body=meeting._get_email_template('reminder', meeting),
+                    subject=f"Meeting Reminder: {meeting.name} - {meeting.date.strftime('%d/%m/%Y at %H:%M') if meeting.date else 'TBD'}",
+                    partner_ids=meeting.participant_ids.mapped('partner_id').ids,
+                    subtype_xmlid='mail.mt_comment',
+                )
+            except Exception as e:
+                _logger.error(f"Failed to send reminder: {str(e)}")
+                meeting._send_email_with_sudo('reminder')
 
     def _send_meeting_start_notification(self):
         """Send meeting start notification."""
@@ -585,13 +607,19 @@ class InternshipMeeting(models.Model):
 
                 for participant in meeting.participant_ids:
                     if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+                        try:
+                            # Use sudo() for mail creation
+                            self.env['mail.mail'].sudo().create({
+                                'subject': subject,
+                                'body_html': body,
+                                'email_from': meeting.organizer_id.email or self.env.user.email,
+                                'email_to': participant.email,
+                                'auto_delete': True,
+                            }).send()
+
+                            _logger.info(f"Meeting start notification sent to {participant.email}")
+                        except Exception as e:
+                            _logger.error(f"Failed to send start notification to {participant.email}: {str(e)}")
 
     def _send_meeting_summary_email(self):
         """Send meeting summary email."""
@@ -602,30 +630,19 @@ class InternshipMeeting(models.Model):
 
                 for participant in meeting.participant_ids:
                     if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+                        try:
+                            # Use sudo() for mail creation
+                            self.env['mail.mail'].sudo().create({
+                                'subject': subject,
+                                'body_html': body,
+                                'email_from': meeting.organizer_id.email or self.env.user.email,
+                                'email_to': participant.email,
+                                'auto_delete': True,
+                            }).send()
 
-    def _send_meeting_cancellation_email(self):
-        """Send meeting cancellation email."""
-        for meeting in self:
-            if meeting.participant_ids:
-                subject = f"Meeting Cancelled: {meeting.name}"
-                body = self._get_email_template('cancellation', meeting)
-
-                for participant in meeting.participant_ids:
-                    if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+                            _logger.info(f"Meeting summary sent to {participant.email}")
+                        except Exception as e:
+                            _logger.error(f"Failed to send summary to {participant.email}: {str(e)}")
 
     def _send_meeting_postponement_email(self):
         """Send meeting postponement email."""
@@ -636,13 +653,34 @@ class InternshipMeeting(models.Model):
 
                 for participant in meeting.participant_ids:
                     if participant.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': meeting.organizer_id.email or self.env.user.email,
-                            'email_to': participant.email,
-                            'auto_delete': True,
-                        }).send()
+                        try:
+                            # Use sudo() for mail creation
+                            self.env['mail.mail'].sudo().create({
+                                'subject': subject,
+                                'body_html': body,
+                                'email_from': meeting.organizer_id.email or self.env.user.email,
+                                'email_to': participant.email,
+                                'auto_delete': True,
+                            }).send()
+
+                            _logger.info(f"Meeting postponement sent to {participant.email}")
+                        except Exception as e:
+                            _logger.error(f"Failed to send postponement to {participant.email}: {str(e)}")
+
+
+    def _send_meeting_cancellation_email(self):
+        """Send meeting cancellation email."""
+        for meeting in self:
+            try:
+                meeting.message_post(
+                    body=meeting._get_email_template('cancellation', meeting),
+                    subject=f"Meeting Cancelled: {meeting.name}",
+                    partner_ids=meeting.participant_ids.mapped('partner_id').ids,
+                    subtype_xmlid='mail.mt_comment',
+                )
+            except Exception as e:
+                _logger.error(f"Failed to send cancellation: {str(e)}")
+                meeting._send_email_with_sudo('cancellation')
 
     def _get_email_template(self, template_type, meeting):
         """Generate email template based on type."""
