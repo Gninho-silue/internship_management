@@ -239,7 +239,7 @@ class InternshipMessage(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create method with logging and validation."""
+        """Enhanced create method with proper message handling."""
         _logger.info(f"Creating {len(vals_list)} message record(s)")
 
         for vals in vals_list:
@@ -253,14 +253,20 @@ class InternshipMessage(models.Model):
                 body_text = vals['body'].replace('<p>', '').replace('</p>', '')
                 vals['subject'] = body_text[:50] + '...' if len(body_text) > 50 else body_text
 
+            # Ensure recipients are properly set
+            if not vals.get('recipient_ids'):
+                _logger.warning("Creating message without recipients!")
+
         messages = super().create(vals_list)
 
         for message in messages:
             _logger.info(f"Created message: {message.subject}")
+            _logger.info(f"Recipients: {[r.name for r in message.recipient_ids]}")
 
             # Send email notifications if message is sent
             if message.state == 'sent':
                 message._send_email_notifications()
+                message._create_notifications()
 
         return messages
 
@@ -282,10 +288,22 @@ class InternshipMessage(models.Model):
     # ===============================
 
     def action_send(self):
-        """Send the message."""
-        self.write({'state': 'sent'})
-        self._send_email_notifications()
-        self._create_notifications()
+        """Enhanced send method with better notification handling."""
+        for message in self:
+            # Validate before sending
+            if not message.recipient_ids:
+                raise ValidationError(_("Cannot send message without recipients."))
+
+            # Update state
+            message.write({'state': 'sent'})
+
+            # Create notifications first
+            message._create_notifications()
+
+            # Then send emails
+            message._send_email_notifications()
+
+            _logger.info(f"Message '{message.subject}' sent to {len(message.recipient_ids)} recipients")
 
     def action_mark_as_read(self):
         """Mark message as read by current user."""
@@ -336,40 +354,50 @@ class InternshipMessage(models.Model):
     # NOTIFICATION METHODS
     # ===============================
     def _send_email_notifications(self):
-        """Send email notifications to recipients using Odoo's messaging system."""
+        """Enhanced email notification method using proper Odoo practices."""
         for message in self:
             if message.recipient_ids:
-                subject = f"[Internship Management] {message.subject}"
-                body = self._get_email_template(message)
+                try:
+                    # Use message_post for proper email handling
+                    message.message_post(
+                        body=message._get_email_template(message),
+                        subject=f"[Internship Management] {message.subject}",
+                        partner_ids=message.recipient_ids.mapped('partner_id').ids,
+                        email_layout_xmlid='mail.mail_notification_layout_with_responsible_signature',
+                        subtype_xmlid='mail.mt_comment',
+                        message_type='email',
+                    )
 
-                for recipient in message.recipient_ids:
-                    if recipient.email:
-                        try:
-                            # Use Odoo's built-in messaging system instead of direct mail.mail creation
-                            self.env['mail.mail'].sudo().create({
-                                'subject': subject,
-                                'body_html': body,
-                                'email_to': recipient.email,
-                                'email_from': self.env.user.email or 'noreply@internship.com',
-                                'auto_delete': True,
-                            }).send()
-                            
-                            _logger.info(f"Email notification sent to {recipient.email}")
-                        except Exception as e:
-                            _logger.error(f"Failed to send email to {recipient.email}: {str(e)}")      
-                            continue
-                    else:
-                        _logger.warning(f"Recipient {recipient.name} has no email address")
-                        continue
-            else:
-                _logger.warning("No recipients found for message")
-        
+                    _logger.info(f"Email notifications sent for message: {message.subject}")
+
+                except Exception as e:
+                    _logger.error(f"Failed to send email notifications via message_post: {str(e)}")
+
+                    # Fallback to sudo method
+                    for recipient in message.recipient_ids:
+                        if recipient.email:
+                            try:
+                                self.env['mail.mail'].sudo().create({
+                                    'subject': f"[Internship Management] {message.subject}",
+                                    'body_html': message._get_email_template(message),
+                                    'email_to': recipient.email,
+                                    'email_from': self.env.user.email or 'noreply@internship.com',
+                                    'auto_delete': True,
+                                }).send()
+
+                                _logger.info(f"Fallback email sent to {recipient.email}")
+
+                            except Exception as e2:
+                                _logger.error(f"Failed to send fallback email to {recipient.email}: {str(e2)}")
 
     def _create_notifications(self):
-        """Create in-app notifications for recipients."""
+        """Enhanced notification creation with better tracking."""
         for message in self:
+            _logger.info(f"Creating notifications for message: {message.subject}")
+
+            notification_vals = []
             for recipient in message.recipient_ids:
-                self.env['internship.notification'].create({
+                notification_vals.append({
                     'title': f'New Message: {message.subject}',
                     'message': f'You have received a new message from {message.sender_id.name}.',
                     'user_id': recipient.id,
@@ -377,7 +405,12 @@ class InternshipMessage(models.Model):
                     'stage_id': message.stage_id.id if message.stage_id else None,
                     'document_id': message.document_id.id if message.document_id else None,
                     'meeting_id': message.meeting_id.id if message.meeting_id else None,
+                    'related_message_id': message.id,  # Add reference to the message
                 })
+
+            if notification_vals:
+                notifications = self.env['internship.notification'].create(notification_vals)
+                _logger.info(f"Created {len(notifications)} notifications for message {message.id}")
 
     def _get_email_template(self, message):
         """Generate email template for the message."""
@@ -406,10 +439,11 @@ class InternshipMessage(models.Model):
     # ===============================
 
     def name_get(self):
-        """Custom name display: Subject (Status)."""
+        """Enhanced name display with sender info."""
         result = []
         for message in self:
-            name = message.subject
+            # Show sender name and subject for better identification
+            name = f"{message.sender_id.name}: {message.subject}"
             if message.state:
                 state_name = dict(message._fields['state'].selection).get(message.state)
                 name = f"{name} ({state_name})"
