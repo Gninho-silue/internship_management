@@ -405,7 +405,7 @@ class InternshipMessage(models.Model):
                     'stage_id': message.stage_id.id if message.stage_id else None,
                     'document_id': message.document_id.id if message.document_id else None,
                     'meeting_id': message.meeting_id.id if message.meeting_id else None,
-                    'related_message_id': message.id,  # Add reference to the message
+                    'message_id': message.id,  # Add reference to the message
                 })
 
             if notification_vals:

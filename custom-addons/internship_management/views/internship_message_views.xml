@@ -128,7 +128,7 @@
 
                     <!-- Filters -->
                     <filter string="My Messages" name="my_messages"
-                            domain="[('sender_id', '=', uid)]"/>
+                            domain="['|', ('sender_id', '=', uid), ('recipient_ids', 'in', uid)]"/>
                     <filter string="Received Messages" name="received_messages"
                             domain="[('recipient_ids', 'in', uid)]"/>
                     <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
@@ -260,6 +260,22 @@
                 </p>
                 <p>
                     Communicate with other users in the internship management system.
+                </p>
+            </field>
+        </record>
+        <!-- Action for sent messages -->
+        <record id="action_internship_message_sent" model="ir.actions.act_window">
+            <field name="name">Sent Messages</field>
+            <field name="res_model">internship.message</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('sender_id', '=', uid)]</field>
+            <field name="context">{'search_default_sent_messages': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No messages sent yet!
+                </p>
+                <p>
+                    Messages you have sent will appear here.
                 </p>
             </field>
         </record>

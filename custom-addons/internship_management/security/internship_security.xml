@@ -58,7 +58,17 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-
+                <!-- Rule: Students - Supervisors see their assigned students -->
+        <record id="internship_student_rule_supervisor" model="ir.rule">
+            <field name="name">Students: Supervisor sees assigned students</field>
+            <field name="model_id" ref="model_internship_student"/>
+            <field name="domain_force">[('internship_ids.supervisor_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
         <!-- Rule: Internships - Students see only their internships -->
         <record id="internship_stage_rule_student" model="ir.rule">
             <field name="name">Internships: Student sees own internships</field>
@@ -136,11 +146,11 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- Rule: Messages - Users see messages they send or receive -->
+                <!-- Rule: Messages - Users see messages they send or receive -->
         <record id="internship_message_rule_user" model="ir.rule">
             <field name="name">Messages: User sees sent/received messages</field>
             <field name="model_id" ref="model_internship_message"/>
-            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', [user.id])]</field>
+            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -152,7 +162,7 @@
         <record id="internship_message_rule_supervisor" model="ir.rule">
             <field name="name">Messages: Supervisor sees sent/received messages</field>
             <field name="model_id" ref="model_internship_message"/>
-            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', [user.id])]</field>
+            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>

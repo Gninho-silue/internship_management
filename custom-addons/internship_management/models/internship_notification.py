@@ -383,13 +383,23 @@ class InternshipNotification(models.Model):
                 subject = f"[Internship Management] {notification.title}"
                 body = self._get_email_template(notification)
 
-                self.env['mail.mail'].create({
-                    'subject': subject,
-                    'body_html': body,
-                    'email_from': notification.sender_id.email or self.env.user.email,
-                    'email_to': notification.user_id.email,
-                    'auto_delete': True,
-                }).send()
+                try:
+                    # Use sudo() for mail creation
+                    self.env['mail.mail'].sudo().create({
+                        'subject': subject,
+                        'body_html': body,
+                        'email_from': notification.sender_id.email or self.env.user.email,
+                        'email_to': notification.user_id.email,
+                        'auto_delete': True,
+                    }).send()
+                    
+                    _logger.info(f"Email notification sent to {notification.user_id.email}")
+                except Exception as e:
+                    _logger.error(f"Failed to send email notification to {notification.user_id.email}: {str(e)}")
+            else:
+                _logger.warning(f"Recipient {notification.user_id.name} has no email address")
+       
+
 
     def _get_email_template(self, notification):
         """Generate email template for the notification."""

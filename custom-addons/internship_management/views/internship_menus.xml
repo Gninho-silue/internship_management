@@ -119,6 +119,19 @@
                   parent="menu_internship_communication"
                   action="action_internship_message_list"
                   sequence="20"/>
+                  
+        <!-- Sent Messages -->
+        <menuitem id="menu_internship_message_sent"
+                  name="Sent Messages"
+                  parent="menu_internship_message"
+                  action="action_internship_message_sent"
+                  sequence="20"/>          
+        <!-- Received Messages -->
+        <menuitem id="menu_internship_message_received"
+                  name="Received Messages"
+                  parent="menu_internship_message"
+                  action="action_internship_message_received"
+                  sequence="30"/>          
 
         <!-- My Notifications -->
         <menuitem id="menu_internship_notification"
