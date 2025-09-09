@@ -96,7 +96,6 @@ class InternshipMeeting(models.Model):
     participant_ids = fields.Many2many(
         'res.users',
         string='Participants',
-        #tracking=True,
         help="Users who should attend this meeting"
     )
 
@@ -357,32 +356,63 @@ class InternshipMeeting(models.Model):
     # CRUD METHODS
     # ===============================
 
+    # File: models/internship_meeting.py
+    # Replace the create method with this improved version
+
     @api.model_create_multi
     def create(self, vals_list):
         """Override create method with logging and validation."""
         _logger.info(f"Creating {len(vals_list)} meeting record(s)")
 
         for vals in vals_list:
-            # Auto-add main participants if not specified
-            if not vals.get('participant_ids') and vals.get('stage_id'):
+            participants = []
+
+            # Auto-add organizer as participant (FIX FOR ISSUE 1)
+            organizer_id = vals.get('organizer_id', self.env.user.id)
+            if organizer_id:
+                participants.append(organizer_id)
+
+            # Auto-add main participants if not specified and stage exists
+            if vals.get('stage_id'):
                 stage = self.env['internship.stage'].browse(vals['stage_id'])
-                participants = []
+
+                # Add student if exists and not already in participants
                 if stage.student_id and stage.student_id.user_id:
-                    participants.append(stage.student_id.user_id.id)
+                    if stage.student_id.user_id.id not in participants:
+                        participants.append(stage.student_id.user_id.id)
+
+                # Add supervisor if exists and not already in participants
                 if stage.supervisor_id and stage.supervisor_id.user_id:
-                    participants.append(stage.supervisor_id.user_id.id)
-                if participants:
-                    vals['participant_ids'] = [(6, 0, participants)]
+                    if stage.supervisor_id.user_id.id not in participants:
+                        participants.append(stage.supervisor_id.user_id.id)
+
+            # Add any existing participants from vals
+            if vals.get('participant_ids'):
+                for participant_command in vals['participant_ids']:
+                    if participant_command[0] == 6:  # Command (6, 0, ids)
+                        existing_participants = participant_command[2]
+                        for pid in existing_participants:
+                            if pid not in participants:
+                                participants.append(pid)
+                    elif participant_command[0] == 4:  # Command (4, id)
+                        if participant_command[1] not in participants:
+                            participants.append(participant_command[1])
+
+            # Set the final participant list
+            if participants:
+                vals['participant_ids'] = [(6, 0, participants)]
 
         meetings = super().create(vals_list)
 
         for meeting in meetings:
-            _logger.info(f"Created meeting: {meeting.name} for {meeting.stage_id.title}")
+            _logger.info(
+                f"Created meeting: {meeting.name} for {meeting.stage_id.title if meeting.stage_id else 'No Stage'}")
+            _logger.info(f"Participants: {[p.name for p in meeting.participant_ids]}")
 
             # Create attendee records
             meeting._create_attendee_records()
 
-            # Send invitation emails
+            # Send invitation emails (will be fixed in Fix 2)
             meeting._send_meeting_invitation_email()
 
         return meetings
@@ -710,7 +740,7 @@ class InternshipMeeting(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by name, type, or participants."""
         args = args or []
         domain = []
@@ -722,7 +752,7 @@ class InternshipMeeting(models.Model):
                       ('participant_ids.name', operator, name),
                       ('agenda', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
 
     def get_meeting_statistics(self):
         """Return statistical data for this meeting."""

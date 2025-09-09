@@ -226,8 +226,8 @@
                             <page string="Related Objects" name="relations">
                                 <group>
                                     <group string="Internship Relations">
-                                        <field name="stage_id"/>
-                                        <field name="document_id"/>
+                                    <field name="stage_id"/>
+                                    <field name="document_id"/>
                                     </group>
                                 </group>
                             </page>

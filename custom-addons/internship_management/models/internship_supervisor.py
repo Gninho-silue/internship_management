@@ -282,7 +282,7 @@ class InternshipSupervisor(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by name, email, department, or position."""
         args = args or []
         domain = []
@@ -294,8 +294,7 @@ class InternshipSupervisor(models.Model):
                       ('department', operator, name),
                       ('position', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
-
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
     @api.model
     def get_available_supervisors(self, expertise_area=None):
         """Get list of available supervisors, optionally filtered by expertise area."""

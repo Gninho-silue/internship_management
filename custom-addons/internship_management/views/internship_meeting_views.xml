@@ -24,10 +24,10 @@
                     <field name="name"/>
                     <field name="stage_id"/>
                     <field name="meeting_type" widget="badge"/>
+                    <field name="meeting_type_modality" widget="badge"/>
                     <field name="date"/>
                     <field name="duration"/>
                     <field name="organizer_id"/>
-                    <field name="meeting_type" widget="radio"/>
                     <field name="state" widget="badge"/>
 
                     <!-- Actions -->
@@ -56,10 +56,10 @@
                     <field name="name"/>
                     <field name="stage_id"/>
                     <field name="meeting_type"/>
+                    <field name="meeting_type_modality"/>
                     <field name="date"/>
                     <field name="duration"/>
                     <field name="organizer_id"/>
-                    <field name="meeting_type"/>
                     <field name="state"/>
                     <field name="is_today"/>
                     <field name="is_past"/>
@@ -74,13 +74,13 @@
                                             <field name="name"/>
                                         </strong>
                                         <div class="o_kanban_record_subtitle">
-                                            <span class="badge badge-pill" t-attf-style="background-color: #{record.type.raw_value == 'kickoff' ? '#28a745' : record.meeting_type.raw_value == 'follow_up' ? '#17a2b8' : record.type.raw_value == 'defense' ? '#dc3545' : record.type.raw_value == 'evaluation' ? '#ffc107' : '#6c757d'};">
+                                            <span class="badge badge-pill" t-attf-style="background-color: #{record.meeting_type.raw_value == 'kickoff' ? '#28a745' : record.meeting_type.raw_value == 'follow_up' ? '#17a2b8' : record.meeting_type.raw_value == 'defense' ? '#dc3545' : record.meeting_type.raw_value == 'evaluation' ? '#ffc107' : '#6c757d'};">
                                                 <field name="meeting_type"/>
                                             </span>
-                                            <span class="badge badge-secondary" t-if="record.meeting_type.raw_value == 'virtual'">
+                                            <span class="badge badge-secondary" t-if="record.meeting_type_modality.raw_value == 'virtual'">
                                                 <i class="fa fa-video-camera"/> Virtual
                                             </span>
-                                            <span class="badge badge-secondary" t-if="record.meeting_type.raw_value == 'physical'">
+                                            <span class="badge badge-secondary" t-if="record.meeting_type_modality.raw_value == 'physical'">
                                                 <i class="fa fa-building"/> Physical
                                             </span>
                                         </div>
@@ -178,16 +178,17 @@
                     <filter string="Defense Meetings" name="defense" domain="[('meeting_type', '=', 'defense')]"/>
                     <filter string="Evaluation Meetings" name="evaluation" domain="[('meeting_type', '=', 'evaluation')]"/>
 
-                    <!-- Meeting Type Filters -->
+                    <!-- Meeting Modality Filters -->
                     <separator/>
-                    <filter string="Virtual Meetings" name="virtual" domain="[('meeting_type', '=', 'virtual')]"/>
-                    <filter string="Physical Meetings" name="physical" domain="[('meeting_type', '=', 'physical')]"/>
+                    <filter string="Virtual Meetings" name="virtual" domain="[('meeting_type_modality', '=', 'virtual')]"/>
+                    <filter string="Physical Meetings" name="physical" domain="[('meeting_type_modality', '=', 'physical')]"/>
 
                     <!-- Date Filters -->
                     <separator/>
                     <filter string="Today" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
                     <filter string="This Week" name="this_week" domain="[('date', '>=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
                     <filter string="This Month" name="this_month" domain="[('date', '>=', context_today().strftime('%Y-%m-01'))]"/>
+                    
                     <!-- Group By -->
                     <group expand="0" string="Group By">
                         <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
@@ -240,7 +241,6 @@
                         <group>
                             <group string="Basic Information">
                                 <field name="stage_id" options="{'no_create': True}"/>
-                                <field name="meeting_type"/>
                                 <field name="organizer_id" readonly="1"/>
                                 <field name="meeting_type" widget="radio" options="{'horizontal': True}"/>
                             </group>
@@ -250,6 +250,12 @@
                                 <field name="end_date" readonly="1"/>
                                 <field name="location"/>
                             </group>
+                        </group>
+
+                        <!-- Meeting Modality -->
+                        <group string="Meeting Details">
+                            <field name="meeting_type_modality" widget="radio" options="{'horizontal': True}"/>
+                            <field name="meeting_url" invisible="meeting_type_modality != 'virtual'"/>
                         </group>
 
                         <!-- Participants -->
@@ -308,6 +314,12 @@
                             <page string="Next Actions" name="actions">
                                 <field name="next_actions" nolabel="1"
                                        placeholder="List the follow-up actions..."
+                                       class="oe_form_field_html"/>
+                            </page>
+
+                            <page string="Decisions" name="decisions">
+                                <field name="decisions" nolabel="1"
+                                       placeholder="Record key decisions made..."
                                        class="oe_form_field_html"/>
                             </page>
 

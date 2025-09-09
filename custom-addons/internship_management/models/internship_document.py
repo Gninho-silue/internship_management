@@ -453,7 +453,7 @@ class InternshipDocument(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by name, type, or keywords."""
         args = args or []
         domain = []
@@ -465,7 +465,7 @@ class InternshipDocument(models.Model):
                       ('keywords', operator, name),
                       ('description', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
 
     def get_document_statistics(self):
         """Return statistical data for this document."""

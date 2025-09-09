@@ -175,7 +175,7 @@ class InternshipStage(models.Model):
                             elapsed_days = total_duration
                         else:
                             elapsed_days = (today - stage.start_date).days
-                            progress_value = (elapsed_days / total_duration) * 100.0
+                        progress_value = (elapsed_days / total_duration) * 100.0
 
             # Ensure progress is within 0-100 range
             stage.completion_percentage = max(0.0, min(100.0, round(progress_value, 2)))
@@ -448,7 +448,7 @@ class InternshipStage(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by reference, title, or student name."""
         args = args or []
         domain = []
@@ -460,4 +460,4 @@ class InternshipStage(models.Model):
                       ('student_id.full_name', operator, name),
                       ('project_description', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)

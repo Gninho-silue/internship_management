@@ -654,7 +654,7 @@ class InternshipTodo(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by name or description."""
         args = args or []
         domain = []
@@ -664,7 +664,7 @@ class InternshipTodo(models.Model):
                       ('name', operator, name),
                       ('description', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
 
     def get_task_statistics(self):
         """Return statistical data for this task."""

@@ -347,8 +347,9 @@ class InternshipStudent(models.Model):
             result.append((student.id, name))
         return result
 
+ 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by name, email, or student ID."""
         args = args or []
         domain = []
@@ -359,4 +360,4 @@ class InternshipStudent(models.Model):
                       ('email', operator, name),
                       ('student_id_number', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)

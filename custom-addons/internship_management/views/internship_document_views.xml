@@ -9,8 +9,8 @@
         <!-- Document Tree View -->
         <record id="view_internship_document_tree" model="ir.ui.view">
             <field name="name">internship.document.tree</field>
-            <field name="model">internship.document</field>
-            <field name="arch" type="xml">
+        <field name="model">internship.document</field>
+        <field name="arch" type="xml">
                 <tree string="Documents"
                       decoration-info="state=='draft'"
                       decoration-warning="state=='submitted'"
@@ -57,31 +57,31 @@
                             title="Archive" class="btn-link text-secondary"
                             invisible="state not in ['approved','rejected']" aria-label="Archive"/>
                 </tree>
-            </field>
-        </record>
+        </field>
+    </record>
 
         <!-- Document Kanban View -->
-        <record id="view_internship_document_kanban" model="ir.ui.view">
-            <field name="name">internship.document.kanban</field>
-            <field name="model">internship.document</field>
-            <field name="arch" type="xml">
+    <record id="view_internship_document_kanban" model="ir.ui.view">
+        <field name="name">internship.document.kanban</field>
+        <field name="model">internship.document</field>
+        <field name="arch" type="xml">
                 <kanban default_group_by="state" class="o_kanban_small_column">
-                    <field name="name"/>
-                    <field name="document_type"/>
+                <field name="name"/>
+                <field name="document_type"/>
                     <field name="stage_id"/>
                     <field name="student_id"/>
                     <field name="supervisor_id"/>
-                    <field name="state"/>
-                    <field name="date_upload"/>
+                <field name="state"/>
+                <field name="date_upload"/>
                     <field name="review_deadline"/>
                     <field name="file_size"/>
-                    <field name="version"/>
+                <field name="version"/>
                     <field name="file" invisible="1"/>
                     <field name="review_required"/>
-                    <field name="reviewed_by"/>
+                <field name="reviewed_by"/>
                     <field name="review_date"/>
-                    <templates>
-                        <t t-name="kanban-box">
+                <templates>
+                    <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_card oe_kanban_global_click #{record.state.raw_value == 'approved' ? 'oe_kanban_color_success' : record.state.raw_value == 'rejected' ? 'oe_kanban_color_danger' : record.state.raw_value == 'under_review' ? 'oe_kanban_color_info' : ''}">
                                 <div class="o_kanban_record_top">
                                     <div class="o_kanban_record_headings">
@@ -143,25 +143,25 @@
                                         <button name="action_download" type="object" icon="fa-download"
                                                 title="Download" class="btn-link btn-sm"
                                                 invisible="not file"/>
-                                    </div>
                                 </div>
                             </div>
-                        </t>
-                    </templates>
-                </kanban>
-            </field>
-        </record>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
 
         <!-- Document Search View -->
         <record id="view_internship_document_search" model="ir.ui.view">
             <field name="name">internship.document.search</field>
-            <field name="model">internship.document</field>
-            <field name="arch" type="xml">
+       <field name="model">internship.document</field>
+       <field name="arch" type="xml">
                 <search string="Search Documents">
                     <!-- Search Fields -->
                     <field name="name"/>
                     <field name="document_type"/>
-                    <field name="stage_id"/>
+               <field name="stage_id"/>
                     <field name="student_id"/>
                     <field name="supervisor_id"/>
                     <field name="keywords"/>
@@ -190,16 +190,16 @@
                         <filter string="Uploader" name="group_uploader" context="{'group_by': 'uploaded_by'}"/>
                     </group>
                 </search>
-            </field>
-        </record>
+       </field>
+   </record>
 
         <!-- Document Form View -->
-        <record id="view_internship_document_form" model="ir.ui.view">
-            <field name="name">internship.document.form</field>
-            <field name="model">internship.document</field>
-            <field name="arch" type="xml">
-                <form string="Document Management" class="o_document_form">
-                    <header>
+   <record id="view_internship_document_form" model="ir.ui.view">
+       <field name="name">internship.document.form</field>
+       <field name="model">internship.document</field>
+       <field name="arch" type="xml">
+           <form string="Document Management" class="o_document_form">
+               <header>
                         <!-- Action Buttons -->
                         <button name="action_submit_for_review" string="Submit for Review" type="object"
                                 class="oe_highlight" icon="fa-paper-plane"
@@ -220,27 +220,34 @@
                                 class="btn-secondary" icon="fa-archive"
                                 invisible="state not in ['approved','rejected']"/>
 
-                        <!-- Statusbar -->
-                        <field name="state" widget="statusbar"
-                               statusbar_visible="draft,submitted,under_review,approved"/>
-                    </header>
+                   <!-- Statusbar -->
+                   <field name="state" widget="statusbar"
+                          statusbar_visible="draft,submitted,under_review,approved"/>
+               </header>
 
-                    <sheet>
-                        <!-- Title and Type -->
-                        <div class="oe_title">
-                            <h1>
-                                <field name="name" placeholder="Document Title" required="1"/>
-                            </h1>
-                            <h3 class="text-muted">
-                                <field name="document_type" readonly="1"/>
-                            </h3>
-                        </div>
+               <sheet>
+                         <style>
+                            .o_field_text textarea {
+                                min-height: 150px !important;
+                                resize: vertical !important;
+                            }
+                            .o_field_html .note-editable {
+                                min-height: 150px !important;
+                            }
+                        </style>
+                        <!-- Title -->
+                   <div class="oe_title">
+                       <h1>
+                           <field name="name" placeholder="Document Title" required="1"/>
+                       </h1>
+                   </div>
 
                         <!-- Main Information -->
                         <group>
                             <group string="Document Information">
                                 <field name="stage_id" required="1"/>
-                                <field name="document_type" invisible="1"/>
+                                <field name="document_type" required="1"
+                                       invisible="state != 'draft'"/>
                                 <field name="version"/>
                                 <field name="file" filename="filename" required="1"/>
                                 <field name="filename" invisible="1"/>
@@ -255,23 +262,23 @@
                         </group>
 
                         <!-- Alerts and Notifications -->
-                        <div class="alert alert-info" role="alert"
+                   <div class="alert alert-info" role="alert"
                              invisible="state != 'draft'">
-                            <i class="fa fa-info-circle"/>
-                            This document is in draft mode. Upload a file and submit for review.
-                        </div>
+                       <i class="fa fa-info-circle"/>
+                       This document is in draft mode. Upload a file and submit for review.
+                   </div>
 
-                        <div class="alert alert-warning" role="alert"
+                   <div class="alert alert-warning" role="alert"
                              invisible="state != 'submitted'">
-                            <i class="fa fa-clock-o"/>
-                            This document is awaiting review from your supervisor.
-                        </div>
+                       <i class="fa fa-clock-o"/>
+                       This document is awaiting review from your supervisor.
+                   </div>
 
-                        <div class="alert alert-success" role="alert"
+                   <div class="alert alert-success" role="alert"
                              invisible="state != 'approved'">
-                            <i class="fa fa-check-circle"/>
-                            This document has been approved!
-                        </div>
+                       <i class="fa fa-check-circle"/>
+                       This document has been approved!
+                   </div>
 
                         <div class="alert alert-danger" role="alert"
                              invisible="state != 'rejected'">
@@ -280,52 +287,65 @@
                         </div>
 
                         <!-- Description and Comments -->
-                        <notebook>
+                   <notebook>
                             <page string="Description &amp; Comments" name="description_comments">
-                                <group>
-                                    <group string="Description">
-                                        <field name="description" nolabel="1"
-                                               placeholder="Detailed description of the document content..."/>
-                                    </group>
-                                    <group string="Internal Comments">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label for="description" class="o_form_label">Description</label>
+                                        <field name="description" nolabel="1" widget="html"
+                                               placeholder="Detailed description of the document content..."
+                                               class="o_field_html"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mt16">
+                                    <div class="col-12">
+                                        <label for="comments" class="o_form_label">Internal Comments</label>
                                         <field name="comments" nolabel="1"
-                                               placeholder="Internal notes and comments about the document..."/>
-                                    </group>
-                                </group>
-                                <separator string="Keywords"/>
-                                <field name="keywords" nolabel="1" placeholder="Comma-separated keywords..."/>
-                            </page>
+                                               placeholder="Internal notes and comments about the document..."
+                                               class="o_field_text"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mt16">
+                                    <div class="col-12">
+                                        <label for="keywords" class="o_form_label">Keywords</label>
+                                        <field name="keywords" nolabel="1"
+                                               placeholder="Comma-separated keywords for better searchability..."/>
+                                    </div>
+                                </div>
+                       </page>
 
                             <!-- Review Tab -->
                             <page string="Review Process" name="review"
-                                  invisible="not review_required">
-                                <group>
-                                    <group string="Review Settings">
-                                        <field name="review_required"/>
-                                        <field name="review_deadline"
-                                               required="review_required"/>
-                                    </group>
-                                    <group string="Review Status"
+                              invisible="not review_required">
+                           <group>
+                               <group string="Review Settings">
+                                   <field name="review_required"/>
+                                   <field name="review_deadline"
+                                          required="review_required"/>
+                               </group>
+                               <group string="Review Status"
                                            invisible="state == 'draft'">
-                                        <field name="reviewed_by" readonly="1"
-                                               widget="many2one_avatar_user"/>
-                                        <field name="review_date" readonly="1"/>
-                                    </group>
-                                </group>
+                                   <field name="reviewed_by" readonly="1"
+                                          widget="many2one_avatar_user"/>
+                                   <field name="review_date" readonly="1"/>
+                               </group>
+                           </group>
 
-                                <group string="Review Comments"
-                                       invisible="not review_comments">
-                                    <field name="review_comments" widget="html" nolabel="1" readonly="1"/>
-                                </group>
-                            </page>
+                           <group string="Review Comments"
+                                 invisible="not review_comments">
+                               <field name="review_comments" widget="html" nolabel="1" readonly="1"/>
+                           </group>
+                       </page>
 
                             <!-- Access Control Tab -->
                             <page string="Access Control" name="access_control">
-                                <group>
+                           <group>
                                     <group string="Visibility">
-                                        <field name="is_public"/>
-                                        <field name="access_level"/>
-                                    </group>
+                                   <field name="is_public"/>
+                                   <field name="access_level"/>
+                               </group>
                                 </group>
                             </page>
 
@@ -340,22 +360,22 @@
                                     </group>
                                     <group string="Other">
                                         <field name="active"/>
-                                        <field name="sequence"/>
-                                    </group>
-                                </group>
-                            </page>
-                        </notebook>
-                    </sheet>
+                                   <field name="sequence"/>
+                               </group>
+                           </group>
+                       </page>
+                   </notebook>
+               </sheet>
 
                     <!-- Chatter -->
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids"/>
-                        <field name="activity_ids"/>
-                        <field name="message_ids"/>
-                    </div>
-                </form>
-            </field>
-        </record>
+               <div class="oe_chatter">
+                   <field name="message_follower_ids"/>
+                   <field name="activity_ids"/>
+                   <field name="message_ids"/>
+               </div>
+           </form>
+       </field>
+   </record>
 
         <!-- ================================= -->
         <!-- ACTIONS -->
@@ -363,53 +383,53 @@
 
         <!-- Main action for documents -->
         <record id="action_internship_document_list" model="ir.actions.act_window">
-            <field name="name">Documents</field>
-            <field name="res_model">internship.document</field>
+       <field name="name">Documents</field>
+       <field name="res_model">internship.document</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{'search_default_my_documents': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Upload your first document!
-                </p>
-                <p>
+       <field name="help" type="html">
+           <p class="o_view_nocontent_smiling_face">
+               Upload your first document!
+           </p>
+           <p>
                     Manage all documents related to internships.
-                </p>
-            </field>
-        </record>
+           </p>
+       </field>
+   </record>
 
         <!-- Action for documents to review -->
-        <record id="action_internship_document_review" model="ir.actions.act_window">
-            <field name="name">Documents to Review</field>
-            <field name="res_model">internship.document</field>
-            <field name="view_mode">tree,form</field>
+   <record id="action_internship_document_review" model="ir.actions.act_window">
+       <field name="name">Documents to Review</field>
+       <field name="res_model">internship.document</field>
+       <field name="view_mode">tree,form</field>
             <field name="domain">[('state', 'in', ['submitted', 'under_review']), ('supervisor_id.user_id', '=', uid)]</field>
             <field name="context">{'search_default_to_review': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
+       <field name="help" type="html">
+           <p class="o_view_nocontent_smiling_face">
                     No documents to review!
-                </p>
-                <p>
+           </p>
+           <p>
                     Documents submitted by students for your review will appear here.
-                </p>
-            </field>
-        </record>
+           </p>
+       </field>
+   </record>
 
         <!-- Action for my documents (students) -->
-        <record id="action_internship_document_my" model="ir.actions.act_window">
-            <field name="name">My Documents</field>
-            <field name="res_model">internship.document</field>
+   <record id="action_internship_document_my" model="ir.actions.act_window">
+       <field name="name">My Documents</field>
+       <field name="res_model">internship.document</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('student_id.user_id', '=', uid)]</field>
+       <field name="domain">[('student_id.user_id', '=', uid)]</field>
             <field name="context">{'search_default_my_documents': 1}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
+       <field name="help" type="html">
+           <p class="o_view_nocontent_smiling_face">
                     Upload your documents here!
-                </p>
-                <p>
+           </p>
+           <p>
                     All documents you have uploaded for your internships will be listed here.
-                </p>
-            </field>
-        </record>
+           </p>
+       </field>
+   </record>
 
     </data>
 </odoo>

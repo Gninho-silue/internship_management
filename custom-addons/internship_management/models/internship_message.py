@@ -335,9 +335,8 @@ class InternshipMessage(models.Model):
     # ===============================
     # NOTIFICATION METHODS
     # ===============================
-
     def _send_email_notifications(self):
-        """Send email notifications to recipients."""
+        """Send email notifications to recipients using Odoo's messaging system."""
         for message in self:
             if message.recipient_ids:
                 subject = f"[Internship Management] {message.subject}"
@@ -345,13 +344,26 @@ class InternshipMessage(models.Model):
 
                 for recipient in message.recipient_ids:
                     if recipient.email:
-                        self.env['mail.mail'].create({
-                            'subject': subject,
-                            'body_html': body,
-                            'email_from': message.sender_id.email,
-                            'email_to': recipient.email,
-                            'auto_delete': True,
-                        }).send()
+                        try:
+                            # Use Odoo's built-in messaging system instead of direct mail.mail creation
+                            self.env['mail.mail'].sudo().create({
+                                'subject': subject,
+                                'body_html': body,
+                                'email_to': recipient.email,
+                                'email_from': self.env.user.email or 'noreply@internship.com',
+                                'auto_delete': True,
+                            }).send()
+                            
+                            _logger.info(f"Email notification sent to {recipient.email}")
+                        except Exception as e:
+                            _logger.error(f"Failed to send email to {recipient.email}: {str(e)}")      
+                            continue
+                    else:
+                        _logger.warning(f"Recipient {recipient.name} has no email address")
+                        continue
+            else:
+                _logger.warning("No recipients found for message")
+        
 
     def _create_notifications(self):
         """Create in-app notifications for recipients."""
@@ -405,7 +417,7 @@ class InternshipMessage(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by subject, body, or sender."""
         args = args or []
         domain = []
@@ -417,7 +429,7 @@ class InternshipMessage(models.Model):
                       ('sender_id.name', operator, name),
                       ('recipient_ids.name', operator, name)]
 
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid)
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
 
     def get_message_statistics(self):
         """Return statistical data for this message."""
