@@ -152,11 +152,12 @@
                                         <field name="jury_member_ids" widget="many2many_tags"/>
                                     </group>
                                 </group>
-                                <group string="Evaluation Feedback">
-                                    <field name="evaluation_feedback" nolabel="1"
-                                           placeholder="Detailed evaluation comments..."
-                                           class="oe_form_field_html"/>
-                                </group>
+                                <separator string="Evaluation Feedback"/>
+                                <div class="oe_form_field_html" style="margin: 10px 0;">
+                                    <field name="evaluation_feedback" nolabel="1" widget="html"
+                                           placeholder="Enter detailed evaluation feedback here..."
+                                           style="min-height: 300px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
+                                </div>
                             </page>
 
                             <page name="documents" string="Documents">
