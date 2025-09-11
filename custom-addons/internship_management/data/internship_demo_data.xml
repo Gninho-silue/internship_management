@@ -2,389 +2,621 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- ================================= -->
-        <!-- SKILLS -->
-        <!-- ================================= -->
+        <!-- ============================================= -->
+        <!-- SKILLS AND COMPETENCIES -->
+        <!-- ============================================= -->
 
+        <!-- Technical Skills -->
         <record id="skill_python" model="internship.skill">
             <field name="name">Python Programming</field>
+            <field name="code">PYTHON</field>
             <field name="category">technical</field>
             <field name="level_required">intermediate</field>
-            <field name="description">Python programming language for web development and data science</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">Python programming language including frameworks like Django, Flask, FastAPI
+            </field>
+            <field name="active" eval="True"/>
         </record>
 
         <record id="skill_javascript" model="internship.skill">
             <field name="name">JavaScript Development</field>
+            <field name="code">JS</field>
             <field name="category">technical</field>
             <field name="level_required">intermediate</field>
-            <field name="description">JavaScript for frontend and backend development</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">JavaScript programming including React, Node.js, Vue.js, Angular</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="skill_react" model="internship.skill">
-            <field name="name">React Framework</field>
+        <record id="skill_database" model="internship.skill">
+            <field name="name">Database Management</field>
+            <field name="code">DB</field>
+            <field name="category">technical</field>
+            <field name="level_required">intermediate</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">SQL, PostgreSQL, MySQL, MongoDB, database design and optimization</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="skill_mobile_dev" model="internship.skill">
+            <field name="name">Mobile Development</field>
+            <field name="code">MOBILE</field>
             <field name="category">technical</field>
             <field name="level_required">advanced</field>
-            <field name="description">React framework for user interface development</field>
+            <field name="difficulty_level">4</field>
+            <field name="description">Android, iOS, Flutter, React Native, Swift, Kotlin development</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="skill_sql" model="internship.skill">
-            <field name="name">SQL Database</field>
+        <record id="skill_web_design" model="internship.skill">
+            <field name="name">Web Design &amp; UX</field>
+            <field name="code">WEBUX</field>
             <field name="category">technical</field>
             <field name="level_required">intermediate</field>
-            <field name="description">SQL language for database management and queries</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">UI/UX design, HTML/CSS, responsive design, user experience, Figma</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="skill_communication" model="internship.skill">
-            <field name="name">Communication Skills</field>
+        <record id="skill_project_management" model="internship.skill">
+            <field name="name">Project Management</field>
+            <field name="code">PM</field>
             <field name="category">soft</field>
+            <field name="level_required">intermediate</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">Agile, Scrum, project planning, resource management, team leadership</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="skill_data_analysis" model="internship.skill">
+            <field name="name">Data Analysis &amp; Machine Learning</field>
+            <field name="code">DATA</field>
+            <field name="category">technical</field>
             <field name="level_required">advanced</field>
-            <field name="description">Effective communication with teams and stakeholders</field>
+            <field name="difficulty_level">4</field>
+            <field name="description">Data science, machine learning, statistical analysis, Python pandas, TensorFlow
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="skill_cybersecurity" model="internship.skill">
+            <field name="name">Cybersecurity</field>
+            <field name="code">SECURITY</field>
+            <field name="category">technical</field>
+            <field name="level_required">advanced</field>
+            <field name="difficulty_level">5</field>
+            <field name="description">Network security, penetration testing, security audit, ethical hacking</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="skill_cloud_computing" model="internship.skill">
+            <field name="name">Cloud Computing</field>
+            <field name="code">CLOUD</field>
+            <field name="category">technical</field>
+            <field name="level_required">advanced</field>
+            <field name="difficulty_level">4</field>
+            <field name="description">AWS, Azure, GCP, Docker, Kubernetes, DevOps practices</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Soft Skills -->
+        <record id="skill_communication" model="internship.skill">
+            <field name="name">Communication</field>
+            <field name="code">COMM</field>
+            <field name="category">soft</field>
+            <field name="level_required">beginner</field>
+            <field name="difficulty_level">2</field>
+            <field name="description">Verbal and written communication, presentation skills, public speaking</field>
+            <field name="active" eval="True"/>
         </record>
 
         <record id="skill_teamwork" model="internship.skill">
-            <field name="name">Team Collaboration</field>
+            <field name="name">Teamwork &amp; Collaboration</field>
+            <field name="code">TEAM</field>
             <field name="category">soft</field>
-            <field name="level_required">advanced</field>
-            <field name="description">Ability to work effectively in team environments</field>
+            <field name="level_required">beginner</field>
+            <field name="difficulty_level">2</field>
+            <field name="description">Team collaboration, interpersonal skills, conflict resolution, leadership</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Language Skills -->
+        <record id="skill_french" model="internship.skill">
+            <field name="name">French Language</field>
+            <field name="code">FR</field>
+            <field name="category">language</field>
+            <field name="level_required">intermediate</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">French language proficiency for business communication</field>
+            <field name="active" eval="True"/>
         </record>
 
         <record id="skill_english" model="internship.skill">
-            <field name="name">Professional English</field>
+            <field name="name">English Language</field>
+            <field name="code">EN</field>
             <field name="category">language</field>
             <field name="level_required">intermediate</field>
-            <field name="description">Technical and professional English proficiency</field>
+            <field name="difficulty_level">3</field>
+            <field name="description">English language proficiency for international business</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <!-- ================================= -->
-        <!-- EXPERTISE AREAS -->
-        <!-- ================================= -->
+        <!-- ============================================= -->
+        <!-- LANGUAGES (if this model exists) -->
+        <!-- ============================================= -->
 
-        <record id="area_it" model="internship.area">
-            <field name="name">Information Technology</field>
-            <field name="description">General IT and software development domain</field>
+        <record id="language_french" model="internship.language">
+            <field name="name">French</field>
+            <field name="code">fr</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="area_web_dev" model="internship.area">
-            <field name="name">Web Development</field>
-            <field name="parent_id" ref="area_it"/>
-            <field name="description">Frontend and backend web application development</field>
+        <record id="language_english" model="internship.language">
+            <field name="name">English</field>
+            <field name="code">en</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="area_mobile_dev" model="internship.area">
+        <record id="language_arabic" model="internship.language">
+            <field name="name">Arabic</field>
+            <field name="code">ar</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="language_spanish" model="internship.language">
+            <field name="name">Spanish</field>
+            <field name="code">es</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- ============================================= -->
+        <!-- AREAS OF EXPERTISE -->
+        <!-- ============================================= -->
+
+        <!-- Main Areas -->
+        <record id="area_software_development" model="internship.area">
+            <field name="name">Software Development</field>
+            <field name="code">SWDEV</field>
+            <field name="description">Complete software development lifecycle, programming, and system design</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Master programming fundamentals and best practices&lt;/li&gt;&lt;li&gt;Learn
+                software architecture and design patterns&lt;/li&gt;&lt;li&gt;Develop experience with modern development
+                frameworks&lt;/li&gt;&lt;li&gt;Understand testing, debugging, and code optimization&lt;/li&gt;&lt;li&gt;Practice
+                version control and collaborative development&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="career_paths">&lt;ul&gt;&lt;li&gt;Full-Stack Developer&lt;/li&gt;&lt;li&gt;Backend Developer&lt;/li&gt;&lt;li&gt;Frontend
+                Developer&lt;/li&gt;&lt;li&gt;Software Architect&lt;/li&gt;&lt;li&gt;DevOps Engineer&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_python'), ref('skill_javascript'), ref('skill_database')])]"/>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="area_web_development" model="internship.area">
+            <field name="name">Web Develoexpected_deliverablespment</field>
+            <field name="code">WEBDEV</field>
+            <field name="parent_id" ref="area_software_development"/>
+            <field name="description">Modern web application development using latest technologies</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Master frontend technologies (HTML, CSS, JavaScript)&lt;/li&gt;&lt;li&gt;Learn
+                modern frameworks (React, Vue.js, Angular)&lt;/li&gt;&lt;li&gt;Develop backend APIs and services&lt;/li&gt;&lt;li&gt;Understand
+                responsive and mobile-first design&lt;/li&gt;&lt;li&gt;Practice web performance optimization&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_javascript'), ref('skill_web_design'), ref('skill_database')])]"/>
+            <field name="sequence">11</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="area_mobile_development" model="internship.area">
             <field name="name">Mobile Development</field>
-            <field name="parent_id" ref="area_it"/>
+            <field name="code">MOBDEV</field>
+            <field name="parent_id" ref="area_software_development"/>
             <field name="description">iOS and Android mobile application development</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Master native mobile development (Swift, Kotlin)&lt;/li&gt;&lt;li&gt;Learn
+                cross-platform frameworks (Flutter, React Native)&lt;/li&gt;&lt;li&gt;Understand mobile UI/UX principles&lt;/li&gt;&lt;li&gt;Practice
+                mobile app deployment and distribution&lt;/li&gt;&lt;li&gt;Integrate mobile apps with backend services&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_mobile_dev'), ref('skill_web_design'), ref('skill_database')])]"/>
+            <field name="sequence">12</field>
+            <field name="active" eval="True"/>
         </record>
 
         <record id="area_data_science" model="internship.area">
-            <field name="name">Data Science and Analytics</field>
-            <field name="parent_id" ref="area_it"/>
-            <field name="description">Data analysis, machine learning and artificial intelligence</field>
+            <field name="name">Data Science &amp; Analytics</field>
+            <field name="code">DATA</field>
+            <field name="description">Data analysis, machine learning, and business intelligence</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Master data analysis tools and techniques&lt;/li&gt;&lt;li&gt;Learn
+                machine learning algorithms and applications&lt;/li&gt;&lt;li&gt;Develop data visualization and
+                reporting skills&lt;/li&gt;&lt;li&gt;Understand statistical analysis and hypothesis testing&lt;/li&gt;&lt;li&gt;Practice
+                with big data technologies&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="career_paths">&lt;ul&gt;&lt;li&gt;Data Scientist&lt;/li&gt;&lt;li&gt;Data Analyst&lt;/li&gt;&lt;li&gt;Machine
+                Learning Engineer&lt;/li&gt;&lt;li&gt;Business Intelligence Analyst&lt;/li&gt;&lt;li&gt;Research
+                Scientist&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_data_analysis'), ref('skill_python'), ref('skill_database')])]"/>
+            <field name="sequence">20</field>
+            <field name="active" eval="True"/>
         </record>
 
         <record id="area_cybersecurity" model="internship.area">
             <field name="name">Cybersecurity</field>
-            <field name="parent_id" ref="area_it"/>
-            <field name="description">Information security and data protection</field>
+            <field name="code">CYBER</field>
+            <field name="description">Information security, network security, and risk management</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Understand security threats and vulnerabilities&lt;/li&gt;&lt;li&gt;Learn
+                penetration testing and security auditing&lt;/li&gt;&lt;li&gt;Master network security and firewall
+                configuration&lt;/li&gt;&lt;li&gt;Develop incident response and recovery skills&lt;/li&gt;&lt;li&gt;Practice
+                security policy and compliance&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="career_paths">&lt;ul&gt;&lt;li&gt;Security Analyst&lt;/li&gt;&lt;li&gt;Penetration Tester&lt;/li&gt;&lt;li&gt;Security
+                Consultant&lt;/li&gt;&lt;li&gt;Chief Information Security Officer&lt;/li&gt;&lt;li&gt;Forensic Analyst&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_cybersecurity'), ref('skill_python'), ref('skill_database')])]"/>
+            <field name="sequence">30</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="area_marketing" model="internship.area">
-            <field name="name">Digital Marketing</field>
-            <field name="description">Online marketing and digital communication strategies</field>
+        <record id="area_project_management" model="internship.area">
+            <field name="name">IT Project Management</field>
+            <field name="code">ITPM</field>
+            <field name="description">Technology project management, agile methodologies, and team leadership</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Master agile and scrum methodologies&lt;/li&gt;&lt;li&gt;Learn
+                project planning and resource management&lt;/li&gt;&lt;li&gt;Develop leadership and team management
+                skills&lt;/li&gt;&lt;li&gt;Understand risk management and quality assurance&lt;/li&gt;&lt;li&gt;Practice
+                stakeholder communication and reporting&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="career_paths">&lt;ul&gt;&lt;li&gt;Project Manager&lt;/li&gt;&lt;li&gt;Scrum Master&lt;/li&gt;&lt;li&gt;Product
+                Owner&lt;/li&gt;&lt;li&gt;Program Manager&lt;/li&gt;&lt;li&gt;IT Director&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_project_management'), ref('skill_communication'), ref('skill_teamwork')])]"/>
+            <field name="sequence">40</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="area_design" model="internship.area">
-            <field name="name">UX/UI Design</field>
-            <field name="description">User experience and interface design</field>
+        <record id="area_devops" model="internship.area">
+            <field name="name">DevOps &amp; Cloud Infrastructure</field>
+            <field name="code">DEVOPS</field>
+            <field name="description">Cloud computing, automation, and infrastructure management</field>
+            <field name="objectives">&lt;ul&gt;&lt;li&gt;Master cloud platforms (AWS, Azure, GCP)&lt;/li&gt;&lt;li&gt;Learn
+                infrastructure as code and automation&lt;/li&gt;&lt;li&gt;Understand CI/CD pipelines and deployment
+                strategies&lt;/li&gt;&lt;li&gt;Practice monitoring and performance optimization&lt;/li&gt;&lt;li&gt;Develop
+                containerization and orchestration skills&lt;/li&gt;&lt;/ul&gt;
+            </field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_python'), ref('skill_cloud_computing'), ref('skill_project_management')])]"/>
+            <field name="sequence">50</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <!-- ================================= -->
+        <!-- ============================================= -->
         <!-- SUPERVISORS -->
-        <!-- ================================= -->
+        <!-- ============================================= -->
 
-        <record id="supervisor_tech_lead" model="internship.supervisor">
-            <field name="name">Mohammed Idrissi</field>
-            <field name="email">m.idrissi@techpal.ma</field>
-            <field name="phone">+212 661 123456</field>
-            <field name="company_id" ref="base.main_company"/>
+        <record id="supervisor_youssef_kadiri" model="internship.supervisor">
+            <field name="name">Youssef KADIRI</field>
+            <field name="email">youssef.kadiri@techpal.ma</field>
+            <field name="phone">+212 661 123 001</field>
             <field name="department">Development Team</field>
-            <field name="position">Senior Lead Developer</field>
+            <field name="position">Senior Full-Stack Developer</field>
+            <field name="expertise_area_ids"
+                   eval="[(6, 0, [ref('area_software_development'), ref('area_web_development')])]"/>
             <field name="max_students">3</field>
             <field name="availability">available</field>
-            <field name="expertise" eval="[(6, 0, [ref('area_web_dev'), ref('area_mobile_dev')])]"/>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="supervisor_data_analyst" model="internship.supervisor">
-            <field name="name">Aicha Bennani</field>
-            <field name="email">a.bennani@techpal.ma</field>
-            <field name="phone">+212 661 789012</field>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="department">Data Science Team</field>
-            <field name="position">Senior Data Scientist</field>
+        <record id="supervisor_fatima_benjelloun" model="internship.supervisor">
+            <field name="name">Fatima BENJELLOUN</field>
+            <field name="email">fatima.benjelloun@techpal.ma</field>
+            <field name="phone">+212 661 123 002</field>
+            <field name="department">Data &amp; Analytics Team</field>
+            <field name="position">Data Science Lead</field>
+            <field name="expertise_area_ids" eval="[(6, 0, [ref('area_data_science'), ref('area_cybersecurity')])]"/>
             <field name="max_students">2</field>
             <field name="availability">available</field>
-            <field name="expertise" eval="[(6, 0, [ref('area_data_science')])]"/>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="supervisor_marketing_manager" model="internship.supervisor">
-            <field name="name">Salma Tahiri</field>
-            <field name="email">s.tahiri@techpal.ma</field>
-            <field name="phone">+212 662 345678</field>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="department">Marketing Team</field>
-            <field name="position">Marketing Manager</field>
+        <record id="supervisor_omar_tazi" model="internship.supervisor">
+            <field name="name">Omar TAZI</field>
+            <field name="email">omar.tazi@techpal.ma</field>
+            <field name="phone">+212 661 123 003</field>
+            <field name="department">Mobile Development</field>
+            <field name="position">Mobile Development Manager</field>
+            <field name="expertise_area_ids"
+                   eval="[(6, 0, [ref('area_mobile_development'), ref('area_project_management')])]"/>
+            <field name="max_students">4</field>
+            <field name="availability">available</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="supervisor_sara_alami" model="internship.supervisor">
+            <field name="name">Sara ALAMI</field>
+            <field name="email">sara.alami@techpal.ma</field>
+            <field name="phone">+212 661 123 004</field>
+            <field name="department">DevOps &amp; Infrastructure</field>
+            <field name="position">DevOps Engineer</field>
+            <field name="expertise_area_ids" eval="[(6, 0, [ref('area_devops'), ref('area_cybersecurity')])]"/>
             <field name="max_students">2</field>
-            <field name="availability">busy</field>
-            <field name="expertise" eval="[(6, 0, [ref('area_marketing'), ref('area_design')])]"/>
+            <field name="availability">available</field>
+            <field name="active" eval="True"/>
         </record>
 
-        <!-- ================================= -->
-        <!-- STUDENTS -->
-        <!-- ================================= -->
+        <record id="supervisor_ahmed_benali" model="internship.supervisor">
+            <field name="name">Ahmed BENALI</field>
+            <field name="email">ahmed.benali@techpal.ma</field>
+            <field name="phone">+212 661 123 005</field>
+            <field name="department">Management</field>
+            <field name="position">Technical Project Manager</field>
+            <field name="expertise_area_ids"
+                   eval="[(6, 0, [ref('area_project_management'), ref('area_software_development')])]"/>
+            <field name="max_students">5</field>
+            <field name="availability">available</field>
+            <field name="active" eval="True"/>
+        </record>
 
-        <record id="student_ahmed_rami" model="internship.student">
-            <field name="full_name">Ahmed Rami</field>
-            <field name="email">ahmed.rami@student.ma</field>
-            <field name="phone">+212 671 123456</field>
-            <field name="birth_date">2001-03-15</field>
-            <field name="linkedin_profile">https://linkedin.com/in/ahmed-rami</field>
-            <field name="institution">National School of Computer Science</field>
+        <!-- ============================================= -->
+        <!-- STUDENTS (Using only existing fields) -->
+        <!-- ============================================= -->
+
+        <record id="student_amine_cherif" model="internship.student">
+            <field name="full_name">Amine CHERIF</field>
+            <field name="email">amine.cherif@etu.uir.ac.ma</field>
+            <field name="phone">+212 661 234 001</field>
+            <field name="birth_date">2000-03-15</field>
+            <field name="institution">International University of Rabat (UIR)</field>
             <field name="education_level">master_2</field>
             <field name="field_of_study">Software Engineering</field>
-            <field name="student_id_number">ENS2021001</field>
+            <field name="student_id_number">UIR2024001</field>
             <field name="expected_graduation_date">2024-06-30</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('skill_python'), ref('skill_javascript'), ref('skill_sql'), ref('skill_english')])]"/>
-            <field name="interest_area_ids" eval="[(6, 0, [ref('area_web_dev'), ref('area_data_science')])]"/>
+            <field name="linkedin_profile">https://linkedin.com/in/amine-cherif</field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_python'), ref('skill_javascript'), ref('skill_database')])]"/>
+            <field name="interest_area_ids"
+                   eval="[(6, 0, [ref('area_web_development'), ref('area_software_development')])]"/>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="student_sara_benchekroun" model="internship.student">
-            <field name="full_name">Sara Benchekroun</field>
-            <field name="email">sara.benchekroun@student.ma</field>
-            <field name="phone">+212 672 234567</field>
-            <field name="birth_date">2000-11-22</field>
-            <field name="linkedin_profile">https://linkedin.com/in/sara-benchekroun</field>
-            <field name="institution">National Institute of Statistics and Applied Economics</field>
+        <record id="student_salma_idrissi" model="internship.student">
+            <field name="full_name">Salma IDRISSI</field>
+            <field name="email">salma.idrissi@etu.uir.ac.ma</field>
+            <field name="phone">+212 661 234 002</field>
+            <field name="birth_date">1999-11-22</field>
+            <field name="institution">International University of Rabat (UIR)</field>
             <field name="education_level">master_2</field>
-            <field name="field_of_study">Data Science and Business Intelligence</field>
-            <field name="student_id_number">INSEA2021002</field>
-            <field name="expected_graduation_date">2024-07-15</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('skill_python'), ref('skill_sql'), ref('skill_communication'), ref('skill_english')])]"/>
-            <field name="interest_area_ids" eval="[(6, 0, [ref('area_data_science'), ref('area_marketing')])]"/>
+            <field name="field_of_study">Data Science</field>
+            <field name="student_id_number">UIR2024002</field>
+            <field name="expected_graduation_date">2024-06-30</field>
+            <field name="linkedin_profile">https://linkedin.com/in/salma-idrissi</field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_python'), ref('skill_data_analysis'), ref('skill_database')])]"/>
+            <field name="interest_area_ids" eval="[(6, 0, [ref('area_data_science')])]"/>
+            <field name="active" eval="True"/>
         </record>
 
-        <record id="student_omar_alaoui" model="internship.student">
-            <field name="full_name">Omar Alaoui</field>
-            <field name="email">omar.alaoui@student.ma</field>
-            <field name="phone">+212 673 345678</field>
-            <field name="birth_date">2002-01-10</field>
-            <field name="linkedin_profile">https://linkedin.com/in/omar-alaoui</field>
-            <field name="institution">Mohammadia School of Engineers</field>
+        <record id="student_karim_bennani" model="internship.student">
+            <field name="full_name">Karim BENNANI</field>
+            <field name="email">karim.bennani@etu.uir.ac.ma</field>
+            <field name="phone">+212 661 234 003</field>
+            <field name="birth_date">2000-07-08</field>
+            <field name="institution">International University of Rabat (UIR)</field>
             <field name="education_level">master_1</field>
-            <field name="field_of_study">Computer Science Engineering</field>
-            <field name="student_id_number">EMI2020003</field>
+            <field name="field_of_study">Computer Science</field>
+            <field name="student_id_number">UIR2024003</field>
             <field name="expected_graduation_date">2025-06-30</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('skill_react'), ref('skill_javascript'), ref('skill_teamwork'), ref('skill_english')])]"/>
-            <field name="interest_area_ids" eval="[(6, 0, [ref('area_web_dev'), ref('area_mobile_dev')])]"/>
+            <field name="linkedin_profile">https://linkedin.com/in/karim-bennani</field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_javascript'), ref('skill_cloud_computing'), ref('skill_database')])]"/>
+            <field name="interest_area_ids" eval="[(6, 0, [ref('area_devops'), ref('area_software_development')])]"/>
+            <field name="active" eval="True"/>
         </record>
 
-        <!-- ================================= -->
-        <!-- INTERNSHIPS - FIXED: using 'title' instead of 'name' -->
-        <!-- ================================= -->
+        <record id="student_yasmine_lamrani" model="internship.student">
+            <field name="full_name">Yasmine LAMRANI</field>
+            <field name="email">yasmine.lamrani@etu.uir.ac.ma</field>
+            <field name="phone">+212 661 234 004</field>
+            <field name="birth_date">2000-01-14</field>
+            <field name="institution">International University of Rabat (UIR)</field>
+            <field name="education_level">master_2</field>
+            <field name="field_of_study">Cybersecurity</field>
+            <field name="student_id_number">UIR2024004</field>
+            <field name="expected_graduation_date">2024-06-30</field>
+            <field name="linkedin_profile">https://linkedin.com/in/yasmine-lamrani</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('skill_cybersecurity'), ref('skill_python')])]"/>
+            <field name="interest_area_ids" eval="[(6, 0, [ref('area_cybersecurity')])]"/>
+            <field name="active" eval="True"/>
+        </record>
 
-        <record id="stage_web_dev_ahmed" model="internship.stage">
+        <record id="student_mehdi_ziane" model="internship.student">
+            <field name="full_name">Mehdi ZIANE</field>
+            <field name="email">mehdi.ziane@etu.uir.ac.ma</field>
+            <field name="phone">+212 661 234 005</field>
+            <field name="birth_date">1999-09-30</field>
+            <field name="institution">International University of Rabat (UIR)</field>
+            <field name="education_level">master_2</field>
+            <field name="field_of_study">Mobile Development</field>
+            <field name="student_id_number">UIR2024005</field>
+            <field name="expected_graduation_date">2024-06-30</field>
+            <field name="linkedin_profile">https://linkedin.com/in/mehdi-ziane</field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_mobile_dev'), ref('skill_javascript'), ref('skill_web_design')])]"/>
+            <field name="interest_area_ids" eval="[(6, 0, [ref('area_mobile_development')])]"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="student_laila_ouali" model="internship.student">
+            <field name="full_name">Laila OUALI</field>
+            <field name="email">laila.ouali@etu.uir.ac.ma</field>
+            <field name="phone">+212 661 234 006</field>
+            <field name="birth_date">2000-05-18</field>
+            <field name="institution">International University of Rabat (UIR)</field>
+            <field name="education_level">bachelor_3</field>
+            <field name="field_of_study">Information Systems</field>
+            <field name="student_id_number">UIR2024006</field>
+            <field name="expected_graduation_date">2024-06-30</field>
+            <field name="linkedin_profile">https://linkedin.com/in/laila-ouali</field>
+            <field name="skill_ids"
+                   eval="[(6, 0, [ref('skill_javascript'), ref('skill_web_design'), ref('skill_project_management')])]"/>
+            <field name="interest_area_ids"
+                   eval="[(6, 0, [ref('area_web_development'), ref('area_project_management')])]"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- ============================================= -->
+        <!-- INTERNSHIP STAGES -->
+        <!-- ============================================= -->
+
+        <record id="stage_ecommerce_platform" model="internship.stage">
             <field name="title">E-commerce Platform Development</field>
-            <field name="reference_number">STG-2024-001</field>
-            <field name="internship_type">final_project</field>
-            <field name="student_id" ref="student_ahmed_rami"/>
-            <field name="supervisor_id" ref="supervisor_tech_lead"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="start_date">2024-02-01</field>
-            <field name="end_date">2024-07-31</field>
-            <field name="project_description">
-                &lt;p&gt;&lt;strong&gt;Project Overview:&lt;/strong&gt;&lt;/p&gt;
-                &lt;p&gt;Development of a complete e-commerce platform using modern web technologies including Python/Django for backend API and React for frontend interface.&lt;/p&gt;
-                &lt;ul&gt;
-                    &lt;li&gt;Product catalog management&lt;/li&gt;
-                    &lt;li&gt;Order processing system&lt;/li&gt;
-                    &lt;li&gt;Payment gateway integration&lt;/li&gt;
-                    &lt;li&gt;Administrative dashboard&lt;/li&gt;
-                    &lt;li&gt;Customer relationship management&lt;/li&gt;
-                &lt;/ul&gt;
-            </field>
-            <field name="learning_objectives">
-                &lt;ul&gt;
-                    &lt;li&gt;Master full-stack web development&lt;/li&gt;
-                    &lt;li&gt;Learn software development best practices&lt;/li&gt;
-                    &lt;li&gt;Project management from conception to deployment&lt;/li&gt;
-                    &lt;li&gt;Agile team collaboration&lt;/li&gt;
-                    &lt;li&gt;API design and implementation&lt;/li&gt;
-                &lt;/ul&gt;
-            </field>
-            <field name="state">in_progress</field>
-        </record>
-
-        <record id="stage_data_analysis_sara" model="internship.stage">
-            <field name="title">Sales Predictive Analytics System</field>
-            <field name="reference_number">STG-2024-002</field>
-            <field name="internship_type">final_project</field>
-            <field name="student_id" ref="student_sara_benchekroun"/>
-            <field name="supervisor_id" ref="supervisor_data_analyst"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="start_date">2024-03-01</field>
-            <field name="end_date">2024-08-31</field>
-            <field name="project_description">
-                &lt;p&gt;&lt;strong&gt;Project Overview:&lt;/strong&gt;&lt;/p&gt;
-                &lt;p&gt;Development of a comprehensive predictive model to analyze sales trends and forecast future performance using machine learning techniques.&lt;/p&gt;
-                &lt;ul&gt;
-                    &lt;li&gt;Data collection and preprocessing&lt;/li&gt;
-                    &lt;li&gt;Statistical analysis and modeling&lt;/li&gt;
-                    &lt;li&gt;Machine learning implementation&lt;/li&gt;
-                    &lt;li&gt;Interactive data visualizations&lt;/li&gt;
-                &lt;/ul&gt;
-            </field>
-            <field name="learning_objectives">
-                &lt;ul&gt;
-                    &lt;li&gt;Master Machine Learning algorithms&lt;/li&gt;
-                    &lt;li&gt;Real-world data analysis experience&lt;/li&gt;
-                    &lt;li&gt;Advanced data visualization techniques&lt;/li&gt;
-                    &lt;li&gt;Business intelligence reporting&lt;/li&gt;
-                &lt;/ul&gt;
-            </field>
-            <field name="state">completed</field>
-            <field name="final_grade">16.5</field>
-        </record>
-
-        <record id="stage_mobile_app_omar" model="internship.stage">
-            <field name="title">Cross-Platform Task Management Mobile App</field>
-            <field name="reference_number">STG-2024-003</field>
+            <field name="reference_number">TechPal-2024-001</field>
             <field name="internship_type">summer_internship</field>
-            <field name="student_id" ref="student_omar_alaoui"/>
-            <field name="supervisor_id" ref="supervisor_tech_lead"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="start_date">2024-06-15</field>
-            <field name="end_date">2024-08-15</field>
-            <field name="project_description">
-                &lt;p&gt;&lt;strong&gt;Project Overview:&lt;/strong&gt;&lt;/p&gt;
-                &lt;p&gt;Development of a cross-platform mobile application using React Native for team task and project management.&lt;/p&gt;
-                &lt;ul&gt;
-                    &lt;li&gt;Task creation and assignment&lt;/li&gt;
-                    &lt;li&gt;Project timeline management&lt;/li&gt;
-                    &lt;li&gt;Team collaboration features&lt;/li&gt;
-                    &lt;li&gt;Real-time notifications&lt;/li&gt;
-                &lt;/ul&gt;
-            </field>
-            <field name="learning_objectives">
-                &lt;ul&gt;
-                    &lt;li&gt;React Native mobile development&lt;/li&gt;
-                    &lt;li&gt;Mobile user experience design&lt;/li&gt;
-                    &lt;li&gt;REST API integration&lt;/li&gt;
-                    &lt;li&gt;App store deployment process&lt;/li&gt;
-                &lt;/ul&gt;
-            </field>
-            <field name="state">approved</field>
-        </record>
-
-        <!-- ================================= -->
-        <!-- TASKS -->
-        <!-- ================================= -->
-
-        <record id="todo_setup_dev_env" model="internship.todo">
-            <field name="name">Development Environment Setup</field>
-            <field name="sequence">1</field>
-            <field name="stage_id" ref="stage_web_dev_ahmed"/>
-            <field name="deadline">2024-02-05</field>
-            <field name="state">done</field>
-            <field name="assigned_to" ref="base.user_admin"/>
-            <field name="description">Install and configure Python, Django, Node.js, React and development IDE</field>
-            <field name="priority">2</field>
-        </record>
-
-        <record id="todo_database_design" model="internship.todo">
-            <field name="name">Database Architecture Design</field>
-            <field name="sequence">2</field>
-            <field name="stage_id" ref="stage_web_dev_ahmed"/>
-            <field name="deadline">2024-02-15</field>
-            <field name="state">done</field>
-            <field name="assigned_to" ref="base.user_admin"/>
-            <field name="description">Design database schema for users, products, orders, and payment entities</field>
-            <field name="priority">3</field>
-        </record>
-
-        <record id="todo_api_development" model="internship.todo">
-            <field name="name">REST API Development</field>
-            <field name="sequence">3</field>
-            <field name="stage_id" ref="stage_web_dev_ahmed"/>
-            <field name="deadline">2024-04-01</field>
+            <field name="area_id" ref="area_web_development"/>
+            <field name="student_id" ref="student_amine_cherif"/>
+            <field name="supervisor_id" ref="supervisor_youssef_kadiri"/>
+            <field name="start_date">2024-07-01</field>
+            <field name="end_date">2024-09-30</field>
             <field name="state">in_progress</field>
-            <field name="assigned_to" ref="base.user_admin"/>
-            <field name="description">Implement RESTful API endpoints for product CRUD operations and order management</field>
-            <field name="priority">3</field>
+            <field name="project_description">Development of a modern e-commerce platform using React.js and Node.js. The
+                project includes product management, shopping cart, online payment integration, and a comprehensive
+                admin dashboard. Focus on scalability and performance optimization.
+            </field>
+            <field name="learning_objectives">- Master modern full-stack development
+                - Implement RESTful API architecture
+                - Integrate payment gateway systems
+                - Optimize performance and user experience
+                - Deploy to cloud infrastructure
+                - Practice agile development methodologies
+            </field>
+
+            <field name="completion_percentage">45</field>
         </record>
 
-        <record id="todo_frontend_development" model="internship.todo">
-            <field name="name">React Frontend Implementation</field>
-            <field name="sequence">4</field>
-            <field name="stage_id" ref="stage_web_dev_ahmed"/>
-            <field name="deadline">2024-05-15</field>
-            <field name="state">todo</field>
-            <field name="assigned_to" ref="base.user_admin"/>
-            <field name="description">Develop responsive user interface and admin dashboard using React</field>
-            <field name="priority">2</field>
+        <record id="stage_mobile_task_app" model="internship.stage">
+            <field name="title">Cross-Platform Task Management App</field>
+            <field name="reference_number">TechPal-2024-002</field>
+            <field name="internship_type">professional_internship</field>
+            <field name="area_id" ref="area_mobile_development"/>
+            <field name="student_id" ref="student_mehdi_ziane"/>
+            <field name="supervisor_id" ref="supervisor_omar_tazi"/>
+            <field name="start_date">2024-08-01</field>
+            <field name="end_date">2024-10-31</field>
+            <field name="state">in_progress</field>
+            <field name="project_description">Creation of a cross-platform task management mobile application using Flutter. The
+                app will support offline synchronization, team collaboration features, push notifications, and real-time
+                updates across devices.
+            </field>
+            <field name="learning_objectives">- Develop cross-platform mobile application
+                - Implement offline synchronization capabilities
+                - Integrate push notification system
+                - Create intuitive user experience design
+                - Publish to app stores (iOS and Android)
+                - Implement team collaboration features
+            </field>
+
+            <field name="completion_percentage">30</field>
         </record>
 
-        <!-- ================================= -->
-        <!-- DOCUMENTS -->
-        <!-- ================================= -->
-
-        <record id="doc_convention_ahmed" model="internship.document">
-            <field name="name">Internship Agreement - Ahmed Rami</field>
-            <field name="type">convention</field>
-            <field name="stage_id" ref="stage_web_dev_ahmed"/>
-            <field name="student_id" ref="student_ahmed_rami"/>
-            <field name="filename">internship_agreement_ahmed_rami.pdf</field>
-            <field name="state">validated</field>
-            <field name="comments">Agreement signed by all parties - effective from February 1st, 2024</field>
+        <record id="stage_data_analytics_dashboard" model="internship.stage">
+            <field name="title">Business Intelligence Analytics Dashboard</field>
+            <field name="reference_number">TechPal-2024-003</field>
+            <field name="internship_type">final_project</field>
+            <field name="area_id" ref="area_data_science"/>
+            <field name="student_id" ref="student_salma_idrissi"/>
+            <field name="supervisor_id" ref="supervisor_fatima_benjelloun"/>
+            <field name="start_date">2024-09-01</field>
+            <field name="end_date">2024-12-15</field>
+            <field name="state">approved</field>
+            <field name="project_description">Development of an advanced business intelligence dashboard using Python and
+                machine learning. The project includes real-time data visualization, predictive analytics, automated
+                reporting, and actionable business insights generation.
+            </field>
+            <field name="learning_objectives">- Analyze and visualize complex business data
+                - Develop predictive machine learning models
+                - Create interactive and responsive dashboards
+                - Automate report generation processes
+                - Present actionable business insights
+                - Deploy scalable analytics infrastructure
+            </field>
+            <field name="completion_percentage">0</field>
         </record>
 
-        <record id="doc_rapport_sara" model="internship.document">
-            <field name="name">Final Internship Report - Sara Benchekroun</field>
-            <field name="type">rapport</field>
-            <field name="stage_id" ref="stage_data_analysis_sara"/>
-            <field name="student_id" ref="student_sara_benchekroun"/>
-            <field name="filename">final_report_sara_benchekroun.pdf</field>
-            <field name="state">validated</field>
-            <field name="comments">Excellent comprehensive report with detailed technical analysis and business insights</field>
+        <record id="stage_security_audit_tool" model="internship.stage">
+            <field name="title">Automated Security Audit Platform</field>
+            <field name="reference_number">TechPal-2024-004</field>
+            <field name="internship_type">summer_internship</field>
+            <field name="area_id" ref="area_cybersecurity"/>
+            <field name="student_id" ref="student_yasmine_lamrani"/>
+            <field name="supervisor_id" ref="supervisor_fatima_benjelloun"/>
+            <field name="start_date">2024-06-15</field>
+            <field name="end_date">2024-09-15</field>
+            <field name="state">in_progress</field>
+            <field name="project_description">Creation of an automated security audit platform for web applications. The tool
+                will perform vulnerability scanning, security assessment, compliance checking, and generate
+                comprehensive security reports.
+            </field>
+            <field name="learning_objectives">- Implement automated vulnerability scanning
+                - Develop comprehensive security assessment algorithms
+                - Create detailed security reporting system
+                - Integrate with CI/CD pipelines
+                - Build threat intelligence capabilities
+                - Design security best practices framework
+            </field>
+            <field name="completion_percentage">60</field>
         </record>
 
-        <!-- ================================= -->
-        <!-- MEETINGS -->
-        <!-- ================================= -->
+        <record id="stage_devops_automation" model="internship.stage">
+            <field name="title">Cloud DevOps Automation Platform</field>
+            <field name="reference_number">TechPal-2024-005</field>
+            <field name="internship_type">professional_internship</field>
+            <field name="area_id" ref="area_devops"/>
+            <field name="student_id" ref="student_karim_bennani"/>
+            <field name="supervisor_id" ref="supervisor_sara_alami"/>
+            <field name="start_date">2024-09-01</field>
+            <field name="end_date">2024-12-15</field>
+            <field name="state">submitted</field>
+            <field name="project_description">Design and implementation of a comprehensive cloud-based DevOps platform. The
+                project includes automated deployment pipelines, infrastructure monitoring, container orchestration, and
+                scalable cloud architecture management.
+            </field>
+            <field name="learning_objectives">- Implement automated CI/CD pipeline systems
+                - Develop infrastructure monitoring solutions
+                - Create containerized deployment strategies
+                - Build automated testing frameworks
+                - Design scalable cloud architecture
+                - Optimize performance and resource utilization
+            </field>
+            <field name="completion_percentage">0</field>
+        </record>
 
-        <record id="meeting_kickoff_ahmed" model="internship.meeting">
-            <field name="name">Project Kickoff Meeting - Ahmed Rami</field>
-            <field name="stage_id" ref="stage_web_dev_ahmed"/>
-            <field name="date">2024-02-01 09:00:00</field>
-            <field name="duration">2.0</field>
-            <field name="type">kickoff</field>
-            <field name="organizer_id" ref="base.user_admin"/>
+        <record id="stage_web_portfolio" model="internship.stage">
+            <field name="title">Professional Portfolio Website</field>
+            <field name="reference_number">TechPal-2024-006</field>
+            <field name="internship_type">observation_internship</field>
+            <field name="area_id" ref="area_web_development"/>
+            <field name="student_id" ref="student_laila_ouali"/>
+            <field name="supervisor_id" ref="supervisor_ahmed_benali"/>
+            <field name="start_date">2024-07-15</field>
+            <field name="end_date">2024-08-15</field>
             <field name="state">completed</field>
-            <field name="summary">
-                &lt;p&gt;&lt;strong&gt;Meeting Objectives Achieved:&lt;/strong&gt;&lt;/p&gt;
-                &lt;ul&gt;
-                    &lt;li&gt;Company and development team introduction&lt;/li&gt;
-                    &lt;li&gt;E-commerce project requirements and scope&lt;/li&gt;
-                    &lt;li&gt;Project timeline and milestone planning&lt;/li&gt;
-                    &lt;li&gt;Development environment and tools overview&lt;/li&gt;
-                &lt;/ul&gt;
+            <field name="project_description">Development of a professional portfolio website showcasing web development skills.
+                The project includes responsive design, content management system, SEO optimization, and modern web
+                technologies implementation.
             </field>
-            <field name="next_actions">
-                &lt;ul&gt;
-                    &lt;li&gt;Set up complete development environment&lt;/li&gt;
-                    &lt;li&gt;Review existing system architecture&lt;/li&gt;
-                    &lt;li&gt;Begin database schema modeling&lt;/li&gt;
-                    &lt;li&gt;Schedule weekly progress meetings&lt;/li&gt;
-                &lt;/ul&gt;
+            <field name="learning_objectives">- Create responsive and modern web design
+                - Implement content management capabilities
+                - Optimize for search engines (SEO)
+                - Practice modern web development techniques
+                - Deploy to production environment
+                - Learn project management basics
             </field>
+            <field name="completion_percentage">100</field>
+            <field name="final_grade">16.5</field>
+            <field name="defense_date">2024-08-20 14:00:00</field>
+            <field name="defense_grade">17.0</field>
         </record>
 
     </data>

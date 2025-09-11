@@ -1,158 +1,189 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="defense_report_document">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="stage">
-                <t t-call="internship_management.defense_report_template"/>
+    <data>
+        <!-- Defense Proceedings Report -->
+        <template id="defense_report_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="stage">
+                    <t t-call="internship_management.defense_report_layout"/>
+                </t>
             </t>
-        </t>
-    </template>
+        </template>
 
-    <template id="defense_report_template">
-        <div class="page">
-            <div class="oe_structure"/>
-            
-            <!-- En-tête -->
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12 text-center">
-                        <h1 style="color: #2c3e50; margin-bottom: 20px;">
-                            <strong>PROCÈS-VERBAL DE SOUTENANCE</strong>
-                        </h1>
-                        <h3 style="color: #7f8c8d; margin-bottom: 30px;">
-                            Gestion des Stages - Techpal
-                        </h3>
+        <template id="defense_report_layout">
+            <div class="page" style="font-family: 'Segoe UI', Arial, sans-serif; color: #2c3e50;">
+
+                <!-- Professional Header -->
+                <div style="border-bottom: 3px solid #3498db; padding-bottom: 20px; margin-bottom: 30px;">
+                    <div class="row">
+                        <div class="col-8">
+                            <h1 style="margin: 0; font-weight: 300; font-size: 28px; color: #2c3e50;">
+                                DEFENSE PROCEEDINGS
+                            </h1>
+                            <h2 style="margin: 5px 0 0 0; color: #3498db; font-weight: 400; font-size: 16px;">
+                                Internship Management System - TechPal
+                            </h2>
+                        </div>
+                        <div class="col-4 text-right">
+                            <div style="color: #7f8c8d; font-size: 12px;">
+                                <strong>Document ID:</strong> <span t-esc="data[stage.id]['reference']"/><br/>
+                                <strong>Date:</strong> <span t-esc="data[stage.id]['current_date']"/><br/>
+                                <strong>Company:</strong> TechPal Casablanca
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Informations du stage -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div style="border: 2px solid #3498db; border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
-                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
-                                <i class="fa fa-graduation-cap"></i> Informations du Stage
-                            </h4>
-                            <div class="row">
-                                <div class="col-6">
-                                    <p><strong>Sujet :</strong> <span t-field="stage.name"/></p>
-                                    <p><strong>Stagiaire :</strong> <span t-field="stage.student_id.name"/></p>
-                                    <p><strong>Encadrant :</strong> <span t-field="stage.supervisor_id.name"/></p>
+                <!-- Internship Information -->
+                <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                           border-left: 4px solid #3498db; padding: 20px; margin-bottom: 25px; border-radius: 5px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-graduation-cap" style="color: #3498db; margin-right: 8px;"></i>
+                        Internship Information
+                    </h3>
+                    <div class="row">
+                        <div class="col-6">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e; width: 35%;">Title:</td>
+                                    <td t-esc="data[stage.id]['internship_title']"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Student:</td>
+                                    <td t-esc="data[stage.id]['student_name']"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Student ID:</td>
+                                    <td t-esc="data[stage.id]['student_id']"/>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e; width: 35%;">Supervisor:</td>
+                                    <td t-esc="data[stage.id]['supervisor_name']"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Position:</td>
+                                    <td t-esc="data[stage.id]['supervisor_position']"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Duration:</td>
+                                    <td t-esc="data[stage.id]['duration']"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Defense Details -->
+                <div style="background: #ffffff; border: 1px solid #e9ecef; border-radius: 5px;
+                           padding: 20px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-gavel" style="color: #e74c3c; margin-right: 8px;"></i>
+                        Defense Session Details
+                    </h3>
+                    <table style="width: 100%; font-size: 13px;">
+                        <tr style="height: 35px;">
+                            <td style="font-weight: bold; color: #34495e; width: 25%;">Defense Date:</td>
+                            <td t-esc="data[stage.id]['defense_date']" style="color: #2c3e50;"/>
+                        </tr>
+                        <tr style="height: 35px;">
+                            <td style="font-weight: bold; color: #34495e;">Location:</td>
+                            <td>TechPal Conference Room, Casablanca</td>
+                        </tr>
+                        <tr style="height: 35px;">
+                            <td style="font-weight: bold; color: #34495e;">Duration:</td>
+                            <td>1.5 hours (Presentation + Q&amp;A)</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Evaluation Results -->
+                <div style="background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+                           border-left: 4px solid #27ae60; padding: 20px; margin-bottom: 25px; border-radius: 5px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-star" style="color: #f39c12; margin-right: 8px;"></i>
+                        Evaluation Results
+                    </h3>
+                    <div class="row">
+                        <div class="col-6">
+                            <div style="text-align: center; padding: 15px; background: white; border-radius: 5px; margin-right: 10px;">
+                                <h4 style="color: #3498db; margin: 0; font-size: 16px;">Defense Grade</h4>
+                                <div style="font-size: 24px; font-weight: bold; color: #2c3e50; margin: 10px 0;">
+                                    <span t-esc="data[stage.id]['defense_grade']"/>/20
                                 </div>
-                                <div class="col-6">
-                                    <p><strong>Entreprise :</strong> <span t-field="stage.company_id.name"/></p>
-                                    <p><strong>Date de soutenance :</strong> <span t-field="stage.defense_date" t-options='{"widget": "datetime"}'/></p>
-                                    <p><strong>Salle :</strong> <span t-field="stage.defense_room"/></p>
-                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Jury -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div style="border: 2px solid #e74c3c; border-radius: 10px; padding: 20px; background-color: #fdf2f2;">
-                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
-                                <i class="fa fa-users"></i> Composition du Jury
-                            </h4>
-                            <div t-if="stage.jury_ids">
-                                <ul style="list-style: none; padding: 0;">
-                                    <li t-foreach="stage.jury_ids" t-as="member" style="margin-bottom: 5px;">
-                                        <i class="fa fa-user"></i> <span t-field="member.name"/>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div t-else="">
-                                <p style="color: #7f8c8d; font-style: italic;">Aucun membre du jury assigné</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Présence -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div style="border: 2px solid #27ae60; border-radius: 10px; padding: 20px; background-color: #f0f9f0;">
-                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
-                                <i class="fa fa-check-circle"></i> Présence à la Soutenance
-                            </h4>
-                            <div t-if="stage.defense_attendance">
-                                <ul style="list-style: none; padding: 0;">
-                                    <li t-foreach="stage.defense_attendance" t-as="attendee" style="margin-bottom: 5px;">
-                                        <i class="fa fa-user-check"></i> <span t-field="attendee.name"/>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div t-else="">
-                                <p style="color: #7f8c8d; font-style: italic;">Aucune information de présence</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Procès-verbal -->
-                <div class="row mb-4" t-if="stage.defense_report">
-                    <div class="col-12">
-                        <div style="border: 2px solid #9b59b6; border-radius: 10px; padding: 20px; background-color: #f8f4f8;">
-                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
-                                <i class="fa fa-file-text"></i> Procès-Verbal
-                            </h4>
-                            <div t-field="stage.defense_report" t-options='{"widget": "html"}'/>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notes du jury -->
-                <div class="row mb-4" t-if="stage.defense_notes">
-                    <div class="col-12">
-                        <div style="border: 2px solid #f39c12; border-radius: 10px; padding: 20px; background-color: #fef9f0;">
-                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
-                                <i class="fa fa-comments"></i> Notes du Jury
-                            </h4>
-                            <div t-field="stage.defense_notes" t-options='{"widget": "html"}'/>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Évaluation -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div style="border: 2px solid #34495e; border-radius: 10px; padding: 20px; background-color: #f4f6f8;">
-                            <h4 style="color: #2c3e50; margin-bottom: 15px;">
-                                <i class="fa fa-star"></i> Évaluation
-                            </h4>
-                            <div class="row">
-                                <div class="col-6">
-                                    <p><strong>Note de soutenance :</strong> 
-                                        <span t-if="stage.defense_grade" t-field="stage.defense_grade" t-options='{"widget": "float_time"}'/>
-                                        <span t-else="" style="color: #7f8c8d;">Non notée</span>
-                                    </p>
-                                </div>
-                                <div class="col-6">
-                                    <p><strong>Note finale :</strong> 
-                                        <span t-if="stage.grade" t-field="stage.grade" t-options='{"widget": "float_time"}'/>
-                                        <span t-else="" style="color: #7f8c8d;">Non notée</span>
-                                    </p>
+                        <div class="col-6">
+                            <div style="text-align: center; padding: 15px; background: white; border-radius: 5px; margin-left: 10px;">
+                                <h4 style="color: #27ae60; margin: 0; font-size: 16px;">Final Grade</h4>
+                                <div style="font-size: 24px; font-weight: bold; color: #2c3e50; margin: 10px 0;">
+                                    <span t-esc="data[stage.id]['final_grade']"/>/20
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Signature -->
-                <div class="row mt-5">
-                    <div class="col-12 text-center">
-                        <div style="border-top: 2px solid #bdc3c7; padding-top: 20px; margin-top: 30px;">
-                            <p style="color: #7f8c8d; font-size: 12px;">
-                                Document généré automatiquement le <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>
-                            </p>
-                            <p style="color: #7f8c8d; font-size: 12px;">
-                                Système de Gestion des Stages - Techpal
-                            </p>
+                <!-- Official Validation -->
+                <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;
+                           padding: 20px; margin-bottom: 30px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-certificate" style="color: #8e44ad; margin-right: 8px;"></i>
+                        Official Validation
+                    </h3>
+                    <p style="margin-bottom: 20px; line-height: 1.6; font-size: 14px;">
+                        This document certifies that <strong t-esc="data[stage.id]['student_name']"/>
+                        has successfully presented and defended their internship project titled
+                        "<strong t-esc="data[stage.id]['internship_title']"/>" on
+                        <span t-esc="data[stage.id]['defense_date']"/>.
+                    </p>
+                    <p style="margin-bottom: 30px; line-height: 1.6; font-size: 14px;">
+                        The defense session was conducted in accordance with TechPal's internship evaluation standards
+                        and academic requirements.
+                    </p>
+                </div>
+
+                <!-- Signatures -->
+                <div style="margin-top: 40px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 20px; font-size: 18px;">
+                        <i class="fa fa-pencil" style="color: #34495e; margin-right: 8px;"></i>
+                        Signatures
+                    </h3>
+                    <div class="row">
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 60px;">
+                                <strong>Supervisor</strong><br/>
+                                <span t-esc="data[stage.id]['supervisor_name']"/><br/>
+                                <small style="color: #7f8c8d;">Date &amp; Signature</small>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 60px;">
+                                <strong>Student</strong><br/>
+                                <span t-esc="data[stage.id]['student_name']"/><br/>
+                                <small style="color: #7f8c8d;">Date &amp; Signature</small>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 60px;">
+                                <strong>HR Director</strong><br/>
+                                TechPal Management<br/>
+                                <small style="color: #7f8c8d;">Date &amp; Signature</small>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="margin-top: 40px; border-top: 1px solid #e9ecef; padding-top: 15px;
+                           text-align: center; color: #7f8c8d; font-size: 11px;">
+                    Generated by Internship Management System - TechPal Casablanca<br/>
+                    This document is digitally generated and does not require additional stamps.
                 </div>
             </div>
-        </div>
-    </template>
+        </template>
+    </data>
 </odoo>

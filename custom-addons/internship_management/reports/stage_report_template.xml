@@ -1,290 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
-        <!-- Template pour le rapport de stage -->
-        <template id="stage_report_template">
+        <!-- Comprehensive Stage Report -->
+        <template id="stage_report_document">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="stage">
-                    <t t-call="web.external_layout">
-                        <div class="page">
-                            <div class="oe_structure"/>
-                            
-                            <!-- En-tête -->
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <h2>RAPPORT DE STAGE</h2>
-                                    <h3 t-field="stage.name"/>
-                                </div>
-                            </div>
-                            
-                            <br/>
-                            
-                            <!-- Informations générales -->
-                            <div class="row">
-                                <div class="col-6">
-                                    <table class="table table-sm">
-                                        <tr>
-                                            <td><strong>Référence:</strong></td>
-                                            <td t-field="stage.reference"/>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Type de stage:</strong></td>
-                                            <td>
-                                                <span t-if="stage.stage_type == 'pfe'">PFE</span>
-                                                <span t-elif="stage.stage_type == 'stage_ete'">Stage d'été</span>
-                                                <span t-elif="stage.stage_type == 'stage_obs'">Stage d'observation</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Stagiaire:</strong></td>
-                                            <td t-field="stage.student_id.name"/>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Encadrant:</strong></td>
-                                            <td t-field="stage.supervisor_id.name"/>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div class="col-6">
-                                    <table class="table table-sm">
-                                        <tr>
-                                            <td><strong>Entreprise:</strong></td>
-                                            <td t-field="stage.company_id.name"/>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Période:</strong></td>
-                                            <td>
-                                                Du <span t-field="stage.start_date"/> 
-                                                au <span t-field="stage.end_date"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Durée:</strong></td>
-                                            <td><span t-field="stage.duration"/> jours</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>État:</strong></td>
-                                            <td>
-                                                <span class="badge badge-primary" t-if="stage.state == 'draft'">Brouillon</span>
-                                                <span class="badge badge-info" t-if="stage.state == 'submitted'">Soumis</span>
-                                                <span class="badge badge-warning" t-if="stage.state == 'approved'">Approuvé</span>
-                                                <span class="badge badge-primary" t-if="stage.state == 'in_progress'">En cours</span>
-                                                <span class="badge badge-success" t-if="stage.state == 'completed'">Terminé</span>
-                                                <span class="badge badge-success" t-if="stage.state == 'evaluated'">Évalué</span>
-                                                <span class="badge badge-secondary" t-if="stage.state == 'cancelled'">Annulé</span>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            
-                            <br/>
-                            
-                            <!-- Description -->
-                            <div class="row">
-                                <div class="col-12">
-                                    <h4>Description du Stage</h4>
-                                    <div t-field="stage.description"/>
-                                </div>
-                            </div>
-                            
-                            <br/>
-                            
-                            <!-- Objectifs -->
-                            <div class="row" t-if="stage.objectives">
-                                <div class="col-12">
-                                    <h4>Objectifs</h4>
-                                    <div t-field="stage.objectives"/>
-                                </div>
-                            </div>
-                            
-                            <br/>
-                            
-                            <!-- Tâches -->
-                            <div class="row" t-if="stage.todo_ids">
-                                <div class="col-12">
-                                    <h4>Tâches du Stage</h4>
-                                    <table class="table table-sm table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Tâche</th>
-                                                <th>Date limite</th>
-                                                <th>Assigné à</th>
-                                                <th>État</th>
-                                                <th>Priorité</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr t-foreach="stage.todo_ids" t-as="task">
-                                                <td t-field="task.name"/>
-                                                <td t-field="task.deadline"/>
-                                                <td t-field="task.assigned_to"/>
-                                                <td>
-                                                    <span class="badge badge-secondary" t-if="task.state == 'todo'">À faire</span>
-                                                    <span class="badge badge-primary" t-if="task.state == 'in_progress'">En cours</span>
-                                                    <span class="badge badge-success" t-if="task.state == 'done'">Terminé</span>
-                                                </td>
-                                                <td>
-                                                    <span class="text-danger" t-if="task.priority == '3'">Haute</span>
-                                                    <span class="text-warning" t-if="task.priority == '2'">Moyenne</span>
-                                                    <span class="text-muted" t-if="task.priority == '1'">Basse</span>
-                                                    <span class="text-muted" t-if="task.priority == '0'">Très basse</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            
-                            <!-- Progression -->
-                            <div class="row">
-                                <div class="col-12">
-                                    <h4>Progression</h4>
-                                    <div class="progress" style="height: 30px;">
-                                        <div class="progress-bar" role="progressbar" 
-                                             t-attf-style="width: #{stage.progress}%"
-                                             t-attf-aria-valuenow="#{stage.progress}"
-                                             aria-valuemin="0" aria-valuemax="100">
-                                            <span t-esc="stage.progress"/>%
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <br/>
-                            
-                            <!-- Évaluation si disponible -->
-                            <div class="row" t-if="stage.state in ['completed', 'evaluated'] and stage.grade">
-                                <div class="col-12">
-                                    <h4>Évaluation</h4>
-                                    <table class="table table-sm">
-                                        <tr t-if="stage.grade">
-                                            <td><strong>Note finale:</strong></td>
-                                            <td><span t-field="stage.grade"/>/20</td>
-                                        </tr>
-                                        <tr t-if="stage.defense_grade">
-                                            <td><strong>Note soutenance:</strong></td>
-                                            <td><span t-field="stage.defense_grade"/>/20</td>
-                                        </tr>
-                                    </table>
-                                    
-                                    <div t-if="stage.feedback">
-                                        <strong>Commentaires:</strong>
-                                        <div t-field="stage.feedback"/>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="oe_structure"/>
-                        </div>
-                    </t>
+                    <t t-call="internship_management.stage_report_layout"/>
                 </t>
             </t>
         </template>
 
-        <!-- Template pour la convention de stage -->
-        <template id="convention_report_template">
-            <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="stage">
-                    <t t-call="web.external_layout">
-                        <div class="page">
-                            <div class="oe_structure"/>
-                            
-                            <!-- En-tête -->
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <h2>CONVENTION DE STAGE</h2>
-                                </div>
-                            </div>
-                            
-                            <br/>
-                            
-                            <div class="row">
-                                <div class="col-12">
-                                    <p>
-                                        La présente convention est établie entre :
-                                    </p>
-                                    
-                                    <h5>L'ÉTABLISSEMENT :</h5>
-                                    <p>
-                                        <strong t-field="stage.company_id.name"/><br/>
-                                        <span t-field="stage.company_id.street"/><br/>
-                                        <span t-field="stage.company_id.zip"/> <span t-field="stage.company_id.city"/><br/>
-                                        Tél: <span t-field="stage.company_id.phone"/><br/>
-                                        Email: <span t-field="stage.company_id.email"/>
-                                    </p>
-                                    
-                                    <h5>LE STAGIAIRE :</h5>
-                                    <p>
-                                        <strong t-field="stage.student_id.name"/><br/>
-                                        <span t-field="stage.student_id.email"/><br/>
-                                        <span t-field="stage.student_id.phone"/>
-                                    </p>
-                                    
-                                    <h5>L'ENCADRANT :</h5>
-                                    <p>
-                                        <strong t-field="stage.supervisor_id.name"/><br/>
-                                        <span t-field="stage.supervisor_id.email"/><br/>
-                                        <span t-field="stage.supervisor_id.phone"/>
-                                    </p>
-                                    
-                                    <br/>
-                                    
-                                    <h5>OBJET DU STAGE :</h5>
-                                    <p><strong t-field="stage.name"/></p>
-                                    
-                                    <h5>DESCRIPTION :</h5>
-                                    <div t-field="stage.description"/>
-                                    
-                                    <br/>
-                                    
-                                    <h5>DURÉE ET PÉRIODE :</h5>
-                                    <p>
-                                        Du <strong t-field="stage.start_date"/> au <strong t-field="stage.end_date"/><br/>
-                                        Durée totale : <strong t-field="stage.duration"/> jours
-                                    </p>
-                                    
-                                    <br/>
-                                    
-                                    <h5>SIGNATURES :</h5>
-                                    <div class="row">
-                                        <div class="col-4 text-center">
-                                            <p><strong>Le Stagiaire</strong></p>
-                                            <br/><br/>
-                                            <p>_______________________</p>
-                                            <p t-field="stage.student_id.name"/>
-                                        </div>
-                                        <div class="col-4 text-center">
-                                            <p><strong>L'Encadrant</strong></p>
-                                            <br/><br/>
-                                            <p>_______________________</p>
-                                            <p t-field="stage.supervisor_id.name"/>
-                                        </div>
-                                        <div class="col-4 text-center">
-                                            <p><strong>L'Établissement</strong></p>
-                                            <br/><br/>
-                                            <p>_______________________</p>
-                                            <p>Représentant légal</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <br/>
-                                    
-                                    <p class="text-center">
-                                        <small>
-                                            Convention établie le <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
-                                        </small>
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div class="oe_structure"/>
-                        </div>
-                    </t>
-                </t>
-            </t>
-        </template>
+        <template id="stage_report_layout">
+            <div class="page" style="font-family: 'Segoe UI', Arial, sans-serif; color: #2c3e50;">
 
+                <!-- Professional Header -->
+                <div style="border-bottom: 3px solid #34495e; padding-bottom: 20px; margin-bottom: 30px;">
+                    <div class="row">
+                        <div class="col-8">
+                            <h1 style="margin: 0; font-weight: 300; font-size: 28px; color: #2c3e50;">
+                                INTERNSHIP SUMMARY REPORT
+                            </h1>
+                            <h2 style="margin: 5px 0 0 0; color: #34495e; font-weight: 400; font-size: 16px;">
+                                Comprehensive Overview - TechPal
+                            </h2>
+                        </div>
+                        <div class="col-4 text-right">
+                            <div style="color: #7f8c8d; font-size: 12px;">
+                                <strong>Report ID:</strong> <span t-field="stage.reference_number"/><br/>
+                                <strong>Generated:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')"/><br/>
+                                <strong>Status:</strong> <span t-field="stage.state" t-options="{'widget': 'badge'}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Overview Cards -->
+                <div class="row" style="margin-bottom: 25px;">
+                    <div class="col-3">
+                        <div style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 8px; padding: 15px; text-align: center;">
+                            <h4 style="color: #3498db; margin: 0; font-size: 14px;">Progress</h4>
+                            <div style="font-size: 20px; font-weight: bold; color: #2c3e50; margin: 5px 0;">
+                                <span t-field="stage.completion_percentage"/>%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div style="background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); border-radius: 8px; padding: 15px; text-align: center;">
+                            <h4 style="color: #27ae60; margin: 0; font-size: 14px;">Final Grade</h4>
+                            <div style="font-size: 20px; font-weight: bold; color: #2c3e50; margin: 5px 0;">
+                                <span t-field="stage.final_grade"/>/20
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div style="background: linear-gradient(135deg, #fff3cd 0%, #fef9e7 100%); border-radius: 8px; padding: 15px; text-align: center;">
+                            <h4 style="color: #f39c12; margin: 0; font-size: 14px;">Duration</h4>
+                            <div style="font-size: 16px; font-weight: bold; color: #2c3e50; margin: 5px 0;">
+                                <t t-set="duration" t-value="(stage.end_date - stage.start_date).days if stage.start_date and stage.end_date else 0"/>
+                                <span t-esc="duration"/> days
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div style="background: linear-gradient(135deg, #fdeaea 0%, #fdf2f2 100%); border-radius: 8px; padding: 15px; text-align: center;">
+                            <h4 style="color: #e74c3c; margin: 0; font-size: 14px;">Defense Status</h4>
+                            <div style="font-size: 14px; font-weight: bold; color: #2c3e50; margin: 5px 0;">
+                                <span t-field="stage.defense_status" t-options="{'widget': 'badge'}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Information -->
+                <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;
+                           padding: 20px; margin-bottom: 25px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-info-circle" style="color: #3498db; margin-right: 8px;"></i>
+                        Internship Overview
+                    </h3>
+                    <div class="row">
+                        <div class="col-6">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e; width: 35%;">Title:</td>
+                                    <td t-field="stage.title"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Student:</td>
+                                    <td t-field="stage.student_id.full_name"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Supervisor:</td>
+                                    <td t-field="stage.supervisor_id.name"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Company:</td>
+                                    <td t-field="stage.company_id.name"/>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e; width: 35%;">Start Date:</td>
+                                    <td t-field="stage.start_date" t-options="{'widget': 'date'}"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">End Date:</td>
+                                    <td t-field="stage.end_date" t-options="{'widget': 'date'}"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Type:</td>
+                                    <td t-field="stage.internship_type"/>
+                                </tr>
+                                <tr style="height: 30px;">
+                                    <td style="font-weight: bold; color: #34495e;">Reference:</td>
+                                    <td t-field="stage.reference_number"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Description -->
+                <div t-if="stage.project_description" style="background: #ffffff; border: 1px solid #e9ecef; border-radius: 5px;
+                           padding: 20px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-file-text-o" style="color: #8e44ad; margin-right: 8px;"></i>
+                        Project Description
+                    </h3>
+                    <div t-field="stage.project_description" style="line-height: 1.6; font-size: 14px;"/>
+                </div>
+
+                <!-- Learning Objectives -->
+                <div t-if="stage.learning_objectives" style="background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+                           border-left: 4px solid #27ae60; padding: 20px; margin-bottom: 25px; border-radius: 5px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-target" style="color: #27ae60; margin-right: 8px;"></i>
+                        Learning Objectives
+                    </h3>
+                    <div t-field="stage.learning_objectives" style="line-height: 1.6; font-size: 14px;"/>
+                </div>
+
+                <!-- Evaluation Summary -->
+                <div t-if="stage.state in ['completed', 'evaluated']" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;
+                           padding: 20px; margin-bottom: 25px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fa fa-star" style="color: #f39c12; margin-right: 8px;"></i>
+                        Final Evaluation Summary
+                    </h3>
+                    <div class="row">
+                        <div class="col-6" t-if="stage.final_grade">
+                            <p><strong>Final Grade:</strong> <span t-field="stage.final_grade"/>/20</p>
+                        </div>
+                        <div class="col-6" t-if="stage.defense_grade">
+                            <p><strong>Defense Grade:</strong> <span t-field="stage.defense_grade"/>/20</p>
+                        </div>
+                    </div>
+                    <div t-if="stage.evaluation_feedback">
+                        <strong>Supervisor Feedback:</strong>
+                        <div t-field="stage.evaluation_feedback" style="margin-top: 10px; padding: 10px; background: white; border-radius: 3px;"/>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="margin-top: 40px; border-top: 1px solid #e9ecef; padding-top: 15px;
+                           text-align: center; color: #7f8c8d; font-size: 11px;">
+                    TechPal Internship Management System - Comprehensive Internship Report<br/>
+                    Generated automatically from system data - All information is up to date.
+                </div>
+            </div>
+        </template>
     </data>
 </odoo>

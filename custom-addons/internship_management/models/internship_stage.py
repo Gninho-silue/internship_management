@@ -136,7 +136,7 @@ class InternshipStage(models.Model):
         help="Detailed description of the internship project and context"
     )
 
-    learning_objectives = fields.Html(
+    title = fields.Html(
         string='Learning Objectives',
         help="Educational and professional objectives to be achieved"
     )
