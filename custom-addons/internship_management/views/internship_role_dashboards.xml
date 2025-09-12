@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- ================================= -->
+        <!-- DASHBOARD CLIENT ACTION -->
+        <!-- ================================= -->
+        
+        <record id="action_internship_dashboard" model="ir.actions.client">
+            <field name="name">Internship Dashboard</field>
+            <field name="tag">internship_role_dashboard</field>
+            <field name="target">current</field>
+            <field name="params">{}</field>
+        </record>
 
         <!-- ================================= -->
         <!-- STUDENT DASHBOARD TEMPLATE -->

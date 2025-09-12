@@ -50,7 +50,7 @@
         <menuitem id="menu_internship_dashboard"
                   name="Dashboard"
                   parent="menu_internship_stages"
-                  action="action_internship_stage_dashboard"
+                  action="action_internship_dashboard"
                   sequence="5"/>
 
         <!-- All Internships -->
