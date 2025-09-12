@@ -82,12 +82,10 @@ Developed as a professional-grade application following Odoo best practices.
         # Menus (last)
         'views/internship_menus.xml',
     ],
-    # Add new 'assets' section:
+    # Assets for role-based dashboard
     'assets': {
         'web.assets_backend': [
-            # 'internship_management/static/src/css/dashboard.css',
             'internship_management/static/src/css/role_dashboard.css',
-            # 'internship_management/static/src/js/dashboard.js',
             'internship_management/static/src/js/role_dashboard.js',
         ],
     },
