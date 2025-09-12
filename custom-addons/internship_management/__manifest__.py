@@ -76,6 +76,7 @@ Developed as a professional-grade application following Odoo best practices.
         'views/internship_meeting_views.xml',
         'views/internship_user_profile_views.xml',
         'views/internship_role_dashboards.xml',
+        'views/internship_dashboard_template.xml'
         'views/internship_dashboard_actions.xml',
 
 
@@ -83,14 +84,13 @@ Developed as a professional-grade application following Odoo best practices.
         'views/internship_menus.xml',
     ],
 
-    # Assets for role-based dashboard
+    # Assets 
     'assets': {
         'web.assets_backend': [
             'internship_management/static/src/css/role_dashboard.css',
             'internship_management/static/src/js/role_dashboard.js',
         ],
     },
-
     # Demo data
     'demo': [
         # 'demo/demo_students.xml',
