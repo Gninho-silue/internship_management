@@ -9,4 +9,4 @@ from . import internship_message
 from . import internship_notification
 from . import internship_meeting
 from . import internship_user_profile
-from . import internship_dashboard
+from . import internship_analytics

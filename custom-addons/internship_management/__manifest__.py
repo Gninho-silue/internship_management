@@ -82,6 +82,7 @@ Developed as a professional-grade application following Odoo best practices.
         # Menus (last)
         'views/internship_menus.xml',
     ],
+
     # Assets for role-based dashboard
     'assets': {
         'web.assets_backend': [
