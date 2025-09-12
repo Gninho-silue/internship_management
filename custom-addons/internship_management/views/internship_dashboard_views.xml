@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- DASHBOARD QWeb TEMPLATE -->
+        <!-- ================================= -->
+
+        <template id="internship_dashboard_template">
+            <div class="o_internship_dashboard">
+
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="dashboard-title mb-1">
+                                <i class="fa fa-tachometer-alt text-primary me-2"></i>
+                                Internship Management Dashboard
+                            </h2>
+                            <p class="text-muted mb-0">Real-time analytics and insights</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-primary me-2" id="refreshDashboard">
+                                <i class="fa fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn btn-outline-secondary" id="exportDashboard">
+                                <i class="fa fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Section -->
+                <div class="kpi-section">
+                    <div class="row g-3">
+                        <!-- Total Internships Card -->
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-primary">
+                                <div class="kpi-icon">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="totalInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Total Internships</p>
+                                    <small class="kpi-trend" id="totalTrend">Loading...</small>
+                                </div>
+                                <div class="kpi-background">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Internships Card -->
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-success">
+                                <div class="kpi-icon">
+                                    <i class="fa fa-play-circle"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="activeInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Active Now</p>
+                                    <small class="kpi-trend" id="activeTrend">Loading...</small>
+                                </div>
+                                <div class="kpi-background">
+                                    <i class="fa fa-play-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Completion Rate Card -->
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-info">
+                                <div class="kpi-icon">
+                                    <i class="fa fa-chart-line"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="completionRate" class="kpi-value">0%</h3>
+                                    <p class="kpi-label">Completion Rate</p>
+                                    <small class="kpi-trend" id="completionTrend">Loading...</small>
+                                </div>
+                                <div class="kpi-background">
+                                    <i class="fa fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Average Grade Card -->
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-warning">
+                                <div class="kpi-icon">
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <h3 id="averageGrade" class="kpi-value">0.0</h3>
+                                    <p class="kpi-label">Average Grade</p>
+                                    <small class="kpi-trend" id="gradeTrend">Loading...</small>
+                                </div>
+                                <div class="kpi-background">
+                                    <i class="fa fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="row g-4">
+
+                        <!-- Status Distribution Chart -->
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-pie-chart text-primary me-2"></i>
+                                        Status Distribution
+                                    </h5>
+                                    <div class="chart-actions">
+                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Fullscreen">
+                                            <i class="fa fa-expand"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="statusChart" height="300"></canvas>
+                                    </div>
+                                    <div class="chart-loading d-none" id="statusChartLoading">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Trends Chart -->
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-line-chart text-success me-2"></i>
+                                        Monthly Trends
+                                    </h5>
+                                    <select class="form-select form-select-sm" id="trendsTimeRange" style="width: auto;">
+                                        <option value="6">Last 6 months</option>
+                                        <option value="12" >Last 12 months</option>
+                                        <option value="24">Last 24 months</option>
+                                    </select>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="trendsChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grade Distribution Chart -->
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-bar-chart text-warning me-2"></i>
+                                        Grade Distribution
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="gradeChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Supervisor Workload Chart -->
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-users text-info me-2"></i>
+                                        Supervisor Workload
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="workloadChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Area Performance Chart -->
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-trophy text-danger me-2"></i>
+                                        Performance by Area
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="performanceChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Section: Activities and Alerts -->
+                <div class="bottom-section">
+                    <div class="row g-4">
+
+                        <!-- Recent Activities -->
+                        <div class="col-lg-8">
+                            <div class="activities-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-clock text-info me-2"></i>
+                                        Recent Activities
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="activities-list" id="activitiesList">
+                                        <!-- Activities will be populated by JavaScript -->
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading activities...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Alerts -->
+                        <div class="col-lg-4">
+                            <div class="alerts-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                        System Alerts
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alerts-list" id="alertsList">
+                                        <!-- Alerts will be populated by JavaScript -->
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading alerts...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="dashboard-footer text-center text-muted mt-4">
+                    <small>Last updated: <span id="lastUpdated">--</span> | Internship Management System v1.0</small>
+                </div>
+
+            </div>
+        </template>
+
+        <!-- ================================= -->
+        <!-- MOBILE DASHBOARD TEMPLATE -->
+        <!-- ================================= -->
+
+        <template id="internship_mobile_dashboard_template">
+            <div class="o_internship_mobile_dashboard">
+
+                <!-- Mobile Header -->
+                <div class="mobile-header">
+                    <h4 class="mobile-title">
+                        <i class="fa fa-tachometer-alt me-2"></i>
+                        Dashboard
+                    </h4>
+                    <button class="btn btn-sm btn-primary" id="mobileRefresh">
+                        <i class="fa fa-sync"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile KPI Cards -->
+                <div class="mobile-kpi-section">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mobile-kpi-card mobile-kpi-primary">
+                                <div class="mobile-kpi-icon">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </div>
+                                <div class="mobile-kpi-value" id="mobileTotal">0</div>
+                                <div class="mobile-kpi-label">Total</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mobile-kpi-card mobile-kpi-success">
+                                <div class="mobile-kpi-icon">
+                                    <i class="fa fa-play-circle"></i>
+                                </div>
+                                <div class="mobile-kpi-value" id="mobileActive">0</div>
+                                <div class="mobile-kpi-label">Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Chart -->
+                <div class="mobile-chart-section">
+                    <div class="mobile-chart-card">
+                        <h6 class="mobile-chart-title">Status Overview</h6>
+                        <div class="mobile-chart-container">
+                            <canvas id="mobileStatusChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Quick Actions -->
+                <div class="mobile-actions-section">
+                    <h6 class="mobile-section-title">Quick Actions</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button class="btn btn-outline-primary btn-block mobile-action-btn" onclick="window.location.href='/web#action=internship_management.action_internship_stage_list'">
+                                <i class="fa fa-plus"></i><br/>
+                                <small>New Internship</small>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-info btn-block mobile-action-btn" onclick="window.location.href='/web#action=internship_management.action_internship_stage_list&amp;view_type=kanban'">
+                                <i class="fa fa-kanban"></i><br/>
+                                <small>View Board</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+
+        <!-- ================================= -->
+        <!-- ROLE-BASED DASHBOARD CLIENT ACTIONS -->
+        <!-- ================================= -->
+
+        <record id="action_internship_dashboard" model="ir.actions.client">
+            <field name="name">Executive Dashboard</field>
+            <field name="tag">internship_role_dashboard</field>
+            <field name="target">current</field>
+            <field name="params">{}</field>
+        </record>
+
+        <record id="action_internship_student_dashboard" model="ir.actions.client">
+            <field name="name">Student Dashboard</field>
+            <field name="tag">internship_role_dashboard</field>
+            <field name="target">current</field>
+            <field name="params">{}</field>
+        </record>
+
+        <record id="action_internship_supervisor_dashboard" model="ir.actions.client">
+            <field name="name">Supervisor Dashboard</field>
+            <field name="tag">internship_role_dashboard</field>
+            <field name="target">current</field>
+            <field name="params">{}</field>
+        </record>
+
+        <record id="action_internship_company_dashboard" model="ir.actions.client">
+            <field name="name">Company Dashboard</field>
+            <field name="tag">internship_role_dashboard</field>
+            <field name="target">current</field>
+            <field name="params">{}</field>
+        </record>
+
+        <record id="action_internship_admin_dashboard" model="ir.actions.client">
+            <field name="name">Admin Dashboard</field>
+            <field name="tag">internship_role_dashboard</field>
+            <field name="target">current</field>
+            <field name="params">{}</field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- MENU ITEM -->
+        <!-- ================================= -->
+
+        <menuitem id="menu_internship_dashboard"
+                  name="Dashboard"
+                  parent="menu_internship_main"
+                  action="action_internship_dashboard"
+                  sequence="1"
+                  web_icon="internship_management,static/description/icon.png"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- STUDENT DASHBOARD TEMPLATE -->
+        <!-- ================================= -->
+        
+        <template id="internship_student_dashboard_template">
+            <div class="o_internship_dashboard o_student_dashboard">
+                <!-- Student Dashboard Header -->
+                <div class="dashboard-header student-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="dashboard-title mb-1">
+                                <i class="fa fa-user-graduate text-success me-2"></i>
+                                Student Dashboard
+                            </h2>
+                            <p class="text-muted mb-0" id="studentInfo">Welcome back!</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-success me-2" id="refreshDashboard">
+                                <i class="fa fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn btn-outline-success" id="viewMyInternships">
+                                <i class="fa fa-briefcase"></i> My Internships
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student KPI Cards -->
+                <div class="kpi-section">
+                    <div class="row g-3">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-success">
+                                <div class="kpi-icon"><i class="fa fa-play-circle"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="activeInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Active Internships</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-info">
+                                <div class="kpi-icon"><i class="fa fa-check-circle"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="completedInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-warning">
+                                <div class="kpi-icon"><i class="fa fa-star"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="averageGrade" class="kpi-value">0.0/20</h3>
+                                    <p class="kpi-label">Average Grade</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-primary">
+                                <div class="kpi-icon"><i class="fa fa-chart-line"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="completionRate" class="kpi-value">0%</h3>
+                                    <p class="kpi-label">Completion Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Charts Section -->
+                <div class="charts-section">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-chart-line text-success me-2"></i>
+                                        Progress Timeline
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="progressChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-star text-warning me-2"></i>
+                                        Grade Evolution
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="gradeChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Bottom Section -->
+                <div class="bottom-section">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="activities-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-clock text-info me-2"></i>
+                                        Recent Activities
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="activities-list" id="activitiesList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="alerts-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                        Upcoming Deadlines
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="deadlines-list" id="deadlinesList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="dashboard-footer text-center text-muted mt-4">
+                    <small>Last updated: <span id="lastUpdated">--</span> | Student Portal</small>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================================= -->
+        <!-- SUPERVISOR DASHBOARD TEMPLATE -->
+        <!-- ================================= -->
+        
+        <template id="internship_supervisor_dashboard_template">
+            <div class="o_internship_dashboard o_supervisor_dashboard">
+                <!-- Supervisor Dashboard Header -->
+                <div class="dashboard-header supervisor-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="dashboard-title mb-1">
+                                <i class="fa fa-user-tie text-primary me-2"></i>
+                                Supervisor Dashboard
+                            </h2>
+                            <p class="text-muted mb-0" id="supervisorInfo">Manage your students</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-primary me-2" id="refreshDashboard">
+                                <i class="fa fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn btn-outline-primary" id="viewMyStudents">
+                                <i class="fa fa-users"></i> My Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supervisor KPI Cards -->
+                <div class="kpi-section">
+                    <div class="row g-3">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-primary">
+                                <div class="kpi-icon"><i class="fa fa-users"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="currentStudents" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Current Students</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-info">
+                                <div class="kpi-icon"><i class="fa fa-user-plus"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="maxCapacity" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Max Capacity</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-warning">
+                                <div class="kpi-icon"><i class="fa fa-tasks"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="workload" class="kpi-value">0%</h3>
+                                    <p class="kpi-label">Workload</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-success">
+                                <div class="kpi-icon"><i class="fa fa-graduation-cap"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="totalSupervised" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Total Supervised</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supervisor Charts Section -->
+                <div class="charts-section">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-chart-bar text-primary me-2"></i>
+                                        Student Progress
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="studentProgressChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-chart-pie text-info me-2"></i>
+                                        Grade Distribution
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="gradeDistributionChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supervisor Bottom Section -->
+                <div class="bottom-section">
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="activities-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-clock text-info me-2"></i>
+                                        Recent Activities
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="activities-list" id="activitiesList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="alerts-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                        Alerts
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alerts-list" id="alertsList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="dashboard-footer text-center text-muted mt-4">
+                    <small>Last updated: <span id="lastUpdated">--</span> | Supervisor Portal</small>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================================= -->
+        <!-- COMPANY DASHBOARD TEMPLATE -->
+        <!-- ================================= -->
+        
+        <template id="internship_company_dashboard_template">
+            <div class="o_internship_dashboard o_company_dashboard">
+                <!-- Company Dashboard Header -->
+                <div class="dashboard-header company-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="dashboard-title mb-1">
+                                <i class="fa fa-building text-info me-2"></i>
+                                Company Dashboard
+                            </h2>
+                            <p class="text-muted mb-0" id="companyInfo">Manage your internships</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-info me-2" id="refreshDashboard">
+                                <i class="fa fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn btn-outline-info" id="viewCompanyInternships">
+                                <i class="fa fa-briefcase"></i> Our Internships
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company KPI Cards -->
+                <div class="kpi-section">
+                    <div class="row g-3">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-primary">
+                                <div class="kpi-icon"><i class="fa fa-briefcase"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="totalInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Total Internships</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-success">
+                                <div class="kpi-icon"><i class="fa fa-play-circle"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="activeInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Active Now</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-info">
+                                <div class="kpi-icon"><i class="fa fa-user-tie"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="supervisorsCount" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Supervisors</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-warning">
+                                <div class="kpi-icon"><i class="fa fa-trophy"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="successRate" class="kpi-value">0%</h3>
+                                    <p class="kpi-label">Success Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Charts Section -->
+                <div class="charts-section">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-chart-pie text-info me-2"></i>
+                                        Internship Distribution
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="internshipDistributionChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-chart-line text-success me-2"></i>
+                                        Timeline Analysis
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="timelineChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Bottom Section -->
+                <div class="bottom-section">
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="activities-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-clock text-info me-2"></i>
+                                        Recent Activities
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="activities-list" id="activitiesList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="alerts-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                        Alerts
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alerts-list" id="alertsList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="dashboard-footer text-center text-muted mt-4">
+                    <small>Last updated: <span id="lastUpdated">--</span> | Company Portal</small>
+                </div>
+            </div>
+        </template>
+
+        <!-- ================================= -->
+        <!-- ADMIN DASHBOARD TEMPLATE -->
+        <!-- ================================= -->
+        
+        <template id="internship_admin_dashboard_template">
+            <div class="o_internship_dashboard o_admin_dashboard">
+                <!-- Admin Dashboard Header -->
+                <div class="dashboard-header admin-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="dashboard-title mb-1">
+                                <i class="fa fa-tachometer-alt text-danger me-2"></i>
+                                Admin Dashboard
+                            </h2>
+                            <p class="text-muted mb-0">System overview and analytics</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-danger me-2" id="refreshDashboard">
+                                <i class="fa fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn btn-outline-danger" id="exportDashboard">
+                                <i class="fa fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin KPI Cards -->
+                <div class="kpi-section">
+                    <div class="row g-3">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-primary">
+                                <div class="kpi-icon"><i class="fa fa-graduation-cap"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="totalInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Total Internships</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-success">
+                                <div class="kpi-icon"><i class="fa fa-play-circle"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="activeInternships" class="kpi-value">0</h3>
+                                    <p class="kpi-label">Active Now</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-info">
+                                <div class="kpi-icon"><i class="fa fa-chart-line"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="completionRate" class="kpi-value">0%</h3>
+                                    <p class="kpi-label">Completion Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="kpi-card kpi-warning">
+                                <div class="kpi-icon"><i class="fa fa-star"></i></div>
+                                <div class="kpi-content">
+                                    <h3 id="averageGrade" class="kpi-value">0.0</h3>
+                                    <p class="kpi-label">Average Grade</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Charts Section -->
+                <div class="charts-section">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-pie-chart text-primary me-2"></i>
+                                        Status Distribution
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="statusChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-line-chart text-success me-2"></i>
+                                        Monthly Trends
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="trendsChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-bar-chart text-warning me-2"></i>
+                                        Grade Distribution
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="gradeChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-users text-info me-2"></i>
+                                        Supervisor Workload
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="workloadChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h5 class="chart-title">
+                                        <i class="fa fa-trophy text-danger me-2"></i>
+                                        Performance by Area
+                                    </h5>
+                                </div>
+                                <div class="chart-body">
+                                    <div class="chart-container">
+                                        <canvas id="performanceChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Bottom Section -->
+                <div class="bottom-section">
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="activities-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-clock text-info me-2"></i>
+                                        Recent Activities
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="activities-list" id="activitiesList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="alerts-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                        System Alerts
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alerts-list" id="alertsList">
+                                        <div class="text-center text-muted py-4">
+                                            <div class="spinner-border spinner-border-sm" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="dashboard-footer text-center text-muted mt-4">
+                    <small>Last updated: <span id="lastUpdated">--</span> | Admin Portal</small>
+                </div>
+            </div>
+        </template>
+
+    </data>
+</odoo>
