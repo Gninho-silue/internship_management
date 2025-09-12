@@ -1,123 +1,56 @@
-# -*- coding: utf-8 -*-
-# ===========================================
-# INTERNSHIP MANAGEMENT SYSTEM - ACCESS RULES
-# ===========================================
-# This file defines access control rules for all models in the internship management system.
-# Each rule specifies which user groups can perform CRUD operations on specific models.
-#
-# Format: id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-# Where: 1 = allowed, 0 = denied
-# ===========================================
-
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-
-# ===========================================
-# CORE INTERNSHIP MODELS
-# ===========================================
-
-# Student Management
 access_internship_student_student,internship.student.student,model_internship_student,group_internship_student,1,1,0,0
 access_internship_student_supervisor,internship.student.supervisor,model_internship_student,group_internship_supervisor,1,1,0,0
 access_internship_student_coordinator,internship.student.coordinator,model_internship_student,group_internship_coordinator,1,1,1,0
 access_internship_student_admin,internship.student.admin,model_internship_student,group_internship_admin,1,1,1,1
-
-# Supervisor Management
 access_internship_supervisor_student,internship.supervisor.student,model_internship_supervisor,group_internship_student,1,0,0,0
 access_internship_supervisor_supervisor,internship.supervisor.supervisor,model_internship_supervisor,group_internship_supervisor,1,1,0,0
 access_internship_supervisor_coordinator,internship.supervisor.coordinator,model_internship_supervisor,group_internship_coordinator,1,1,1,0
 access_internship_supervisor_admin,internship.supervisor.admin,model_internship_supervisor,group_internship_admin,1,1,1,1
-
-# Internship Stage Management
 access_internship_stage_student,internship.stage.student,model_internship_stage,group_internship_student,1,1,0,0
 access_internship_stage_supervisor,internship.stage.supervisor,model_internship_stage,group_internship_supervisor,1,1,1,0
 access_internship_stage_coordinator,internship.stage.coordinator,model_internship_stage,group_internship_coordinator,1,1,1,0
 access_internship_stage_admin,internship.stage.admin,model_internship_stage,group_internship_admin,1,1,1,1
-
-# ===========================================
-# DOCUMENT MANAGEMENT
-# ===========================================
-
-# Document Management
 access_internship_document_student,internship.document.student,model_internship_document,group_internship_student,1,1,1,1
 access_internship_document_supervisor,internship.document.supervisor,model_internship_document,group_internship_supervisor,1,1,1,0
 access_internship_document_coordinator,internship.document.coordinator,model_internship_document,group_internship_coordinator,1,1,1,1
 access_internship_document_admin,internship.document.admin,model_internship_document,group_internship_admin,1,1,1,1
-
-# ===========================================
-# CONFIGURATION MODELS
-# ===========================================
-
-# Skills Management
 access_internship_skill_student,internship.skill.student,model_internship_skill,group_internship_student,1,0,0,0
 access_internship_skill_supervisor,internship.skill.supervisor,model_internship_skill,group_internship_supervisor,1,0,0,0
 access_internship_skill_coordinator,internship.skill.coordinator,model_internship_skill,group_internship_coordinator,1,1,1,1
 access_internship_skill_admin,internship.skill.admin,model_internship_skill,group_internship_admin,1,1,1,1
-
-# Areas of Expertise
 access_internship_area_student,internship.area.student,model_internship_area,group_internship_student,1,0,0,0
 access_internship_area_supervisor,internship.area.supervisor,model_internship_area,group_internship_supervisor,1,0,0,0
 access_internship_area_coordinator,internship.area.coordinator,model_internship_area,group_internship_coordinator,1,1,1,1
 access_internship_area_admin,internship.area.admin,model_internship_area,group_internship_admin,1,1,1,1
-
-# Language Management
-access_internship_language_student,internship.language.student,model_internship_language,group_internship_student,1,0,0,0
-access_internship_language_supervisor,internship.language.supervisor,model_internship_language,group_internship_supervisor,1,0,0,0
-access_internship_language_coordinator,internship.language.coordinator,model_internship_language,group_internship_coordinator,1,1,1,1
-access_internship_language_admin,internship.language.admin,model_internship_language,group_internship_admin,1,1,1,1
-
-# ===========================================
-# COMMUNICATION MODELS
-# ===========================================
-
-# Meeting Management
 access_internship_meeting_student,internship.meeting.student,model_internship_meeting,group_internship_student,1,0,0,0
 access_internship_meeting_supervisor,internship.meeting.supervisor,model_internship_meeting,group_internship_supervisor,1,1,1,0
 access_internship_meeting_coordinator,internship.meeting.coordinator,model_internship_meeting,group_internship_coordinator,1,1,1,1
 access_internship_meeting_admin,internship.meeting.admin,model_internship_meeting,group_internship_admin,1,1,1,1
-
-# Meeting Attendees
-access_internship_meeting_attendee_student,internship.meeting.attendee.student,model_internship_meeting_attendee,group_internship_student,1,0,0,0
-access_internship_meeting_attendee_supervisor,internship.meeting.attendee.supervisor,model_internship_meeting_attendee,group_internship_supervisor,1,1,1,0
-access_internship_meeting_attendee_coordinator,internship.meeting.attendee.coordinator,model_internship_meeting_attendee,group_internship_coordinator,1,1,1,1
-access_internship_meeting_attendee_admin,internship.meeting.attendee.admin,model_internship_meeting_attendee,group_internship_admin,1,1,1,1
-
-# Message Management
-access_internship_message_student,internship.message.student,model_internship_message,group_internship_student,1,1,1,0
-access_internship_message_supervisor,internship.message.supervisor,model_internship_message,group_internship_supervisor,1,1,1,0
-access_internship_message_coordinator,internship.message.coordinator,model_internship_message,group_internship_coordinator,1,1,1,1
-access_internship_message_admin,internship.message.admin,model_internship_message,group_internship_admin,1,1,1,1
-
-# Notification Management
-access_internship_notification_student,internship.notification.student,model_internship_notification,group_internship_student,1,1,1,0
-access_internship_notification_supervisor,internship.notification.supervisor,model_internship_notification,group_internship_supervisor,1,1,1,0
-access_internship_notification_coordinator,internship.notification.coordinator,model_internship_notification,group_internship_coordinator,1,1,1,1
-access_internship_notification_admin,internship.notification.admin,model_internship_notification,group_internship_admin,1,1,1,1
-
-# ===========================================
-# TASK MANAGEMENT
-# ===========================================
-
-# Todo Management
 access_internship_todo_student,internship.todo.student,model_internship_todo,group_internship_student,1,1,0,0
 access_internship_todo_supervisor,internship.todo.supervisor,model_internship_todo,group_internship_supervisor,1,1,1,1
 access_internship_todo_coordinator,internship.todo.coordinator,model_internship_todo,group_internship_coordinator,1,1,1,1
 access_internship_todo_admin,internship.todo.admin,model_internship_todo,group_internship_admin,1,1,1,1
-
-# ===========================================
-# USER MANAGEMENT
-# ===========================================
-
-# User Profile Management
+access_internship_message_student,internship.message.student,model_internship_message,group_internship_student,1,1,1,0
+access_internship_message_supervisor,internship.message.supervisor,model_internship_message,group_internship_supervisor,1,1,1,0
+access_internship_message_coordinator,internship.message.coordinator,model_internship_message,group_internship_coordinator,1,1,1,1
+access_internship_message_admin,internship.message.admin,model_internship_message,group_internship_admin,1,1,1,1
+access_internship_notification_student,internship.notification.student,model_internship_notification,group_internship_student,1,1,1,0
+access_internship_notification_supervisor,internship.notification.supervisor,model_internship_notification,group_internship_supervisor,1,1,1,0
+access_internship_notification_coordinator,internship.notification.coordinator,model_internship_notification,group_internship_coordinator,1,1,1,1
+access_internship_notification_admin,internship.notification.admin,model_internship_notification,group_internship_admin,1,1,1,1
 access_internship_user_profile_student,internship.user.profile.student,model_internship_user_profile,group_internship_student,1,1,0,0
 access_internship_user_profile_supervisor,internship.user.profile.supervisor,model_internship_user_profile,group_internship_supervisor,1,1,1,0
 access_internship_user_profile_coordinator,internship.user.profile.coordinator,model_internship_user_profile,group_internship_coordinator,1,1,1,1
 access_internship_user_profile_admin,internship.user.profile.admin,model_internship_user_profile,group_internship_admin,1,1,1,1
-
-# ===========================================
-# ANALYTICS & DASHBOARD
-# ===========================================
-
-# Analytics Model (Dashboard Data)
+access_internship_language_student,internship.language.student,model_internship_language,group_internship_student,1,0,0,0
+access_internship_language_supervisor,internship.language.supervisor,model_internship_language,group_internship_supervisor,1,0,0,0
+access_internship_language_coordinator,internship.language.coordinator,model_internship_language,group_internship_coordinator,1,1,1,1
+access_internship_language_admin,internship.language.admin,model_internship_language,group_internship_admin,1,1,1,1
+access_internship_meeting_attendee_student,internship.meeting.attendee.student,model_internship_meeting_attendee,group_internship_student,1,0,0,0
+access_internship_meeting_attendee_supervisor,internship.meeting.attendee.supervisor,model_internship_meeting_attendee,group_internship_supervisor,1,1,1,0
+access_internship_meeting_attendee_coordinator,internship.meeting.attendee.coordinator,model_internship_meeting_attendee,group_internship_coordinator,1,1,1,1
+access_internship_meeting_attendee_admin,internship.meeting.attendee.admin,model_internship_meeting_attendee,group_internship_admin,1,1,1,1
 access_internship_analytics_student,internship.analytics.student,model_internship_analytics,group_internship_student,1,0,0,0
 access_internship_analytics_supervisor,internship.analytics.supervisor,model_internship_analytics,group_internship_supervisor,1,0,0,0
 access_internship_analytics_coordinator,internship.analytics.coordinator,model_internship_analytics,group_internship_coordinator,1,0,0,0
