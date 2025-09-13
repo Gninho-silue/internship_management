@@ -1,0 +1,5 @@
+[33mabce8f7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/code-standardization[m[33m)[m Delete some file whit error
+[33mf84f6ce[m fix: Resolve dashboard JavaScript registry error
+[33m7625512[m feat: Add access rules for internship.analytics model
+[33mab9b295[m feat: Add analytics access rules and organize security file
+[33m505cb25[m refactor: Separate dashboard actions from templates
