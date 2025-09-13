@@ -112,41 +112,9 @@
                   action="action_internship_meeting_list"
                   sequence="15"
                   groups="group_internship_coordinator,group_internship_admin"/>
+      
 
-        <!-- Messages -->
-        <menuitem id="menu_internship_message"
-                  name="Messages"
-                  parent="menu_internship_communication"
-                  action="action_internship_message_list"
-                  sequence="20"/>
-
-        <!-- Sent Messages -->
-        <menuitem id="menu_internship_message_sent"
-                  name="Sent Messages"
-                  parent="menu_internship_message"
-                  action="action_internship_message_sent"
-                  sequence="20"/>
-        <!-- Received Messages -->
-        <menuitem id="menu_internship_message_received"
-                  name="Received Messages"
-                  parent="menu_internship_message"
-                  action="action_internship_message_received"
-                  sequence="30"/>
-
-        <!-- My Notifications -->
-        <menuitem id="menu_internship_notification"
-                  name="My Notifications"
-                  parent="menu_internship_communication"
-                  action="action_internship_notification_my"
-                  sequence="30"/>
-
-        <!-- All Notifications (admin) -->
-        <menuitem id="menu_internship_notification_all"
-                  name="All Notifications"
-                  parent="menu_internship_communication"
-                  action="action_internship_notification_list"
-                  sequence="35"
-                  groups="group_internship_coordinator,group_internship_admin"/>
+        
 
         <!-- ================================= -->
         <!-- REPORTS SUBMENU -->

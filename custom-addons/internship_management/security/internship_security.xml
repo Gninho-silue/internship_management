@@ -145,42 +145,7 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-
-                <!-- Rule: Messages - Users see messages they send or receive -->
-        <record id="internship_message_rule_user" model="ir.rule">
-            <field name="name">Messages: User sees sent/received messages</field>
-            <field name="model_id" ref="model_internship_message"/>
-            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', user.id)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-
-        <!-- Rule: Messages - Supervisors see messages they send or receive -->
-        <record id="internship_message_rule_supervisor" model="ir.rule">
-            <field name="name">Messages: Supervisor sees sent/received messages</field>
-            <field name="model_id" ref="model_internship_message"/>
-            <field name="domain_force">['|', ('sender_id', '=', user.id), ('recipient_ids', 'in', user.id)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-
-        <!-- Rule: Notifications - Users see their own notifications -->
-        <record id="internship_notification_rule_user" model="ir.rule">
-            <field name="name">Notifications: User sees own notifications</field>
-            <field name="model_id" ref="model_internship_notification"/>
-            <field name="domain_force">[('user_id', '=', user.id)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+       
         <!-- Rule: Supervisors - Full access to own data -->
         <record id="internship_supervisor_rule_own" model="ir.rule">
             <field name="name">Supervisors: Own profile access</field>
@@ -231,30 +196,6 @@
         <record id="internship_document_rule_coordinator" model="ir.rule">
             <field name="name">Coordinator: All documents access</field>
             <field name="model_id" ref="model_internship_document"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-
-        <!-- Rule: Messages - Coordinators see all messages -->
-        <record id="internship_message_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: All messages access</field>
-            <field name="model_id" ref="model_internship_message"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-
-        <!-- Rule: Notifications - Coordinators see all notifications -->
-        <record id="internship_notification_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: All notifications access</field>
-            <field name="model_id" ref="model_internship_notification"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
             <field name="perm_read" eval="True"/>
