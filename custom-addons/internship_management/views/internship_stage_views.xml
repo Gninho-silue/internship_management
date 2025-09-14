@@ -11,10 +11,15 @@
             <field name="name">internship.stage.tree</field>
             <field name="model">internship.stage</field>
             <field name="arch" type="xml">
-                <tree string="Internships" decoration-info="state=='draft'"
+                <tree string="Internships"
+                      decoration-info="state=='draft'"
                       decoration-warning="state=='submitted'"
-                      decoration-success="state=='approved'"
-                      decoration-primary="state=='in_progress'">
+                      decoration-bf="state=='approved'"
+                      decoration-primary="state=='in_progress'"
+                      decoration-success="state=='completed'"
+                      decoration-muted="state=='evaluated'"
+                      decoration-danger="state=='cancelled'">
+
                     <field name="reference_number"/>
                     <field name="title"/>
                     <field name="internship_type"/>
@@ -28,9 +33,11 @@
                     <field name="state" widget="badge"
                            decoration-info="state=='draft'"
                            decoration-warning="state=='submitted'"
-                           decoration-success="state=='approved'"
+                           decoration-bf="state=='approved'"
                            decoration-primary="state=='in_progress'"
-                           decoration-muted="state=='cancelled'"/>
+                           decoration-success="state=='completed'"
+                           decoration-muted="state=='evaluated'"
+                           decoration-danger="state=='cancelled'"/>
                 </tree>
             </field>
         </record>
@@ -56,6 +63,9 @@
                                 class="oe_highlight" invisible="state != 'approved'"/>
                         <button name="action_complete" string="Complete" type="object"
                                 class="oe_highlight" invisible="state != 'in_progress'"/>
+                        <button name="action_schedule_defense" string="Schedule Defense" type="object"
+                                class="oe_highlight" invisible="state != 'completed'"
+                                groups="internship_management.group_internship_supervisor"/>
                         <button name="action_evaluate" string="Evaluate" type="object"
                                 class="oe_highlight" invisible="state != 'completed'"
                                 groups="internship_management.group_internship_supervisor"/>
@@ -155,7 +165,7 @@
                                     <button name="%(action_defense_report)d" string="Defense Report" type="action"
                                             class="oe_stat_button" icon="fa-gavel"
                                             help="Generate defense proceedings"
-                                            invisible="defense_status != 'completed'"/>
+                                            invisible="state not in ['defense_completed', 'evaluated']"/>
                                     <button name="%(action_evaluation_report)d" string="Evaluation Report" type="action"
                                             class="oe_stat_button" icon="fa-star"
                                             help="Generate evaluation report"
@@ -163,17 +173,23 @@
                                 </div>
                             </page>
 
-                            <page name="evaluation" string="Evaluation"
+                            <!-- Defense & Evaluation Page -->
+                            <page name="defense_evaluation" string="Defense &amp; Evaluation"
                                   invisible="state not in ['completed', 'evaluated']">
                                 <group>
-                                    <group>
-                                        <field name="final_grade"/>
-                                        <field name="defense_grade"/>
+                                    <group string="Defense Details">
                                         <field name="defense_date"/>
+                                        <field name="defense_location"/>
                                         <field name="defense_status" widget="badge"/>
                                     </group>
-                                    <group>
+                                    <group string="Jury Members">
                                         <field name="jury_member_ids" widget="many2many_tags"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Grades">
+                                        <field name="defense_grade"/>
+                                        <field name="final_grade"/>
                                     </group>
                                 </group>
                                 <separator string="Evaluation Feedback"/>
@@ -423,3 +439,4 @@
 
     </data>
 </odoo>
+

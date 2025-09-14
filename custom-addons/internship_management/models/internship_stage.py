@@ -345,6 +345,11 @@ class InternshipStage(models.Model):
         string='Defense Date',
         help="Scheduled date for defense presentation"
     )
+    
+    defense_location = fields.Char(
+        string='Defense Location',
+        help="Location where the defense will take place"
+    )
 
     defense_status = fields.Selection([
         ('scheduled', 'Scheduled'),
@@ -441,9 +446,94 @@ class InternshipStage(models.Model):
         """Mark internship as completed."""
         self.write({'state': 'completed'})
 
+    def action_schedule_defense(self):
+        """Schedule defense for completed internship."""
+        self.ensure_one()
+        if self.state != 'completed':
+            raise ValidationError(_("Only completed internships can have their defense scheduled."))
+        
+        # Create communication for defense scheduling
+        self.env['internship.communication'].create({
+            'subject': f'Defense Scheduling Required: {self.title}',
+            'content': f'''
+                <p><strong>Defense Scheduling Required</strong></p>
+                <p>Internship "{self.title}" has been completed and is ready for defense scheduling.</p>
+                <p><strong>Student:</strong> {self.student_id.full_name if self.student_id else 'N/A'}</p>
+                <p><strong>Supervisor:</strong> {self.supervisor_id.name if self.supervisor_id else 'N/A'}</p>
+                <p>Please configure the defense details in the "Defense" tab and assign jury members.</p>
+            ''',
+            'communication_type': 'defense_scheduling',
+            'stage_id': self.id,
+            'sender_id': self.env.user.id,
+            'recipient_ids': [(6, 0, [
+                user_id for user_id in [
+                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
+                ] if user_id
+            ])],
+            'priority': '2',
+            'state': 'sent'
+        })
+        
+        # Just send notification, don't change state
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Defense Scheduling'),
+                'message': _('Please configure defense details in the Defense tab.'),
+                'type': 'info',
+            }
+        }
+
+
     def action_evaluate(self):
         """Mark internship as evaluated."""
-        self.write({'state': 'evaluated'})
+        self.ensure_one()
+        if self.state != 'completed':
+            raise ValidationError(_("Only completed internships can be evaluated."))
+        
+        # Validate defense configuration before evaluation
+        if not self.defense_date:
+            raise ValidationError(_("Defense date must be set before evaluation."))
+        
+        if not self.jury_member_ids:
+            raise ValidationError(_("At least one jury member must be assigned before evaluation."))
+        
+        if not self.defense_grade:
+            raise ValidationError(_("Defense grade must be set before evaluation."))
+        
+        if not self.final_grade:
+            raise ValidationError(_("Final grade must be set before evaluation."))
+        
+        # Update defense status to completed
+        self.write({
+            'state': 'evaluated',
+            'defense_status': 'completed'
+        })
+        
+        # Create communication for evaluation completion
+        self.env['internship.communication'].create({
+            'subject': f'Internship Evaluated: {self.title}',
+            'content': f'''
+                <p><strong>Internship Evaluation Completed</strong></p>
+                <p>Internship "{self.title}" has been fully evaluated.</p>
+                <p><strong>Student:</strong> {self.student_id.full_name if self.student_id else 'N/A'}</p>
+                <p><strong>Defense Grade:</strong> {self.defense_grade}/20</p>
+                <p><strong>Final Grade:</strong> {self.final_grade}/20</p>
+                <p><strong>Defense Date:</strong> {self.defense_date.strftime("%d/%m/%Y %H:%M") if self.defense_date else 'N/A'}</p>
+            ''',
+            'communication_type': 'stage_update',
+            'stage_id': self.id,
+            'sender_id': self.env.user.id,
+            'recipient_ids': [(6, 0, [
+                user_id for user_id in [
+                    self.student_id.user_id.id if self.student_id and self.student_id.user_id else None,
+                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
+                ] if user_id
+            ])],
+            'priority': '1',
+            'state': 'sent'
+        })
 
     def action_cancel(self):
         """Cancel internship."""

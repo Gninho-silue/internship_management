@@ -56,7 +56,9 @@ class InternshipCommunication(models.Model):
         ('approval_request', 'Approval Request'),
         ('deadline_reminder', 'Deadline Reminder'),
         ('stage_update', 'Stage Update'),
-        ('general_announcement', 'General Announcement')
+        ('general_announcement', 'General Announcement'),
+        ('defense_scheduling', 'Defense Scheduling'),
+        ('alert', 'Alert')
     ], string='Communication Type', default='internal_message', tracking=True,
         help="Type of communication being sent")
     
