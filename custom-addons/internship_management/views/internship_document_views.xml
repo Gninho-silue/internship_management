@@ -220,6 +220,12 @@
                                 class="btn-secondary" icon="fa-archive"
                                 invisible="state not in ['approved','rejected']"/>
 
+                        <!-- Feedback Actions -->
+                        <button name="action_add_feedback" string="Add Feedback" type="object"
+                                class="btn-primary" icon="fa-comment"/>
+                        <button name="action_view_feedback" string="View Feedback" type="object"
+                                class="btn-info" icon="fa-list"/>
+
                    <!-- Statusbar -->
                    <field name="state" widget="statusbar"
                           statusbar_visible="draft,submitted,under_review,approved"/>
@@ -261,7 +267,7 @@
                             </group>
                         </group>
 
-                        <!-- Alerts and Notifications -->
+                        <!-- Alerts -->
                    <div class="alert alert-info" role="alert"
                              invisible="state != 'draft'">
                        <i class="fa fa-info-circle"/>
@@ -364,6 +370,32 @@
                                </group>
                            </group>
                        </page>
+
+                       <!-- Document Feedback Page -->
+                       <page string="Feedback" name="feedback">
+                           <group>
+                               <group string="Feedback Statistics">
+                                   <field name="feedback_count"/>
+                                   <field name="pending_feedback_count"/>
+                               </group>
+                               <group string="Recent Activity">
+                                   <field name="last_feedback_date"/>
+                                   <field name="last_reviewer_id"/>
+                               </group>
+                           </group>
+                           <group string="Document Feedback">
+                               <field name="feedback_ids" widget="one2many">
+                                   <tree>
+                                       <field name="feedback_summary"/>
+                                       <field name="reviewer_id"/>
+                                       <field name="feedback_type"/>
+                                       <field name="priority" widget="priority"/>
+                                       <field name="status"/>
+                                       <field name="create_date"/>
+                                   </tree>
+                               </field>
+                           </group>
+                       </page>
                    </notebook>
                </sheet>
 
@@ -371,7 +403,6 @@
                <div class="oe_chatter">
                    <field name="message_follower_ids"/>
                    <field name="activity_ids"/>
-                   <field name="message_ids"/>
                </div>
            </form>
        </field>

@@ -317,6 +317,13 @@ class InternshipMeeting(models.Model):
         help="Documents related to this meeting"
     )
 
+    communication_ids = fields.One2many(
+        'internship.communication',
+        'meeting_id',
+        string='Related Communications',
+        help="Communications related to this meeting"
+    )
+
     # ===============================
     # TECHNICAL FIELDS
     # ===============================
@@ -445,7 +452,6 @@ class InternshipMeeting(models.Model):
     def action_start(self):
         """Start the meeting."""
         self.write({'state': 'in_progress'})
-        self._send_meeting_start_notification()
 
     def action_complete(self):
         """Complete the meeting."""
@@ -462,12 +468,22 @@ class InternshipMeeting(models.Model):
         self.write({'state': 'postponed'})
         self._send_meeting_postponement_email()
 
-    def action_send_reminder(self):
-        """Send reminder to participants."""
-        for meeting in self:
-            meeting._send_meeting_reminder_email()
-            meeting.reminder_sent = True
-            meeting.reminder_date = fields.Datetime.now()
+    def action_open_meeting_communications(self):
+        """Open communications for this meeting."""
+        self.ensure_one()
+        return {
+            'name': f'Meeting Communications - {self.name}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.communication',
+            'view_mode': 'tree,form',
+            'domain': [('meeting_id', '=', self.id)],
+            'context': {
+                'default_meeting_id': self.id,
+                'default_stage_id': self.stage_id.id,
+                'default_sender_id': self.env.user.id,
+            },
+            'target': 'current',
+        }
 
     def action_generate_minutes(self):
         """Generate meeting minutes document."""
@@ -597,29 +613,6 @@ class InternshipMeeting(models.Model):
             except Exception as e:
                 _logger.error(f"Failed to send reminder: {str(e)}")
                 meeting._send_email_with_sudo('reminder')
-
-    def _send_meeting_start_notification(self):
-        """Send meeting start notification."""
-        for meeting in self:
-            if meeting.participant_ids:
-                subject = f"Meeting Started: {meeting.name}"
-                body = self._get_email_template('start', meeting)
-
-                for participant in meeting.participant_ids:
-                    if participant.email:
-                        try:
-                            # Use sudo() for mail creation
-                            self.env['mail.mail'].sudo().create({
-                                'subject': subject,
-                                'body_html': body,
-                                'email_from': meeting.organizer_id.email or self.env.user.email,
-                                'email_to': participant.email,
-                                'auto_delete': True,
-                            }).send()
-
-                            _logger.info(f"Meeting start notification sent to {participant.email}")
-                        except Exception as e:
-                            _logger.error(f"Failed to send start notification to {participant.email}: {str(e)}")
 
     def _send_meeting_summary_email(self):
         """Send meeting summary email."""

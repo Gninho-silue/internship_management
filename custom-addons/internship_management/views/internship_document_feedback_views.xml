@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Document Feedback Tree View -->
+        <record id="view_internship_document_feedback_tree" model="ir.ui.view">
+            <field name="name">internship.document.feedback.tree</field>
+            <field name="model">internship.document.feedback</field>
+            <field name="arch" type="xml">
+                <tree string="Document Feedback" decoration-info="status == 'pending'" decoration-success="status == 'resolved'" decoration-muted="status == 'dismissed'">
+                    <field name="feedback_summary"/>
+                    <field name="document_id"/>
+                    <field name="reviewer_id"/>
+                    <field name="feedback_type"/>
+                    <field name="priority" widget="priority"/>
+                    <field name="status"/>
+                    <field name="create_date"/>
+                    <field name="response_time_hours"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Document Feedback Form View -->
+        <record id="view_internship_document_feedback_form" model="ir.ui.view">
+            <field name="name">internship.document.feedback.form</field>
+            <field name="model">internship.document.feedback</field>
+            <field name="arch" type="xml">
+                <form string="Document Feedback" class="o_feedback_form">
+                    <header>
+                        <button name="action_acknowledge" string="Acknowledge" type="object"
+                                class="btn-info" icon="fa-check"
+                                invisible="status != 'pending'"/>
+                        <button name="action_resolve" string="Resolve" type="object"
+                                class="oe_highlight" icon="fa-check-circle"
+                                invisible="status not in ['pending', 'acknowledged']"/>
+                        <button name="action_dismiss" string="Dismiss" type="object"
+                                class="btn-danger" icon="fa-times"
+                                invisible="status not in ['pending', 'acknowledged']"/>
+                        <button name="action_respond" string="Respond" type="object"
+                                class="btn-primary" icon="fa-reply"
+                                invisible="status in ['resolved', 'dismissed']"/>
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="pending,acknowledged,resolved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="feedback_summary" placeholder="Feedback summary..."/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="document_id"/>
+                                <field name="reviewer_id"/>
+                                <field name="feedback_type"/>
+                                <field name="priority" widget="priority"/>
+                            </group>
+                            <group>
+                                <field name="stage_id" readonly="1"/>
+                                <field name="create_date" readonly="1"/>
+                                <field name="response_time_hours" readonly="1"/>
+                                <field name="is_resolved" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Feedback Details">
+                            <field name="detailed_feedback" widget="html"/>
+                        </group>
+                        <group string="Response" invisible="not response_content">
+                            <field name="response_content" widget="html" readonly="1"/>
+                            <field name="response_by" readonly="1"/>
+                            <field name="response_date" readonly="1"/>
+                        </group>
+                        <group string="Related Communication" invisible="not communication_id">
+                            <field name="communication_id"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Document Feedback Search View -->
+        <record id="view_internship_document_feedback_search" model="ir.ui.view">
+            <field name="name">internship.document.feedback.search</field>
+            <field name="model">internship.document.feedback</field>
+            <field name="arch" type="xml">
+                <search string="Search Document Feedback">
+                    <field name="feedback_summary"/>
+                    <field name="document_id"/>
+                    <field name="reviewer_id"/>
+                    <field name="stage_id"/>
+                    <separator/>
+                    <filter string="Pending" name="pending" domain="[('status', '=', 'pending')]"/>
+                    <filter string="Acknowledged" name="acknowledged" domain="[('status', '=', 'acknowledged')]"/>
+                    <filter string="Resolved" name="resolved" domain="[('status', '=', 'resolved')]"/>
+                    <filter string="Dismissed" name="dismissed" domain="[('status', '=', 'dismissed')]"/>
+                    <separator/>
+                    <filter string="Approval" name="approval" domain="[('feedback_type', '=', 'approval')]"/>
+                    <filter string="Revision Required" name="revision" domain="[('feedback_type', '=', 'revision_required')]"/>
+                    <filter string="Comments" name="comments" domain="[('feedback_type', '=', 'comment')]"/>
+                    <separator/>
+                    <filter string="High Priority" name="high_priority" domain="[('priority', 'in', ['2', '3'])]"/>
+                    <filter string="My Feedback" name="my_feedback" domain="[('reviewer_id', '=', uid)]"/>
+                    <filter string="Feedback on My Documents" name="on_my_docs" domain="[('document_id.stage_id.student_id.user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Unresolved" name="unresolved" domain="[('is_resolved', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Feedback Type" name="group_type" context="{'group_by': 'feedback_type'}"/>
+                        <filter string="Reviewer" name="group_reviewer" context="{'group_by': 'reviewer_id'}"/>
+                        <filter string="Document" name="group_document" context="{'group_by': 'document_id'}"/>
+                        <filter string="Stage" name="group_stage" context="{'group_by': 'stage_id'}"/>
+                        <filter string="Priority" name="group_priority" context="{'group_by': 'priority'}"/>
+                        <filter string="Creation Date" name="group_date" context="{'group_by': 'create_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Document Feedback Kanban View -->
+        <record id="view_internship_document_feedback_kanban" model="ir.ui.view">
+            <field name="name">internship.document.feedback.kanban</field>
+            <field name="model">internship.document.feedback</field>
+            <field name="arch" type="xml">
+                <kanban string="Document Feedback" class="o_feedback_kanban">
+                    <field name="feedback_summary"/>
+                    <field name="document_id"/>
+                    <field name="reviewer_id"/>
+                    <field name="feedback_type"/>
+                    <field name="priority"/>
+                    <field name="status"/>
+                    <field name="create_date"/>
+                    <field name="response_time_hours"/>
+                    <field name="is_resolved"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="feedback_summary"/>
+                                            </strong>
+                                        </div>
+                                        <div class="o_kanban_record_priority">
+                                            <field name="priority" widget="priority"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="o_kanban_record_details">
+                                            <div class="o_kanban_record_subtitle">
+                                                <span t-esc="record.document_id.value"/>
+                                                <span> • </span>
+                                                <span t-esc="record.feedback_type.value"/>
+                                            </div>
+                                            <div class="o_kanban_record_bottom">
+                                                <div class="oe_kanban_bottom_left">
+                                                    <span class="badge badge-info" t-if="record.reviewer_id.value">
+                                                        <i class="fa fa-user"/> <t t-esc="record.reviewer_id.value"/>
+                                                    </span>
+                                                </div>
+                                                <div class="oe_kanban_bottom_right">
+                                                    <span class="badge badge-success" t-if="record.is_resolved.value">
+                                                        Resolved
+                                                    </span>
+                                                    <span class="badge badge-warning" t-elif="record.status.value == 'pending'">
+                                                        Pending
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Document Feedback Actions -->
+        <record id="action_internship_document_feedback_list" model="ir.actions.act_window">
+            <field name="name">Document Feedback</field>
+            <field name="res_model">internship.document.feedback</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_internship_document_feedback_search"/>
+            <field name="context">{'search_default_unresolved': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No document feedback yet!
+                </p>
+                <p>
+                    Document feedback allows supervisors and coordinators to provide
+                    structured comments and approval on student deliverables.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_internship_document_feedback_my" model="ir.actions.act_window">
+            <field name="name">My Feedback</field>
+            <field name="res_model">internship.document.feedback</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_internship_document_feedback_search"/>
+            <field name="domain">[('reviewer_id', '=', uid)]</field>
+            <field name="context">{'search_default_my_feedback': 1}</field>
+        </record>
+
+        <record id="action_internship_document_feedback_pending" model="ir.actions.act_window">
+            <field name="name">Pending Feedback</field>
+            <field name="res_model">internship.document.feedback</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_internship_document_feedback_search"/>
+            <field name="domain">[('status', '=', 'pending')]</field>
+            <field name="context">{'search_default_pending': 1}</field>
+        </record>
+
+    </data>
+</odoo>

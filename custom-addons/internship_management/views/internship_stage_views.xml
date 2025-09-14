@@ -65,6 +65,12 @@
                                 invisible="state == 'draft' or state == 'evaluated'"
                                 groups="internship_management.group_internship_admin"/>
 
+                        <!-- Communication and Feedback Actions -->
+                        <button name="action_open_communications" string="Communications" type="object"
+                                class="btn-info" icon="fa-comments"/>
+                        <button name="action_open_document_feedback" string="Document Feedback" type="object"
+                                class="btn-primary" icon="fa-file-text-o"/>
+
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"
                                statusbar_colors="{'draft': 'secondary', 'submitted': 'warning', 'approved': 'info', 'in_progress': 'primary', 'completed': 'success', 'evaluated': 'success'}"/>
@@ -107,16 +113,34 @@
                             </page>
 
                             <page name="tasks" string="Tasks">
-                                <field name="task_ids">
-                                    <tree editable="bottom">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="name"/>
-                                        <field name="deadline"/>
-                                        <field name="assigned_to"/>
-                                        <field name="state" widget="badge"/>
-                                        <field name="priority" widget="priority"/>
-                                    </tree>
-                                </field>
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="action_create_task" string="Create Task" type="object"
+                                            class="oe_stat_button" icon="fa-plus"
+                                            help="Create a new task for this internship"/>
+                                </div>
+                                <group>
+                                    <group string="Task Statistics">
+                                        <field name="task_count"/>
+                                        <field name="completed_task_count"/>
+                                        <field name="pending_task_count"/>
+                                    </group>
+                                    <group string="Quick Actions">
+                                        <button name="action_open_tasks" string="View All Tasks" type="object"
+                                                class="btn-primary" icon="fa-list"/>
+                                    </group>
+                                </group>
+                                <group string="Recent Tasks">
+                                    <field name="task_ids" widget="one2many">
+                                        <tree>
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="name"/>
+                                            <field name="deadline"/>
+                                            <field name="assigned_to"/>
+                                            <field name="state" widget="badge"/>
+                                            <field name="priority" widget="priority"/>
+                                        </tree>
+                                    </field>
+                                </group>
                             </page>
 
                             <page name="reports" string="Reports and Documents">
@@ -181,6 +205,49 @@
                                     </tree>
                                 </field>
                             </page>
+
+                            <!-- Communications Page -->
+                            <page string="Communications" name="communications">
+                                <group>
+                                    <group string="Communication Statistics">
+                                        <field name="total_communications"/>
+                                        <field name="unread_communications"/>
+                                    </group>
+                                    <group string="Document Feedback Statistics">
+                                        <field name="pending_feedback"/>
+                                        <field name="total_document_feedback"/>
+                                    </group>
+                                </group>
+                                <group string="Recent Communications">
+                                    <field name="communication_ids" widget="one2many">
+                                        <tree>
+                                            <field name="subject"/>
+                                            <field name="communication_type"/>
+                                            <field name="sender_id"/>
+                                            <field name="priority" widget="priority"/>
+                                            <field name="state"/>
+                                            <field name="create_date"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+
+                            <!-- Document Feedback Page -->
+                            <page string="Document Feedback" name="document_feedback">
+                                <group string="Recent Document Feedback">
+                                    <field name="document_feedback_ids" widget="one2many">
+                                        <tree>
+                                            <field name="feedback_summary"/>
+                                            <field name="document_id"/>
+                                            <field name="reviewer_id"/>
+                                            <field name="feedback_type"/>
+                                            <field name="priority" widget="priority"/>
+                                            <field name="status"/>
+                                            <field name="create_date"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
 
@@ -188,7 +255,6 @@
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
                         <field name="activity_ids"/>
-                        <field name="message_ids"/>
                     </div>
                 </form>
             </field>

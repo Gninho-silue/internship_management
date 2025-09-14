@@ -42,6 +42,11 @@
                   parent="menu_internship_root"
                   sequence="50"/>
 
+        <menuitem id="menu_internship_task"
+                  name="Task"
+                  parent="menu_internship_root"
+                  sequence="60"/>
+
         <!-- ================================= -->
         <!-- INTERNSHIPS SUBMENU -->
         <!-- ================================= -->
@@ -112,7 +117,80 @@
                   action="action_internship_meeting_list"
                   sequence="15"
                   groups="group_internship_coordinator,group_internship_admin"/>
-      
+
+        <!-- Communications -->
+        <menuitem id="menu_internship_communication_all"
+                  name="All Communications"
+                  parent="menu_internship_communication"
+                  action="action_internship_communication_list"
+                  sequence="20"/>
+
+        <!-- My Communications -->
+        <menuitem id="menu_internship_communication_my"
+                  name="My Communications"
+                  parent="menu_internship_communication"
+                  action="action_internship_communication_my"
+                  sequence="25"/>
+
+        <!-- Communications to Me -->
+        <menuitem id="menu_internship_communication_to_me"
+                  name="Communications to Me"
+                  parent="menu_internship_communication"
+                  action="action_internship_communication_to_me"
+                  sequence="30"/>
+
+        <!-- Document Feedback -->
+        <menuitem id="menu_internship_document_feedback_all"
+                  name="Document Feedback"
+                  parent="menu_internship_communication"
+                  action="action_internship_document_feedback_list"
+                  sequence="40"/>
+
+        <!-- My Feedback -->
+        <menuitem id="menu_internship_document_feedback_my"
+                  name="My Feedback"
+                  parent="menu_internship_communication"
+                  action="action_internship_document_feedback_my"
+                  sequence="45"/>
+
+        <!-- Pending Feedback -->
+        <menuitem id="menu_internship_document_feedback_pending"
+                  name="Pending Feedback"
+                  parent="menu_internship_communication"
+                  action="action_internship_document_feedback_pending"
+                  sequence="50"/>
+
+        <!-- ================================= -->
+        <!-- TASKS SUBMENU -->
+        <!-- ================================= -->
+
+        <!-- All Tasks -->
+        <menuitem id="menu_internship_todo_all"
+                  name="All Tasks"
+                  parent="menu_internship_task"
+                  action="action_internship_todo_list"
+                  sequence="60"/>
+
+        <!-- My Tasks -->
+        <menuitem id="menu_internship_todo_my"
+                  name="My Tasks"
+                  parent="menu_internship_task"
+                  action="action_internship_todo_my"
+                  sequence="65"/>
+
+        <!-- Overdue Tasks -->
+        <menuitem id="menu_internship_todo_overdue"
+                  name="Overdue Tasks"
+                  parent="menu_internship_task"
+                  action="action_internship_todo_overdue"
+                  sequence="70"/>
+
+        <!-- Tasks Due Today -->
+        <menuitem id="menu_internship_todo_due_today"
+                  name="Tasks Due Today"
+                  parent="menu_internship_task"
+                  action="action_internship_todo_due_today"
+                  sequence="75"/>
 
         
 

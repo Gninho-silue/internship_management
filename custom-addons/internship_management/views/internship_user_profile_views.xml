@@ -55,7 +55,6 @@
                             <group name="stats" string="Usage Statistics">
                                 <field name="last_login" readonly="1"/>
                                 <field name="login_count" readonly="1"/>
-                                <field name="notification_preferences"/>
                             </group>
                         </group>
 
@@ -107,7 +106,6 @@
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
                         <field name="activity_ids"/>
-                        <field name="message_ids"/>
                     </div>
                 </form>
             </field>

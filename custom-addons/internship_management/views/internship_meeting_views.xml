@@ -220,9 +220,10 @@
                         <button name="action_cancel" string="Cancel Meeting" type="object"
                                 class="btn-danger" icon="fa-times"
                                 invisible="state in ['cancelled', 'completed']"/>
-                        <button name="action_send_reminder" string="Send Reminder" type="object"
-                                class="btn-info" icon="fa-bell"
-                                invisible="reminder_sent"/>
+
+                        <!-- Communication Actions -->
+                        <button name="action_open_meeting_communications" string="Meeting Communications" type="object"
+                                class="btn-info" icon="fa-comments"/>
 
                         <!-- Statusbar -->
                         <field name="state" widget="statusbar"
@@ -263,14 +264,6 @@
                             <field name="participant_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
 
-                        <!-- Notifications -->
-                        <group>
-                            <group string="Notifications">
-                                <field name="email_sent"/>
-                                <field name="reminder_sent"/>
-                                <field name="reminder_date"/>
-                            </group>
-                        </group>
 
                         <!-- Alerts -->
                         <div class="alert alert-info" role="alert"
@@ -333,6 +326,22 @@
                                     </tree>
                                 </field>
                             </page>
+
+                            <!-- Meeting Communications Page -->
+                            <page string="Communications" name="communications">
+                                <group string="Meeting Communications">
+                                    <field name="communication_ids" widget="one2many">
+                                        <tree>
+                                            <field name="subject"/>
+                                            <field name="communication_type"/>
+                                            <field name="sender_id"/>
+                                            <field name="priority" widget="priority"/>
+                                            <field name="state"/>
+                                            <field name="create_date"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
 
@@ -340,7 +349,6 @@
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
                         <field name="activity_ids"/>
-                        <field name="message_ids"/>
                     </div>
                 </form>
             </field>

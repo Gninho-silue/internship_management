@@ -534,6 +534,35 @@ class InternshipTodo(models.Model):
     )
 
     # ===============================
+    # ALERT FIELDS
+    # ===============================
+
+    is_overdue = fields.Boolean(
+        string='Overdue',
+        compute='_compute_overdue_status',
+        store=True,
+        help="True if task is past its deadline"
+    )
+
+    days_overdue = fields.Integer(
+        string='Days Overdue',
+        compute='_compute_overdue_status',
+        store=True,
+        help="Number of days the task is overdue"
+    )
+
+    alert_sent = fields.Boolean(
+        string='Alert Sent',
+        default=False,
+        help="True if overdue alert has been sent"
+    )
+
+    last_alert_date = fields.Datetime(
+        string='Last Alert Date',
+        help="When the last overdue alert was sent"
+    )
+
+    # ===============================
     # TECHNICAL FIELDS
     # ===============================
 
@@ -574,7 +603,6 @@ class InternshipTodo(models.Model):
     def action_start(self):
         """Start working on the task."""
         self.write({'state': 'in_progress'})
-        self._send_start_notification()
 
     def action_mark_done(self):
         """Mark task as completed."""
@@ -583,60 +611,107 @@ class InternshipTodo(models.Model):
             'completion_date': fields.Datetime.now(),
             'progress_percentage': 100.0
         })
-        self._send_completion_notification()
 
     def action_cancel(self):
         """Cancel the task."""
         self.write({'state': 'cancelled'})
-        self._send_cancellation_notification()
 
-    def action_reset(self):
-        """Reset task to todo state."""
+    def action_reset_to_pending(self):
+        """Reset task to pending state."""
         self.write({
             'state': 'todo',
             'progress_percentage': 0.0,
             'completion_date': False
         })
 
+    def action_start(self):
+        """Start the task."""
+        self.write({
+            'state': 'in_progress'
+        })
+
+    def action_complete(self):
+        """Complete the task."""
+        self.write({
+            'state': 'done',
+            'completion_date': fields.Datetime.now(),
+            'progress_percentage': 100.0
+        })
+
+    # ===============================
+    # COMPUTED METHODS
+    # ===============================
+
+    @api.depends('deadline', 'state')
+    def _compute_overdue_status(self):
+        """Compute overdue status and days overdue."""
+        today = fields.Datetime.now()
+        for todo in self:
+            if todo.deadline and todo.state in ['todo', 'in_progress']:
+                if todo.deadline < today:
+                    todo.is_overdue = True
+                    delta = today - todo.deadline
+                    todo.days_overdue = delta.days
+                else:
+                    todo.is_overdue = False
+                    todo.days_overdue = 0
+            else:
+                todo.is_overdue = False
+                todo.days_overdue = 0
+
     # ===============================
     # NOTIFICATION METHODS
     # ===============================
 
-    def _send_start_notification(self):
-        """Send notification when task is started."""
-        for todo in self:
-            if todo.assigned_to and todo.assigned_to != self.env.user:
-                self.env['internship.notification'].create({
-                    'title': f'Task Started: {todo.name}',
-                    'message': f'Task "{todo.name}" has been started.',
-                    'user_id': todo.assigned_to.id,
-                    'notification_type': 'info',
-                    'stage_id': todo.stage_id.id,
-                })
+    def send_overdue_alert(self):
+        """Send overdue alert for this task."""
+        self.ensure_one()
+        if not self.is_overdue or self.alert_sent:
+            return
 
-    def _send_completion_notification(self):
-        """Send notification when task is completed."""
-        for todo in self:
-            if todo.created_by and todo.created_by != self.env.user:
-                self.env['internship.notification'].create({
-                    'title': f'Task Completed: {todo.name}',
-                    'message': f'Task "{todo.name}" has been completed.',
-                    'user_id': todo.created_by.id,
-                    'notification_type': 'info',
-                    'stage_id': todo.stage_id.id,
-                })
+        # Create communication for overdue alert
+        self.env['internship.communication'].create({
+            'subject': f'⚠️ Task Overdue: {self.name}',
+            'content': f'''
+                <p><strong>Task Overdue Alert</strong></p>
+                <p>Task "{self.name}" is {self.days_overdue} days overdue.</p>
+                <p><strong>Deadline:</strong> {self.deadline.strftime('%Y-%m-%d %H:%M') if self.deadline else 'Not set'}</p>
+                <p><strong>Assigned to:</strong> {self.assigned_to.name if self.assigned_to else 'Not assigned'}</p>
+                <p><strong>Internship:</strong> {self.stage_id.title}</p>
+                <p>Please take action to complete this task as soon as possible.</p>
+            ''',
+            'communication_type': 'alert',
+            'stage_id': self.stage_id.id,
+            'sender_id': self.env.user.id,
+            'recipient_ids': [(6, 0, [
+                self.assigned_to.user_id.id if self.assigned_to and self.assigned_to.user_id else False,
+                self.stage_id.supervisor_id.user_id.id if self.stage_id.supervisor_id and self.stage_id.supervisor_id.user_id else False
+            ])],
+            'priority': '3',  # High priority
+            'state': 'sent'
+        })
 
-    def _send_cancellation_notification(self):
-        """Send notification when task is cancelled."""
-        for todo in self:
-            if todo.assigned_to and todo.assigned_to != self.env.user:
-                self.env['internship.notification'].create({
-                    'title': f'Task Cancelled: {todo.name}',
-                    'message': f'Task "{todo.name}" has been cancelled.',
-                    'user_id': todo.assigned_to.id,
-                    'notification_type': 'alert',
-                    'stage_id': todo.stage_id.id,
-                })
+        # Update alert status
+        self.write({
+            'alert_sent': True,
+            'last_alert_date': fields.Datetime.now()
+        })
+
+    @api.model
+    def check_overdue_tasks(self):
+        """Check for overdue tasks and send alerts."""
+        overdue_tasks = self.search([
+            ('deadline', '<', fields.Datetime.now()),
+            ('state', 'in', ['todo', 'in_progress']),
+            ('alert_sent', '=', False)
+        ])
+
+        for task in overdue_tasks:
+            task.send_overdue_alert()
+
+        _logger.info(f"Checked {len(overdue_tasks)} overdue tasks and sent alerts")
+        return len(overdue_tasks)
+
 
     # ===============================
     # UTILITY METHODS

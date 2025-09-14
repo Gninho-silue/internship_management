@@ -212,19 +212,75 @@ class InternshipStage(models.Model):
         string='Documents',
         help="All documents related to this internship"
     )
-
-    message_ids = fields.One2many(
-        'internship.message',
+    
+    
+    # ===============================
+    # COMMUNICATION INTEGRATION
+    # ===============================
+    
+    communication_ids = fields.One2many(
+        'internship.communication',
         'stage_id',
-        string='Messages',
-        help="Internal messages for this internship"
+        string='Communications',
+        help="All communications related to this internship"
     )
-
-    notification_ids = fields.One2many(
-        'internship.notification',
+    
+    document_feedback_ids = fields.One2many(
+        'internship.document.feedback',
         'stage_id',
-        string='Notifications',
-        help="System notifications for this internship"
+        string='Document Feedback',
+        help="All feedback on documents for this internship"
+    )
+    
+    # ===============================
+    # COMMUNICATION STATISTICS
+    # ===============================
+    
+    @api.depends('communication_ids', 'document_feedback_ids')
+    def _compute_communication_stats(self):
+        for stage in self:
+            stage.total_communications = len(stage.communication_ids)
+            stage.unread_communications = len(stage.communication_ids.filtered(
+                lambda c: c.state == 'sent' and self.env.user in c.recipient_ids
+            ))
+            stage.pending_feedback = len(stage.document_feedback_ids.filtered(
+                lambda f: f.status == 'pending'
+            ))
+            stage.total_document_feedback = len(stage.document_feedback_ids)
+
+    @api.depends('task_ids', 'task_ids.state')
+    def _compute_task_stats(self):
+        for stage in self:
+            stage.task_count = len(stage.task_ids)
+            stage.completed_task_count = len(stage.task_ids.filtered(
+                lambda t: t.state == 'done'
+            ))
+            stage.pending_task_count = len(stage.task_ids.filtered(
+                lambda t: t.state in ['todo', 'in_progress']
+            ))
+    
+    total_communications = fields.Integer(
+        string='Total Communications',
+        compute='_compute_communication_stats',
+        store=True
+    )
+    
+    unread_communications = fields.Integer(
+        string='Unread Communications',
+        compute='_compute_communication_stats',
+        store=True
+    )
+    
+    pending_feedback = fields.Integer(
+        string='Pending Feedback',
+        compute='_compute_communication_stats',
+        store=True
+    )
+    
+    total_document_feedback = fields.Integer(
+        string='Total Document Feedback',
+        compute='_compute_communication_stats',
+        store=True
     )
 
     meeting_ids = fields.One2many(
@@ -239,6 +295,25 @@ class InternshipStage(models.Model):
         'stage_id',
         string='Tasks',
         help="Tasks and deliverables for this internship"
+    )
+
+    # Task statistics
+    task_count = fields.Integer(
+        string='Total Tasks',
+        compute='_compute_task_stats',
+        store=True
+    )
+
+    completed_task_count = fields.Integer(
+        string='Completed Tasks',
+        compute='_compute_task_stats',
+        store=True
+    )
+
+    pending_task_count = fields.Integer(
+        string='Pending Tasks',
+        compute='_compute_task_stats',
+        store=True
     )
 
     # ===============================
@@ -331,14 +406,17 @@ class InternshipStage(models.Model):
         for stage in stages:
             _logger.info(f"Created internship: {stage.reference_number} - {stage.title}")
 
-            # Create welcome notification for student
+            # Create welcome communication for student
             if stage.student_id and stage.student_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'New Internship Assigned: {stage.title}',
-                    'message': f'You have been assigned to internship "{stage.title}". Please review the details.',
-                    'user_id': stage.student_id.user_id.id,
-                    'notification_type': 'info',
+                self.env['internship.communication'].create({
+                    'subject': f'New Internship Assigned: {stage.title}',
+                    'content': f'<p>You have been assigned to internship "{stage.title}". Please review the details.</p>',
+                    'communication_type': 'system_notification',
                     'stage_id': stage.id,
+                    'sender_id': self.env.user.id,
+                    'recipient_ids': [(6, 0, [stage.student_id.user_id.id])],
+                    'priority': '1',
+                    'state': 'sent'
                 })
 
         return stages
@@ -350,22 +428,18 @@ class InternshipStage(models.Model):
     def action_submit(self):
         """Submit internship for approval."""
         self.write({'state': 'submitted'})
-        self._send_submission_notifications()
 
     def action_approve(self):
         """Approve internship."""
         self.write({'state': 'approved'})
-        self._send_approval_notifications()
 
     def action_start(self):
         """Start internship."""
         self.write({'state': 'in_progress'})
-        self._send_start_notifications()
 
     def action_complete(self):
         """Mark internship as completed."""
         self.write({'state': 'completed'})
-        self._send_completion_notifications()
 
     def action_evaluate(self):
         """Mark internship as evaluated."""
@@ -383,57 +457,38 @@ class InternshipStage(models.Model):
             raise ValidationError(_("Cannot reset an evaluated internship to draft."))
         self.write({'state': 'draft'})
 
-    # ===============================
-    # NOTIFICATION METHODS
-    # ===============================
+    def action_open_communications(self):
+        """Open communications for this internship."""
+        self.ensure_one()
+        return {
+            'name': f'Communications - {self.title}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.communication',
+            'view_mode': 'kanban,tree,form',
+            'domain': [('stage_id', '=', self.id)],
+            'context': {
+                'default_stage_id': self.id,
+                'default_sender_id': self.env.user.id,
+            },
+            'target': 'current',
+        }
+    
+    def action_open_document_feedback(self):
+        """Open document feedback for this internship."""
+        self.ensure_one()
+        return {
+            'name': f'Document Feedback - {self.title}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.document.feedback',
+            'view_mode': 'tree,form',
+            'domain': [('stage_id', '=', self.id)],
+            'context': {
+                'default_stage_id': self.id,
+                'default_reviewer_id': self.env.user.id,
+            },
+            'target': 'current',
+        }
 
-    def _send_submission_notifications(self):
-        """Send notifications when internship is submitted."""
-        for stage in self:
-            if stage.supervisor_id and stage.supervisor_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Internship Submitted for Approval: {stage.title}',
-                    'message': f'Internship "{stage.title}" by {stage.student_id.full_name} needs your approval.',
-                    'user_id': stage.supervisor_id.user_id.id,
-                    'notification_type': 'approval',
-                    'stage_id': stage.id,
-                })
-
-    def _send_approval_notifications(self):
-        """Send notifications when internship is approved."""
-        for stage in self:
-            if stage.student_id and stage.student_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Internship Approved: {stage.title}',
-                    'message': f'Your internship "{stage.title}" has been approved. You can now start!',
-                    'user_id': stage.student_id.user_id.id,
-                    'notification_type': 'info',
-                    'stage_id': stage.id,
-                })
-
-    def _send_start_notifications(self):
-        """Send notifications when internship starts."""
-        for stage in self:
-            if stage.student_id and stage.student_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Internship Started: {stage.title}',
-                    'message': f'Your internship "{stage.title}" has officially started. Good luck!',
-                    'user_id': stage.student_id.user_id.id,
-                    'notification_type': 'info',
-                    'stage_id': stage.id,
-                })
-
-    def _send_completion_notifications(self):
-        """Send notifications when internship is completed."""
-        for stage in self:
-            if stage.supervisor_id and stage.supervisor_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Internship Completed: {stage.title}',
-                    'message': f'Internship "{stage.title}" by {stage.student_id.full_name} is ready for evaluation.',
-                    'user_id': stage.supervisor_id.user_id.id,
-                    'notification_type': 'info',
-                    'stage_id': stage.id,
-                })
 
     # ===============================
     # UTILITY METHODS
@@ -461,3 +516,35 @@ class InternshipStage(models.Model):
                       ('project_description', operator, name)]
 
         return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
+
+    def action_create_task(self):
+        """Open form to create a new task for this internship."""
+        self.ensure_one()
+        return {
+            'name': f'Create Task - {self.title}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.todo',
+            'view_mode': 'form',
+            'view_id': self.env.ref('internship_management.view_internship_todo_form').id,
+            'context': {
+                'default_stage_id': self.id,
+                'default_assigned_to': self.student_id.id if self.student_id else False,
+            },
+            'target': 'new',
+        }
+
+    def action_open_tasks(self):
+        """Open tasks for this internship."""
+        self.ensure_one()
+        return {
+            'name': f'Tasks - {self.title}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.todo',
+            'view_mode': 'kanban,tree,form',
+            'domain': [('stage_id', '=', self.id)],
+            'context': {
+                'default_stage_id': self.id,
+                'default_assigned_to': self.student_id.id if self.student_id else False,
+            },
+            'target': 'current',
+        }

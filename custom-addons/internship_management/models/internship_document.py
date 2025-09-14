@@ -105,6 +105,56 @@ class InternshipDocument(models.Model):
         readonly=True,
         help="User who reviewed this document"
     )
+        # ===============================
+    # FEEDBACK INTEGRATION
+    # ===============================
+    
+    feedback_ids = fields.One2many(
+        'internship.document.feedback',
+        'document_id',
+        string='Feedback',
+        help="All feedback received on this document"
+    )
+    
+    communication_ids = fields.One2many(
+        'internship.communication',
+        'document_id',
+        string='Related Communications',
+        help="Communications related to this document"
+    )
+    
+    # ===============================
+    # FEEDBACK STATISTICS
+    # ===============================
+    
+    @api.depends('feedback_ids')
+    def _compute_feedback_stats(self):
+        for doc in self:
+            doc.total_feedback = len(doc.feedback_ids)
+            doc.pending_feedback = len(doc.feedback_ids.filtered(
+                lambda f: f.status == 'pending'
+            ))
+            doc.approved_feedback = len(doc.feedback_ids.filtered(
+                lambda f: f.feedback_type == 'approval'
+            ))
+    
+    total_feedback = fields.Integer(
+        string='Total Feedback',
+        compute='_compute_feedback_stats',
+        store=True
+    )
+    
+    pending_feedback = fields.Integer(
+        string='Pending Feedback',
+        compute='_compute_feedback_stats',
+        store=True
+    )
+    
+    approved_feedback = fields.Integer(
+        string='Approved Feedback',
+        compute='_compute_feedback_stats',
+        store=True
+    )
 
     # ===============================
     # FILE MANAGEMENT FIELDS
@@ -321,15 +371,18 @@ class InternshipDocument(models.Model):
         for doc in documents:
             _logger.info(f"Created document: {doc.name} for internship {doc.stage_id.title}")
 
-            # Create notification for supervisor if review required
+            # Create communication for supervisor if review required
             if doc.review_required and doc.supervisor_id and doc.supervisor_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'New Document for Review: {doc.name}',
-                    'message': f'Document "{doc.name}" has been submitted for your review.',
-                    'user_id': doc.supervisor_id.user_id.id,
-                    'notification_type': 'approval',
+                self.env['internship.communication'].create({
+                    'subject': f'New Document for Review: {doc.name}',
+                    'content': f'<p>Document "{doc.name}" has been submitted for your review.</p>',
+                    'communication_type': 'approval_request',
                     'stage_id': doc.stage_id.id,
                     'document_id': doc.id,
+                    'sender_id': self.env.user.id,
+                    'recipient_ids': [(6, 0, [doc.supervisor_id.user_id.id])],
+                    'priority': '2',
+                    'state': 'sent'
                 })
 
         return documents
@@ -351,7 +404,6 @@ class InternshipDocument(models.Model):
     def action_submit_for_review(self):
         """Submit document for supervisor review."""
         self.write({'state': 'submitted'})
-        self._send_submission_notification()
 
     def action_start_review(self):
         """Start reviewing the document."""
@@ -367,7 +419,6 @@ class InternshipDocument(models.Model):
             'review_date': fields.Datetime.now(),
             'reviewed_by': self.env.user.id
         })
-        self._send_approval_notification()
 
     def action_reject(self):
         """Reject the document."""
@@ -376,7 +427,6 @@ class InternshipDocument(models.Model):
             'review_date': fields.Datetime.now(),
             'reviewed_by': self.env.user.id
         })
-        self._send_rejection_notification()
 
     def action_archive(self):
         """Archive the document."""
@@ -393,53 +443,87 @@ class InternshipDocument(models.Model):
             'url': f'/web/content?model=internship.document&id={self.id}&field=file&filename_field=filename&download=true',
             'target': 'new',
         }
+    
+    def action_add_feedback(self):
+        """Add feedback to this document."""
+        self.ensure_one()
+        return {
+            'name': f'Add Feedback - {self.name}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.document.feedback',
+            'view_mode': 'form',
+            'context': {
+                'default_document_id': self.id,
+                'default_stage_id': self.stage_id.id,
+                'default_reviewer_id': self.env.user.id,
+            },
+            'target': 'current',
+        }
+    
+    def action_view_feedback(self):
+        """View all feedback for this document."""
+        self.ensure_one()
+        return {
+            'name': f'Feedback - {self.name}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.document.feedback',
+            'view_mode': 'tree,form',
+            'domain': [('document_id', '=', self.id)],
+            'context': {
+                'default_document_id': self.id,
+                'default_stage_id': self.stage_id.id,
+            },
+            'target': 'current',
+        }
 
-    # ===============================
-    # NOTIFICATION METHODS
-    # ===============================
-
-    def _send_submission_notification(self):
-        """Send notification when document is submitted for review."""
-        for doc in self:
-            if doc.supervisor_id and doc.supervisor_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Document Submitted for Review: {doc.name}',
-                    'message': f'Document "{doc.name}" has been submitted for your review.',
-                    'user_id': doc.supervisor_id.user_id.id,
-                    'notification_type': 'approval',
-                    'stage_id': doc.stage_id.id,
-                    'document_id': doc.id,
-                })
-
-    def _send_approval_notification(self):
-        """Send notification when document is approved."""
-        for doc in self:
-            if doc.student_id and doc.student_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Document Approved: {doc.name}',
-                    'message': f'Your document "{doc.name}" has been approved.',
-                    'user_id': doc.student_id.user_id.id,
-                    'notification_type': 'info',
-                    'stage_id': doc.stage_id.id,
-                    'document_id': doc.id,
-                })
-
-    def _send_rejection_notification(self):
-        """Send notification when document is rejected."""
-        for doc in self:
-            if doc.student_id and doc.student_id.user_id:
-                self.env['internship.notification'].create({
-                    'title': f'Document Rejected: {doc.name}',
-                    'message': f'Your document "{doc.name}" has been rejected. Please review comments and resubmit.',
-                    'user_id': doc.student_id.user_id.id,
-                    'notification_type': 'alert',
-                    'stage_id': doc.stage_id.id,
-                    'document_id': doc.id,
-                })
 
     # ===============================
     # UTILITY METHODS
     # ===============================
+
+    # ===============================
+    # FEEDBACK STATISTICS
+    # ===============================
+    
+    @api.depends('feedback_ids')
+    def _compute_feedback_stats(self):
+        for doc in self:
+            doc.feedback_count = len(doc.feedback_ids)
+            doc.pending_feedback_count = len(doc.feedback_ids.filtered(
+                lambda f: f.status == 'pending'
+            ))
+            if doc.feedback_ids:
+                last_feedback = doc.feedback_ids.sorted('create_date', reverse=True)[0]
+                doc.last_feedback_date = last_feedback.create_date
+                doc.last_reviewer_id = last_feedback.reviewer_id
+            else:
+                doc.last_feedback_date = False
+                doc.last_reviewer_id = False
+    
+    feedback_count = fields.Integer(
+        string='Feedback Count',
+        compute='_compute_feedback_stats',
+        store=True
+    )
+    
+    pending_feedback_count = fields.Integer(
+        string='Pending Feedback Count',
+        compute='_compute_feedback_stats',
+        store=True
+    )
+    
+    last_feedback_date = fields.Datetime(
+        string='Last Feedback Date',
+        compute='_compute_feedback_stats',
+        store=True
+    )
+    
+    last_reviewer_id = fields.Many2one(
+        'res.users',
+        string='Last Reviewer',
+        compute='_compute_feedback_stats',
+        store=True
+    )
 
     def name_get(self):
         """Custom name display: Name (Type)."""
