@@ -127,6 +127,39 @@ class InternshipStage(models.Model):
     )
 
     # ===============================
+    # SUBJECT PROPOSAL FIELDS
+    # ===============================
+
+    subject_proposal = fields.Html(
+        string='Subject Proposal',
+        help="Company's proposal for the internship subject (HTML format)"
+    )
+
+    proposal_status = fields.Selection([
+        ('draft', 'Draft'),
+        ('proposed', 'Proposed'),
+        ('accepted', 'Accepted'),
+        ('modifications_requested', 'Modifications Requested'),
+        ('rejected', 'Rejected')
+    ], string='Proposal Status', default='draft', tracking=True,
+       help="Status of the subject proposal")
+
+    proposal_feedback = fields.Html(
+        string='Proposal Feedback',
+        help="Feedback on the subject proposal"
+    )
+
+    proposal_date = fields.Datetime(
+        string='Proposal Date',
+        help="Date when the subject was proposed"
+    )
+
+    proposal_accepted_date = fields.Datetime(
+        string='Accepted Date',
+        help="Date when the proposal was accepted"
+    )
+
+    # ===============================
     # CONTENT FIELDS
     # ===============================
 
@@ -212,7 +245,7 @@ class InternshipStage(models.Model):
         string='Documents',
         help="All documents related to this internship"
     )
-    
+
     
     # ===============================
     # COMMUNICATION INTEGRATION
@@ -224,7 +257,7 @@ class InternshipStage(models.Model):
         string='Communications',
         help="All communications related to this internship"
     )
-    
+
     document_feedback_ids = fields.One2many(
         'internship.document.feedback',
         'stage_id',
@@ -257,6 +290,28 @@ class InternshipStage(models.Model):
             ))
             stage.pending_task_count = len(stage.task_ids.filtered(
                 lambda t: t.state in ['todo', 'in_progress']
+            ))
+
+    @api.depends('presentation_ids', 'presentation_ids.status')
+    def _compute_presentation_stats(self):
+        for stage in self:
+            stage.presentation_count = len(stage.presentation_ids)
+            stage.pending_presentation_count = len(stage.presentation_ids.filtered(
+                lambda p: p.status in ['submitted', 'revision_required']
+            ))
+
+    @api.depends('presentation_ids', 'presentation_ids.is_final_version')
+    def _compute_final_presentation(self):
+        for stage in self:
+            final_presentation = stage.presentation_ids.filtered(lambda p: p.is_final_version)
+            stage.final_presentation_id = final_presentation[0] if final_presentation else False
+
+    @api.depends('meeting_ids', 'meeting_ids.date')
+    def _compute_meeting_stats(self):
+        for stage in self:
+            stage.meeting_count = len(stage.meeting_ids)
+            stage.upcoming_meeting_count = len(stage.meeting_ids.filtered(
+                lambda m: m.date and m.date > fields.Datetime.now()
             ))
     
     total_communications = fields.Integer(
@@ -362,6 +417,51 @@ class InternshipStage(models.Model):
         'internship.supervisor',
         string='Jury Members',
         help="Supervisors assigned as jury members"
+    )
+
+    # PRESENTATION MANAGEMENT
+    presentation_ids = fields.One2many(
+        'internship.presentation',
+        'stage_id',
+        string='Presentations',
+        help="Student presentations for defense"
+    )
+    
+    final_presentation_id = fields.Many2one(
+        'internship.presentation',
+        string='Final Presentation',
+        compute='_compute_final_presentation',
+        store=True,
+        help="Final approved presentation for defense"
+    )
+    
+    presentation_count = fields.Integer(
+        string='Presentation Count',
+        compute='_compute_presentation_stats',
+        store=True,
+        help="Total number of presentations"
+    )
+    
+    pending_presentation_count = fields.Integer(
+        string='Pending Presentations',
+        compute='_compute_presentation_stats',
+        store=True,
+        help="Number of presentations pending review"
+    )
+
+    # Meeting statistics
+    meeting_count = fields.Integer(
+        string='Total Meetings',
+        compute='_compute_meeting_stats',
+        store=True,
+        help="Total number of meetings"
+    )
+
+    upcoming_meeting_count = fields.Integer(
+        string='Upcoming Meetings',
+        compute='_compute_meeting_stats',
+        store=True,
+        help="Number of upcoming meetings"
     )
 
     # ===============================
@@ -547,6 +647,155 @@ class InternshipStage(models.Model):
             raise ValidationError(_("Cannot reset an evaluated internship to draft."))
         self.write({'state': 'draft'})
 
+    # ===============================
+    # SUBJECT PROPOSAL METHODS
+    # ===============================
+
+    def action_propose_subject(self):
+        """Propose subject to student."""
+        self.ensure_one()
+        if not self.subject_proposal:
+            raise ValidationError(_("Please provide a subject proposal before submitting."))
+        
+        self.write({
+            'proposal_status': 'proposed',
+            'proposal_date': fields.Datetime.now(),
+            'state': 'submitted'  # Automatically move to submitted state
+        })
+        
+        # Create communication notification
+        if self.student_id and self.student_id.user_id:
+            self.env['internship.communication'].create({
+                'subject': f'New Subject Proposal: {self.title}',
+                'content': f'''
+                    <p><strong>New Subject Proposal</strong></p>
+                    <p>You have received a new subject proposal for your internship:</p>
+                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
+                        {self.subject_proposal}
+                    </div>
+                    <p>Please review the proposal and either accept it or request modifications.</p>
+                ''',
+                'communication_type': 'approval_request',
+                'stage_id': self.id,
+                'sender_id': self.env.user.id,
+                'recipient_ids': [(6, 0, [self.student_id.user_id.id])],
+                'priority': '2',
+                'state': 'sent'
+            })
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Subject Proposed'),
+                'message': _('Subject proposal has been sent to the student for review.'),
+                'type': 'success',
+            }
+        }
+
+    def action_accept_proposal(self):
+        """Accept the subject proposal."""
+        self.ensure_one()
+        if self.proposal_status != 'proposed':
+            raise ValidationError(_("Only proposed subjects can be accepted."))
+        
+        self.write({
+            'proposal_status': 'accepted',
+            'proposal_accepted_date': fields.Datetime.now(),
+            'state': 'approved'  # Automatically move to approved state
+        })
+        
+        # Automatically start the internship
+        self.action_start()
+        
+        # Create communication notification
+        self.env['internship.communication'].create({
+            'subject': f'Subject Proposal Accepted: {self.title}',
+            'content': f'''
+                <p><strong>Subject Proposal Accepted</strong></p>
+                <p>The subject proposal for internship "{self.title}" has been accepted by {self.student_id.full_name if self.student_id else 'the student'}.</p>
+                <p>The internship can now proceed to the next phase.</p>
+            ''',
+            'communication_type': 'approval_request',
+            'stage_id': self.id,
+            'sender_id': self.env.user.id,
+            'recipient_ids': [(6, 0, [
+                user_id for user_id in [
+                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
+                ] if user_id
+            ])],
+            'priority': '3',
+            'state': 'sent'
+        })
+
+    def action_request_modifications(self):
+        """Request modifications to the subject proposal."""
+        self.ensure_one()
+        if self.proposal_status != 'proposed':
+            raise ValidationError(_("Only proposed subjects can be requested for modifications."))
+        
+        if not self.proposal_feedback:
+            raise ValidationError(_("Please provide feedback explaining the requested modifications."))
+        
+        self.write({
+            'proposal_status': 'modifications_requested',
+            'state': 'draft'  # Return to draft state for modifications
+        })
+        
+        # Create communication notification
+        self.env['internship.communication'].create({
+            'subject': f'Subject Proposal Modifications Requested: {self.title}',
+            'content': f'''
+                <p><strong>Subject Proposal Modifications Requested</strong></p>
+                <p>The subject proposal for internship "{self.title}" requires modifications.</p>
+                <p><strong>Feedback:</strong></p>
+                <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #fff3cd;">
+                    {self.proposal_feedback}
+                </div>
+                <p>Please review the feedback and make the necessary changes.</p>
+            ''',
+            'communication_type': 'approval_request',
+            'stage_id': self.id,
+            'sender_id': self.env.user.id,
+            'recipient_ids': [(6, 0, [
+                user_id for user_id in [
+                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
+                ] if user_id
+            ])],
+            'priority': '1',
+            'state': 'sent'
+        })
+
+    def action_reject_proposal(self):
+        """Reject the subject proposal."""
+        self.ensure_one()
+        if self.proposal_status not in ['proposed', 'modifications_requested']:
+            raise ValidationError(_("Only proposed or modification-requested subjects can be rejected."))
+        
+        self.write({
+            'proposal_status': 'rejected'
+        })
+        
+        # Create communication notification
+        self.env['internship.communication'].create({
+            'subject': f'Subject Proposal Rejected: {self.title}',
+            'content': f'''
+                <p><strong>Subject Proposal Rejected</strong></p>
+                <p>The subject proposal for internship "{self.title}" has been rejected.</p>
+                <p>Please contact the administration for further discussion.</p>
+            ''',
+            'communication_type': 'approval_request',
+            'stage_id': self.id,
+            'sender_id': self.env.user.id,
+            'recipient_ids': [(6, 0, [
+                user_id for user_id in [
+                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
+                ] if user_id
+            ])],
+            'priority': '1',
+            'state': 'sent'
+        })
+
     def action_open_communications(self):
         """Open communications for this internship."""
         self.ensure_one()
@@ -561,6 +810,22 @@ class InternshipStage(models.Model):
                 'default_sender_id': self.env.user.id,
             },
             'target': 'current',
+        }
+
+    def action_create_presentation(self):
+        """Create a new presentation for this internship."""
+        self.ensure_one()
+        return {
+            'name': f'Upload Presentation - {self.title}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.presentation',
+            'view_mode': 'form',
+            'context': {
+                'default_stage_id': self.id,
+                'default_student_id': self.student_id.id if self.student_id else False,
+                'default_supervisor_id': self.supervisor_id.id if self.supervisor_id else False,
+            },
+            'target': 'new',
         }
     
     def action_open_document_feedback(self):
@@ -637,4 +902,28 @@ class InternshipStage(models.Model):
                 'default_assigned_to': self.student_id.id if self.student_id else False,
             },
             'target': 'current',
+        }
+
+    def action_schedule_meeting(self):
+        """Schedule a meeting for this internship."""
+        self.ensure_one()
+        return {
+            'name': f'Schedule Meeting - {self.title}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.meeting',
+            'view_mode': 'form',
+            'context': {
+                'default_stage_id': self.id,
+                'default_student_id': self.student_id.id if self.student_id else False,
+                'default_supervisor_id': self.supervisor_id.id if self.supervisor_id else False,
+                'default_organizer_id': self.env.user.id,
+                'default_participant_ids': [(6, 0, [
+                    user_id for user_id in [
+                        self.student_id.user_id.id if self.student_id and self.student_id.user_id else None,
+                        self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None,
+                        self.env.user.id
+                    ] if user_id
+                ])],
+            },
+            'target': 'new',
         }

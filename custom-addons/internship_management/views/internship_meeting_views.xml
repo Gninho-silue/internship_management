@@ -148,6 +148,27 @@
             </field>
         </record>
 
+        <!-- Meeting Calendar View -->
+        <record id="view_internship_meeting_calendar" model="ir.ui.view">
+            <field name="name">internship.meeting.calendar</field>
+            <field name="model">internship.meeting</field>
+            <field name="arch" type="xml">
+                <calendar string="Meeting Calendar"
+                          date_start="date"
+                          date_stop="end_date"
+                          color="meeting_type"
+                          create="1"
+                          mode="month">
+                    <field name="name"/>
+                    <field name="meeting_type"/>
+                    <field name="stage_id"/>
+                    <field name="organizer_id"/>
+                    <field name="location"/>
+                    <field name="meeting_type_modality"/>
+                </calendar>
+            </field>
+        </record>
+
         <!-- Meeting Search View -->
         <record id="view_internship_meeting_search" model="ir.ui.view">
             <field name="name">internship.meeting.search</field>
@@ -362,7 +383,7 @@
         <record id="action_internship_meeting_list" model="ir.actions.act_window">
             <field name="name">Meetings</field>
             <field name="res_model">internship.meeting</field>
-            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_mode">calendar,kanban,tree,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -378,7 +399,7 @@
         <record id="action_internship_meeting_my" model="ir.actions.act_window">
             <field name="name">My Meetings</field>
             <field name="res_model">internship.meeting</field>
-            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_mode">calendar,kanban,tree,form</field>
             <field name="domain">[('participant_ids', 'in', uid)]</field>
             <field name="context">{'search_default_my_meetings': 1}</field>
             <field name="help" type="html">
@@ -395,7 +416,7 @@
         <record id="action_internship_meeting_organized" model="ir.actions.act_window">
             <field name="name">Meetings I Organize</field>
             <field name="res_model">internship.meeting</field>
-            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_mode">calendar,kanban,tree,form</field>
             <field name="domain">[('organizer_id', '=', uid)]</field>
             <field name="context">{'search_default_organized_by_me': 1}</field>
             <field name="help" type="html">

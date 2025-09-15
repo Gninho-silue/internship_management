@@ -27,9 +27,15 @@ class InternshipDocumentFeedback(models.Model):
     document_id = fields.Many2one(
         'internship.document',
         string='Document',
-        required=True,
         tracking=True,
         help="Document this feedback is about"
+    )
+    
+    presentation_id = fields.Many2one(
+        'internship.presentation',
+        string='Presentation',
+        tracking=True,
+        help="Presentation this feedback is about"
     )
     
     reviewer_id = fields.Many2one(
@@ -225,9 +231,24 @@ class InternshipDocumentFeedback(models.Model):
     # CONSTRAINTS
     # ===============================
     
-    @api.constrains('document_id', 'reviewer_id')
-    def _check_reviewer_access(self):
-        """Ensure reviewer has access to the document."""
+    @api.constrains('document_id', 'presentation_id')
+    def _check_feedback_target(self):
+        """Ensure either document or presentation is specified, but not both."""
         for feedback in self:
-            if feedback.document_id.stage_id.student_id.user_id == feedback.reviewer_id:
-                raise ValidationError(_("Students cannot provide feedback on their own documents."))
+            if not feedback.document_id and not feedback.presentation_id:
+                raise ValidationError(_("Either a document or presentation must be specified."))
+            if feedback.document_id and feedback.presentation_id:
+                raise ValidationError(_("Cannot specify both document and presentation."))
+
+    @api.constrains('document_id', 'presentation_id', 'reviewer_id')
+    def _check_reviewer_access(self):
+        """Ensure reviewer has access to the document or presentation."""
+        for feedback in self:
+            target_stage = None
+            if feedback.document_id:
+                target_stage = feedback.document_id.stage_id
+            elif feedback.presentation_id:
+                target_stage = feedback.presentation_id.stage_id
+            
+            if target_stage and target_stage.student_id.user_id == feedback.reviewer_id:
+                raise ValidationError(_("Students cannot provide feedback on their own documents or presentations."))

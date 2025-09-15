@@ -30,6 +30,12 @@
                     <field name="end_date"/>
                     <field name="duration_days" string="Duration (days)"/>
                     <field name="completion_percentage" widget="progressbar"/>
+                    <field name="proposal_status" widget="badge"
+                           decoration-info="proposal_status=='draft'"
+                           decoration-warning="proposal_status=='proposed'"
+                           decoration-success="proposal_status=='accepted'"
+                           decoration-danger="proposal_status=='modifications_requested'"
+                           decoration-muted="proposal_status=='rejected'"/>
                     <field name="state" widget="badge"
                            decoration-info="state=='draft'"
                            decoration-warning="state=='submitted'"
@@ -54,13 +60,6 @@
                 <form string="Internship">
                     <header>
                         <!-- Boutons d'action selon l'état -->
-                        <button name="action_submit" string="Submit" type="object"
-                                class="oe_highlight" invisible="state != 'draft'"/>
-                        <button name="action_approve" string="Approve" type="object"
-                                class="oe_highlight" invisible="state != 'submitted'"
-                                groups="internship_management.group_internship_supervisor"/>
-                        <button name="action_start" string="Start" type="object"
-                                class="oe_highlight" invisible="state != 'approved'"/>
                         <button name="action_complete" string="Complete" type="object"
                                 class="oe_highlight" invisible="state != 'in_progress'"/>
                         <button name="action_schedule_defense" string="Schedule Defense" type="object"
@@ -80,6 +79,8 @@
                                 class="btn-info" icon="fa-comments"/>
                         <button name="action_open_document_feedback" string="Document Feedback" type="object"
                                 class="btn-primary" icon="fa-file-text-o"/>
+                        <button name="action_schedule_meeting" string="Schedule Meeting" type="object"
+                                class="btn-success" icon="fa-calendar"/>
 
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,submitted,approved,in_progress,completed,evaluated"
@@ -121,7 +122,7 @@
                                        placeholder="List the educational and professional objectives..."
                                        class="oe_form_field_html"/>
                             </page>
-
+                                <!-- Tasks Page -->
                             <page name="tasks" string="Tasks">
                                 <div class="oe_button_box" name="button_box">
                                     <button name="action_create_task" string="Create Task" type="object"
@@ -153,24 +154,119 @@
                                 </group>
                             </page>
 
-                            <page name="reports" string="Reports and Documents">
-                                <div class="oe_button_box" name="button_box">
-                                    <button name="%(action_convention_report)d" string="Internship Agreement" type="action"
-                                            class="oe_stat_button" icon="fa-file-text-o"
-                                            help="Generate internship agreement"/>
-                                    <button name="%(action_attestation_report)d" string="Internship Certificate" type="action"
-                                            class="oe_stat_button" icon="fa-certificate"
-                                            help="Generate internship certificate"
-                                            invisible="state not in ['completed', 'evaluated']"/>
-                                    <button name="%(action_defense_report)d" string="Defense Report" type="action"
-                                            class="oe_stat_button" icon="fa-gavel"
-                                            help="Generate defense proceedings"
-                                            invisible="state not in ['defense_completed', 'evaluated']"/>
-                                    <button name="%(action_evaluation_report)d" string="Evaluation Report" type="action"
-                                            class="oe_stat_button" icon="fa-star"
-                                            help="Generate evaluation report"
-                                            invisible="state != 'evaluated'"/>
+                            <!-- Subject Proposal Page -->
+                            <page name="subject_proposal" string="Subject Proposal">
+                                <header>
+                                    <button name="action_propose_subject" 
+                                            string="Propose Subject" 
+                                            type="object" 
+                                            class="btn-primary"
+                                            invisible="proposal_status != 'draft' or not subject_proposal"/>
+                                    <button name="action_accept_proposal" 
+                                            string="Accept Proposal" 
+                                            type="object" 
+                                            class="btn-success"
+                                            invisible="proposal_status != 'proposed'"/>
+                                    <button name="action_request_modifications" 
+                                            string="Request Modifications" 
+                                            type="object" 
+                                            class="btn-warning"
+                                            invisible="proposal_status != 'proposed'"/>
+                                    <button name="action_reject_proposal" 
+                                            string="Reject Proposal" 
+                                            type="object" 
+                                            class="btn-danger"
+                                            invisible="proposal_status not in ['proposed', 'modifications_requested']"/>
+                                    <field name="proposal_status" widget="statusbar" 
+                                           statusbar_visible="draft,proposed,accepted,modifications_requested,rejected"/>
+                                </header>
+                                
+                                <group>
+                                    <group string="Proposal Information">
+                                        <field name="proposal_date"/>
+                                        <field name="proposal_accepted_date"/>
+                                    </group>
+                                </group>
+                                
+                                <separator string="Subject Proposal"/>
+                                <div class="oe_form_field_html" style="margin: 10px 0;">
+                                    <field name="subject_proposal" nolabel="1" widget="html"
+                                           placeholder="Enter the subject proposal here..."
+                                           style="min-height: 200px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
                                 </div>
+                                
+                                <separator string="Feedback" invisible="proposal_status not in ['modifications_requested', 'rejected']"/>
+                                <div class="oe_form_field_html" style="margin: 10px 0;" invisible="proposal_status not in ['modifications_requested', 'rejected']">
+                                    <field name="proposal_feedback" nolabel="1" widget="html"
+                                           placeholder="Enter feedback on the proposal..."
+                                           style="min-height: 150px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
+                                </div>
+                            </page>
+                            
+
+                            <!-- Meetings Page -->
+                            <page name="meetings" string="Meetings">
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="action_schedule_meeting" 
+                                            type="object" 
+                                            class="oe_stat_button" 
+                                            icon="fa-calendar-plus-o"
+                                            string="Schedule Meeting"
+                                            help="Schedule a new meeting"/>
+                                    <button name="%(action_internship_meeting_list)d" 
+                                            type="action" 
+                                            class="oe_stat_button" 
+                                            icon="fa-calendar"
+                                            string="All Meetings"
+                                            help="View all meetings"/>
+                                </div>
+                                
+                                <group>
+                                    <group string="Meeting Statistics">
+                                        <field name="meeting_count" widget="statinfo" string="Total Meetings"/>
+                                        <field name="upcoming_meeting_count" widget="statinfo" string="Upcoming"/>
+                                    </group>
+                                </group>
+                                
+                                <separator string="Recent Meetings"/>
+                                <field name="meeting_ids" readonly="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="meeting_type" widget="badge"/>
+                                        <field name="date"/>
+                                        <field name="duration"/>
+                                        <field name="organizer_id"/>
+                                        <field name="state" widget="badge"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <!-- Documents Page -->
+                            <page name="documents" string="Documents">
+                                <field name="document_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="document_type"/>
+                                        <field name="date_upload"/>
+                                        <field name="state" widget="badge"/>
+                                    </tree>
+                                </field>
+                            </page>
+                             <!-- Document Feedback Page -->
+                            <page string="Document Feedback" name="document_feedback">
+                                <group string="Recent Document Feedback">
+                                    <field name="document_feedback_ids" widget="one2many">
+                                        <tree>
+                                            <field name="feedback_summary"/>
+                                            <field name="document_id"/>
+                                            <field name="reviewer_id"/>
+                                            <field name="feedback_type"/>
+                                            <field name="priority" widget="priority"/>
+                                            <field name="status"/>
+                                            <field name="create_date"/>
+                                        </tree>
+                                    </field>
+                                </group>
                             </page>
 
                             <!-- Defense & Evaluation Page -->
@@ -200,26 +296,64 @@
                                 </div>
                             </page>
 
-                            <page name="documents" string="Documents">
-                                <field name="document_ids">
+                            <!-- Presentations Page -->
+                            <page name="presentations" string="Presentations">
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="action_create_presentation" 
+                                            type="object" 
+                                            class="oe_stat_button" 
+                                            icon="fa-upload"
+                                            string="Upload Presentation"
+                                            help="Upload a new presentation"/>
+                                    <button name="%(action_internship_presentation)d" 
+                                            type="action" 
+                                            class="oe_stat_button" 
+                                            icon="fa-file-powerpoint-o"
+                                            string="All Presentations"
+                                            help="View all presentations"/>
+                                </div>
+                                
+                                <group>
+                                    <group string="Presentation Statistics">
+                                        <field name="presentation_count" widget="statinfo" string="Total Presentations"/>
+                                        <field name="pending_presentation_count" widget="statinfo" string="Pending Review"/>
+                                    </group>
+                                    <group string="Final Presentation">
+                                        <field name="final_presentation_id"/>
+                                    </group>
+                                </group>
+                                
+                                <separator string="Recent Presentations"/>
+                                <field name="presentation_ids" readonly="1">
                                     <tree>
                                         <field name="name"/>
-                                        <field name="document_type"/>
-                                        <field name="date_upload"/>
-                                        <field name="state" widget="badge"/>
+                                        <field name="version"/>
+                                        <field name="status" widget="badge"/>
+                                        <field name="file_type"/>
+                                        <field name="submission_date"/>
+                                        <field name="is_final_version"/>
                                     </tree>
                                 </field>
                             </page>
-
-                            <page name="meetings" string="Meetings">
-                                <field name="meeting_ids">
-                                    <tree>
-                                        <field name="name"/>
-                                        <field name="date"/>
-                                        <field name="meeting_type"/>
-                                        <field name="state" widget="badge"/>
-                                    </tree>
-                                </field>
+                             <!-- Reports and Documents Page -->
+                            <page name="reports" string="Reports and Documents">
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="%(action_convention_report)d" string="Internship Agreement" type="action"
+                                            class="oe_stat_button" icon="fa-file-text-o"
+                                            help="Generate internship agreement"/>
+                                    <button name="%(action_attestation_report)d" string="Internship Certificate" type="action"
+                                            class="oe_stat_button" icon="fa-certificate"
+                                            help="Generate internship certificate"
+                                            invisible="state not in ['completed', 'evaluated']"/>
+                                    <button name="%(action_defense_report)d" string="Defense Report" type="action"
+                                            class="oe_stat_button" icon="fa-gavel"
+                                            help="Generate defense proceedings"
+                                            invisible="state not in ['defense_completed', 'evaluated']"/>
+                                    <button name="%(action_evaluation_report)d" string="Evaluation Report" type="action"
+                                            class="oe_stat_button" icon="fa-star"
+                                            help="Generate evaluation report"
+                                            invisible="state != 'evaluated'"/>
+                                </div>
                             </page>
 
                             <!-- Communications Page -->
@@ -248,22 +382,7 @@
                                 </group>
                             </page>
 
-                            <!-- Document Feedback Page -->
-                            <page string="Document Feedback" name="document_feedback">
-                                <group string="Recent Document Feedback">
-                                    <field name="document_feedback_ids" widget="one2many">
-                                        <tree>
-                                            <field name="feedback_summary"/>
-                                            <field name="document_id"/>
-                                            <field name="reviewer_id"/>
-                                            <field name="feedback_type"/>
-                                            <field name="priority" widget="priority"/>
-                                            <field name="status"/>
-                                            <field name="create_date"/>
-                                        </tree>
-                                    </field>
-                                </group>
-                            </page>
+                           
                         </notebook>
                     </sheet>
 

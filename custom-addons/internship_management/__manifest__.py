@@ -65,6 +65,7 @@ Developed as a professional-grade application following Odoo best practices.
         'reports/internship_reports.xml',
 
         # Views
+        'views/internship_presentation_views.xml',
         'views/internship_stage_views.xml',
         'views/internship_student_views.xml',
         'views/internship_supervisor_views.xml',
