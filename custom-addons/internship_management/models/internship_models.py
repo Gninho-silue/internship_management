@@ -698,6 +698,64 @@ class InternshipTodo(models.Model):
         })
 
     @api.model
+    def create(self, vals):
+        """Override create to automatically assign tasks based on creator."""
+        # Get the creator
+        creator = self.env.user
+        
+        # Debug logging
+        _logger.info(f"Task creator: {creator.name} (ID: {creator.id})")
+        
+        # Check if creator is a student
+        student = self.env['internship.student'].search([('user_id', '=', creator.id)], limit=1)
+        _logger.info(f"Found student: {student.full_name if student else 'None'}")
+        
+        # Check if creator is a supervisor
+        supervisor = self.env['internship.supervisor'].search([('user_id', '=', creator.id)], limit=1)
+        _logger.info(f"Found supervisor: {supervisor.name if supervisor else 'None'}")
+        
+        # Auto-assign based on creator type
+        if student and not vals.get('assigned_to'):
+            # Student creates task → assign to themselves
+            vals['assigned_to'] = creator.id
+            _logger.info(f"Task auto-assigned to student: {creator.name}")
+            
+        elif supervisor and not vals.get('assigned_to'):
+            # Supervisor creates task → assign to student of the stage
+            if vals.get('stage_id'):
+                stage = self.env['internship.stage'].browse(vals['stage_id'])
+                _logger.info(f"Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
+                if stage.student_id and stage.student_id.user_id:
+                    vals['assigned_to'] = stage.student_id.user_id.id
+                    _logger.info(f"Task auto-assigned to student: {stage.student_id.full_name}")
+                else:
+                    _logger.warning(f"No student found for stage {stage.title}")
+            else:
+                _logger.warning("No stage_id provided for supervisor task creation")
+        elif not vals.get('assigned_to'):
+            # Fallback: Check if user has supervisor role in groups
+            if creator.has_group('internship_management.group_internship_supervisor'):
+                # User has supervisor role → assign to student of the stage
+                if vals.get('stage_id'):
+                    stage = self.env['internship.stage'].browse(vals['stage_id'])
+                    _logger.info(f"Fallback: Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
+                    if stage.student_id and stage.student_id.user_id:
+                        vals['assigned_to'] = stage.student_id.user_id.id
+                        _logger.info(f"Task auto-assigned to student (fallback): {stage.student_id.full_name}")
+                    else:
+                        _logger.warning(f"No student found for stage {stage.title}")
+                else:
+                    _logger.warning("No stage_id provided for supervisor task creation (fallback)")
+            elif creator.has_group('internship_management.group_internship_student'):
+                # User has student role → assign to themselves
+                vals['assigned_to'] = creator.id
+                _logger.info(f"Task auto-assigned to student (fallback): {creator.name}")
+            else:
+                _logger.info(f"No auto-assignment: student={bool(student)}, supervisor={bool(supervisor)}, assigned_to={vals.get('assigned_to')}")
+        
+        return super().create(vals)
+
+    @api.model
     def check_overdue_tasks(self):
         """Check for overdue tasks and send alerts."""
         overdue_tasks = self.search([

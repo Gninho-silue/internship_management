@@ -72,7 +72,7 @@
                         <group>
                             <group name="basic_info" string="Basic Information">
                                 <field name="stage_id" options="{'no_create': True}"/>
-                                <field name="assigned_to" options="{'no_create': True}"/>
+                                <field name="assigned_to" options="{'no_create': True}" readonly="1"/>
                                 <field name="priority" widget="radio" options="{'horizontal': true}"/>
                                 <field name="deadline"/>
                             </group>

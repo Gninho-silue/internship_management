@@ -334,21 +334,6 @@
                   sequence="20"
                   groups="group_internship_coordinator,group_internship_admin"/>
 
-        <!-- Languages -->
-        <menuitem id="menu_internship_languages"
-                  name="Languages"
-                  parent="menu_internship_config"
-                  action="action_internship_language_list"
-                  sequence="30"
-                  groups="group_internship_admin"/>
-
-        <!-- User Profiles -->
-        <menuitem id="menu_internship_user_profiles"
-                  name="User Profiles"
-                  parent="menu_internship_config"
-                  action="action_internship_user_profile_list"
-                  sequence="40"
-                  groups="group_internship_admin"/>
 
 
         <!-- Security Settings Menu Action -->

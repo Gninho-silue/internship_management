@@ -216,29 +216,7 @@
             <field name="perm_unlink" eval="True"/>
         </record>
        
-        <!-- Rule: User Profiles - Users see their own profile -->
-        <record id="internship_user_profile_rule_own" model="ir.rule">
-            <field name="name">User Profiles: Own profile only</field>
-            <field name="model_id" ref="model_internship_user_profile"/>
-            <field name="domain_force">[('user_id', '=', user.id)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
 
-        <!-- Rule: User Profiles - Coordinators see all profiles -->
-        <record id="internship_user_profile_rule_coordinator" model="ir.rule">
-            <field name="name">User Profiles: Coordinator full access</field>
-            <field name="model_id" ref="model_internship_user_profile"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
 
         <!-- =============================================== -->
         <!-- DOMAIN RULES FOR TASKS -->

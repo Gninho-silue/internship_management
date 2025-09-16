@@ -54,7 +54,6 @@ Developed as a professional-grade application following Odoo best practices.
 
         # Base data
         'data/sequences.xml',
-        'data/internship_language_data.xml',
         'data/internship_cron.xml',
 
         # Reports
@@ -73,7 +72,6 @@ Developed as a professional-grade application following Odoo best practices.
         'views/internship_security_views.xml',
         'views/internship_document_views.xml',
         'views/internship_meeting_views.xml',
-        'views/internship_user_profile_views.xml',
         'views/internship_communication_views.xml',
         'views/internship_document_feedback_views.xml',
         'views/internship_todo_views.xml',
