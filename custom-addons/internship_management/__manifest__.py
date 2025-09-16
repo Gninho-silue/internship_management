@@ -77,6 +77,7 @@ Developed as a professional-grade application following Odoo best practices.
         'views/internship_communication_views.xml',
         'views/internship_document_feedback_views.xml',
         'views/internship_todo_views.xml',
+        'views/internship_dashboard_views.xml',
 
         # Menus (last)
         'views/internship_menus.xml',
@@ -85,12 +86,12 @@ Developed as a professional-grade application following Odoo best practices.
     # Assets 
     'assets': {
         'web.assets_backend': [
+    
         ],
     },
     # Demo data
     'demo': [
         'data/internship_demo_data.xml',
-        'data/internship_communication_test_data.xml',
     ],
 
     # Technical settings

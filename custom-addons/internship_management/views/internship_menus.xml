@@ -54,25 +54,40 @@
                   parent="menu_internship_root"
                   sequence="70"/>
 
-        
+
         <!-- ================================= -->
         <!-- INTERNSHIPS SUBMENU -->
         <!-- ================================= -->
 
         <!-- Dashboard -->
-        <!-- <menuitem id="menu_internship_dashboard"
+        <menuitem id="menu_internship_dashboard_admin"
                   name="Dashboard"
                   parent="menu_internship_stages"
-                  action="action_internship_executive_dashboard"
-                  sequence="5"/> -->
+                  action="action_internship_dashboard_admin"
+                  sequence="5"
+                  groups="group_internship_admin"/>
 
-        <!-- All Internships (Admin/Supervisor only) -->
+        <menuitem id="menu_internship_dashboard_supervisor"
+                  name="Dashboard"
+                  parent="menu_internship_stages"
+                  action="action_internship_dashboard_supervisor"
+                  sequence="5"
+                  groups="group_internship_supervisor"/>
+
+        <menuitem id="menu_internship_dashboard_student"
+                  name="Dashboard"
+                  parent="menu_internship_stages"
+                  action="action_internship_dashboard_student"
+                  sequence="5"
+                  groups="group_internship_student"/>
+
+        <!-- All Internships (Admin only) -->
         <menuitem id="menu_internship_stage_all"
                   name="All Internships"
                   parent="menu_internship_stages"
                   action="action_internship_stage_list"
                   sequence="10"
-                  groups="group_internship_admin,group_internship_supervisor"/>
+                  groups="group_internship_admin"/>
 
         <!-- My Internships (for students) -->
         <menuitem id="menu_internship_stage_my"
@@ -114,70 +129,59 @@
         <!-- AGENDA SUBMENU -->
         <!-- ================================= -->
 
-        <!-- All Meetings (Admin/Supervisor only) -->
+        <!-- All Meetings (Admin only) -->
         <menuitem id="menu_internship_meeting_all"
                   name="All Meetings"
                   parent="menu_internship_communication"
                   action="action_internship_meeting_list"
                   sequence="10"
-                  groups="group_internship_admin,group_internship_supervisor"/>
+                  groups="group_internship_admin"/>
 
-        <!-- My Meetings -->
+        <!-- Meetings (Supervisor/Student: organizer or participant) -->
         <menuitem id="menu_internship_meeting_my"
-                  name="My Meetings"
+                  name="Meetings"
                   parent="menu_internship_communication"
                   action="action_internship_meeting_my"
-                  sequence="15"/>
+                  sequence="15"
+                  groups="group_internship_supervisor,group_internship_student"/>
 
-        <!-- Meetings I Organize -->
-        <menuitem id="menu_internship_meeting_organized"
-                  name="Meetings I Organize"
+        <!-- Communications (Supervisor/Student: sent or received) -->
+        <menuitem id="menu_internship_communication_my"
+                  name="Communications"
                   parent="menu_internship_communication"
-                  action="action_internship_meeting_organized"
-                  sequence="20"/>
+                  action="action_internship_communication_my"
+                  sequence="20"
+                  groups="group_internship_supervisor,group_internship_student"/>
 
-        <!-- All Communications (Admin/Supervisor only) -->
+        <!-- All Communications (Admin only) -->
         <menuitem id="menu_internship_communication_all"
                   name="All Communications"
                   parent="menu_internship_communication"
                   action="action_internship_communication_list"
-                  sequence="20"
-                  groups="group_internship_admin,group_internship_supervisor"/>
-
-        <!-- My Communications -->
-        <menuitem id="menu_internship_communication_my"
-                  name="My Communications"
-                  parent="menu_internship_communication"
-                  action="action_internship_communication_my"
-                  sequence="25"/>
-
-        <!-- Communications to Me -->
-        <menuitem id="menu_internship_communication_to_me"
-                  name="Communications to Me"
-                  parent="menu_internship_communication"
-                  action="action_internship_communication_to_me"
-                  sequence="30"/>
+                  sequence="25"
+                  groups="group_internship_admin"/>
 
         <!-- ================================= -->
         <!-- DOCUMENTS SUBMENU -->
         <!-- ================================= -->
 
-        <!-- All Documents (Admin/Supervisor only) -->
+        <!-- All Documents (Admin only) -->
         <menuitem id="menu_internship_document_all"
                   name="All Documents"
                   parent="menu_internship_documents"
                   action="action_internship_document_list"
                   sequence="10"
-                  groups="group_internship_admin,group_internship_supervisor"/>
+                  groups="group_internship_admin"/>
 
-        <!-- My Documents -->
+        <!-- My Documents (Supervisor: documents he created) -->
         <menuitem id="menu_internship_document_my"
                   name="My Documents"
                   parent="menu_internship_documents"
                   action="action_internship_document_my"
-                  sequence="15"/>
+                  sequence="15"
+                  groups="group_internship_supervisor"/>
 
-        <!-- Documents to Review (Supervisor only) -->
+        <!-- Documents to Review (Supervisor: documents from supervised interns) -->
         <menuitem id="menu_internship_document_to_review"
                   name="Documents to Review"
                   parent="menu_internship_documents"
@@ -185,26 +189,27 @@
                   sequence="20"
                   groups="group_internship_supervisor"/>
 
+        <!-- My Documents (Student: documents he created) -->
+        <menuitem id="menu_internship_document_my_student"
+                  name="My Documents"
+                  parent="menu_internship_documents"
+                  action="action_internship_document_my"
+                  sequence="25"
+                  groups="group_internship_student"/>
+
         <!-- ================================= -->
         <!-- PRESENTATIONS SUBMENU -->
         <!-- ================================= -->
 
-        <!-- All Presentations (Admin/Supervisor only) -->
+        <!-- All Presentations (Admin only) -->
         <menuitem id="menu_internship_presentation_all"
                   name="All Presentations"
                   parent="menu_internship_documents"
                   action="action_internship_presentation"
-                  sequence="25"
-                  groups="group_internship_admin,group_internship_supervisor"/>
+                  sequence="30"
+                  groups="group_internship_admin"/>
 
-        <!-- My Presentations -->
-        <menuitem id="menu_internship_presentation_my"
-                  name="My Presentations"
-                  parent="menu_internship_documents"
-                  action="action_my_presentations"
-                  sequence="30"/>
-
-        <!-- Presentations to Review (Supervisor only) -->
+        <!-- Presentations to Review (Supervisor: presentations from supervised interns) -->
         <menuitem id="menu_internship_presentation_to_review"
                   name="Presentations to Review"
                   parent="menu_internship_documents"
@@ -212,53 +217,63 @@
                   sequence="35"
                   groups="group_internship_supervisor"/>
 
+        <!-- My Presentations (Student: presentations he created) -->
+        <menuitem id="menu_internship_presentation_my"
+                  name="My Presentations"
+                  parent="menu_internship_documents"
+                  action="action_my_presentations"
+                  sequence="40"
+                  groups="group_internship_student"/>
+
         <!-- ================================= -->
         <!-- DOCUMENT FEEDBACK SUBMENU -->
         <!-- ================================= -->
 
-        <!-- Document Feedback (Admin/Supervisor only) -->
+        <!-- All Feedback (Admin only) -->
         <menuitem id="menu_internship_document_feedback_all"
-                  name="Document Feedback"
+                  name="All Feedback"
                   parent="menu_internship_documents"
                   action="action_internship_document_feedback_list"
-                  sequence="40"
-                  groups="group_internship_admin,group_internship_supervisor"/>
+                  sequence="45"
+                  groups="group_internship_admin"/>
 
-        <!-- My Feedback -->
+        <!-- My Feedback (Supervisor: feedback on his documents or that he created) -->
         <menuitem id="menu_internship_document_feedback_my"
                   name="My Feedback"
                   parent="menu_internship_documents"
                   action="action_internship_document_feedback_my"
-                  sequence="45"/>
-
-        <!-- Pending Feedback (Supervisor only) -->
-        <menuitem id="menu_internship_document_feedback_pending"
-                  name="Pending Feedback"
-                  parent="menu_internship_documents"
-                  action="action_internship_document_feedback_pending"
                   sequence="50"
                   groups="group_internship_supervisor"/>
+
+        <!-- My Feedback (Student: feedback on his documents) -->
+        <menuitem id="menu_internship_document_feedback_my_student"
+                  name="My Feedback"
+                  parent="menu_internship_documents"
+                  action="action_internship_document_feedback_my"
+                  sequence="55"
+                  groups="group_internship_student"/>
 
         <!-- ================================= -->
         <!-- TASKS SUBMENU -->
         <!-- ================================= -->
 
-        <!-- All Tasks (Admin/Supervisor only) -->
+        <!-- All Tasks (Admin only) -->
         <menuitem id="menu_internship_todo_all"
                   name="All Tasks"
                   parent="menu_internship_task"
                   action="action_internship_todo_list"
                   sequence="60"
-                  groups="group_internship_admin,group_internship_supervisor"/>
+                  groups="group_internship_admin"/>
 
-        <!-- My Tasks -->
+        <!-- My Tasks (Supervisor/Student: tasks assigned to them) -->
         <menuitem id="menu_internship_todo_my"
                   name="My Tasks"
                   parent="menu_internship_task"
                   action="action_internship_todo_my"
-                  sequence="65"/>
+                  sequence="65"
+                  groups="group_internship_supervisor,group_internship_student"/>
 
-        <!-- Overdue Tasks (Supervisor only) -->
+        <!-- Overdue Tasks (Supervisor: tasks from supervised interns that are overdue) -->
         <menuitem id="menu_internship_todo_overdue"
                   name="Overdue Tasks"
                   parent="menu_internship_task"
@@ -266,7 +281,7 @@
                   sequence="70"
                   groups="group_internship_supervisor"/>
 
-        <!-- Tasks Due Today (Supervisor only) -->
+        <!-- Tasks Due Today (Supervisor: tasks from supervised interns due today) -->
         <menuitem id="menu_internship_todo_due_today"
                   name="Tasks Due Today"
                   parent="menu_internship_task"
