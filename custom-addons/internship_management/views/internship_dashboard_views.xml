@@ -42,6 +42,7 @@
                         .card-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
                         .card-warning { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
                         .card-info { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+                        .card-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
                         .card-light { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
                         .card-orange { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
                         .card-pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
@@ -99,6 +100,37 @@
                                 <field name="date_to"/>
                             </group>
                         </group>
+                        
+                        <!-- Alerts Section -->
+                        <div class="section-title">
+                            <h3>🚨 System Alerts</h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-danger">
+                                    <h2><field name="active_alerts"/></h2>
+                                    <p>Active Alerts</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-danger">
+                                    <h2><field name="high_priority_alerts"/></h2>
+                                    <p>High Priority</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-warning">
+                                    <h2><field name="overdue_tasks_alerts"/></h2>
+                                    <p>Overdue Tasks</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-info">
+                                    <h2><field name="total_alerts"/></h2>
+                                    <p>Total Alerts</p>
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- Core Statistics -->
                         <div class="section-title">
@@ -234,6 +266,7 @@
                         .card-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
                         .card-warning { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
                         .card-info { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+                        .card-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
                         .card-light { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
                         .card-orange { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
                         .card-pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
@@ -319,6 +352,37 @@
                             </div>
                         </div>
                         
+                        <!-- Alerts Section -->
+                        <div class="section-title">
+                            <h3>🚨 Active Alerts</h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-danger">
+                                    <h2><field name="active_alerts"/></h2>
+                                    <p>Active Alerts</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-danger">
+                                    <h2><field name="high_priority_alerts"/></h2>
+                                    <p>High Priority</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-warning">
+                                    <h2><field name="overdue_tasks_alerts"/></h2>
+                                    <p>Overdue Tasks</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-info">
+                                    <h2><field name="total_alerts"/></h2>
+                                    <p>Total Alerts</p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Reviews &amp; Tasks -->
                         <div class="section-title">
                             <h3>Reviews &amp; Tasks Management</h3>
@@ -391,6 +455,7 @@
                         .card-success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
                         .card-warning { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
                         .card-info { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+                        .card-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
                         .card-light { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
                         .card-orange { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
                         .card-pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #333; }
@@ -444,6 +509,37 @@
                                 <field name="date_to"/>
                             </group>
                         </group>
+                        
+                        <!-- My Alerts -->
+                        <div class="section-title">
+                            <h3>🚨 My Alerts</h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-danger">
+                                    <h2><field name="active_alerts"/></h2>
+                                    <p>Active Alerts</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-danger">
+                                    <h2><field name="high_priority_alerts"/></h2>
+                                    <p>High Priority</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-warning">
+                                    <h2><field name="overdue_tasks_alerts"/></h2>
+                                    <p>Overdue Tasks</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dashboard-card card-info">
+                                    <h2><field name="total_alerts"/></h2>
+                                    <p>Total Alerts</p>
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- My Internships -->
                         <div class="section-title">

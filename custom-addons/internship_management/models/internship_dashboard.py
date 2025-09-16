@@ -56,6 +56,12 @@ class InternshipDashboard(models.TransientModel):
     # Meeting Statistics
     total_meetings = fields.Integer(string='Total Meetings', compute='_compute_statistics')
     upcoming_meetings = fields.Integer(string='Upcoming Meetings', compute='_compute_statistics')
+    
+    # Alert Statistics
+    total_alerts = fields.Integer(string='Total Alerts', compute='_compute_statistics')
+    active_alerts = fields.Integer(string='Active Alerts', compute='_compute_statistics')
+    high_priority_alerts = fields.Integer(string='High Priority Alerts', compute='_compute_statistics')
+    overdue_tasks_alerts = fields.Integer(string='Overdue Tasks Alerts', compute='_compute_statistics')
 
     # Communication Statistics
     total_communications = fields.Integer(string='Total Communications', compute='_compute_statistics')
@@ -123,6 +129,19 @@ class InternshipDashboard(models.TransientModel):
             dashboard.total_meetings = self.env['internship.meeting'].search_count(meeting_domain)
             dashboard.upcoming_meetings = self.env['internship.meeting'].search_count(
                 meeting_domain + [('date', '>', fields.Datetime.now())]
+            )
+            
+            # Alert Statistics
+            alert_domain = self._get_alert_domain()
+            dashboard.total_alerts = self.env['internship.alert'].search_count(alert_domain)
+            dashboard.active_alerts = self.env['internship.alert'].search_count(
+                alert_domain + [('state', '=', 'active')]
+            )
+            dashboard.high_priority_alerts = self.env['internship.alert'].search_count(
+                alert_domain + [('priority', '=', '1')]
+            )
+            dashboard.overdue_tasks_alerts = self.env['internship.alert'].search_count(
+                alert_domain + [('alert_type', '=', 'task_overdue')]
             )
 
             # Communication Statistics
@@ -266,6 +285,28 @@ class InternshipDashboard(models.TransientModel):
         elif self.dashboard_type == 'student':
             # Student sees meetings they organize or participate in
             domain = ['|', ('organizer_id', '=', self.env.user.id), ('participant_ids', 'in', self.env.user.id)]
+        
+        return domain
+
+    def _get_alert_domain(self):
+        """Get alert domain based on dashboard type."""
+        domain = []
+        
+        if self.dashboard_type == 'supervisor':
+            # Supervisor sees alerts for their supervised internships
+            supervised_stages = self.env['internship.stage'].search([
+                ('supervisor_id.user_id', '=', self.env.user.id)
+            ])
+            stage_ids = supervised_stages.ids
+            domain = [('stage_id', 'in', stage_ids)]
+        elif self.dashboard_type == 'student':
+            # Student sees alerts for their internships
+            student = self.env['internship.student'].search([('user_id', '=', self.env.user.id)], limit=1)
+            if student:
+                stage_ids = student.internship_ids.ids
+                domain = [('stage_id', 'in', stage_ids)]
+            else:
+                domain = [('id', '=', False)]
         
         return domain
 

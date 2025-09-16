@@ -54,6 +54,11 @@
                   parent="menu_internship_root"
                   sequence="70"/>
 
+        <!-- Alerts Section -->
+        <menuitem id="menu_internship_alerts"
+                  name="🚨 Alerts"
+                  parent="menu_internship_root"
+                  sequence="80"/>
 
         <!-- ================================= -->
         <!-- INTERNSHIPS SUBMENU -->
@@ -351,6 +356,49 @@
                   name="Security Settings"
                   parent="menu_internship_config"
                   action="action_internship_security_settings"
+                  sequence="50"
+                  groups="group_internship_admin"/>
+
+        <!-- ================================= -->
+        <!-- ALERTS SUBMENU -->
+        <!-- ================================= -->
+
+        <!-- All Alerts (Admin/Coordinator) -->
+        <menuitem id="menu_internship_alerts_all"
+                  name="All Alerts"
+                  parent="menu_internship_alerts"
+                  action="action_internship_alert"
+                  sequence="10"
+                  groups="group_internship_admin,group_internship_coordinator"/>
+
+        <!-- High Priority Alerts (Admin/Coordinator) -->
+        <menuitem id="menu_internship_alerts_high_priority"
+                  name="High Priority Alerts"
+                  parent="menu_internship_alerts"
+                  action="action_internship_alert_high_priority"
+                  sequence="20"
+                  groups="group_internship_admin,group_internship_coordinator"/>
+
+        <!-- My Alerts (Supervisor/Student) -->
+        <menuitem id="menu_internship_alerts_my_alerts"
+                  name="My Alerts"
+                  parent="menu_internship_alerts"
+                  action="action_internship_alert_my_alerts"
+                  sequence="30"
+                  groups="group_internship_supervisor,group_internship_student"/>
+
+        <!-- Test Actions (Admin only) -->
+        <menuitem id="menu_internship_alerts_test"
+                  name="🧪 Test Alert System"
+                  parent="menu_internship_alerts"
+                  action="action_internship_alert_test"
+                  sequence="40"
+                  groups="group_internship_admin"/>
+
+        <menuitem id="menu_internship_alerts_detection_test"
+                  name="🔍 Run Detection Test"
+                  parent="menu_internship_alerts"
+                  action="action_internship_alert_detection_test"
                   sequence="50"
                   groups="group_internship_admin"/>
 

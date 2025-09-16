@@ -11,3 +11,4 @@ from . import internship_document_feedback
 from . import internship_presentation
 from . import internship_user_profile
 from . import internship_dashboard
+from . import internship_alert
