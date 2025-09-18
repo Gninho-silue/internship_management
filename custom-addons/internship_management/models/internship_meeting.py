@@ -2,7 +2,8 @@
 """Internship Meeting Model"""
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 
@@ -659,7 +660,6 @@ class InternshipMeeting(models.Model):
                             _logger.info(f"Meeting postponement sent to {participant.email}")
                         except Exception as e:
                             _logger.error(f"Failed to send postponement to {participant.email}: {str(e)}")
-
 
     def _send_meeting_cancellation_email(self):
         """Send meeting cancellation email."""

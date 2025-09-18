@@ -2,10 +2,9 @@
 """Internship Alert Model"""
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api
 
 _logger = logging.getLogger(__name__)
 
@@ -189,26 +188,27 @@ class InternshipAlert(models.Model):
     def _send_escalation_notification(self):
         """Send escalation notification."""
         self.ensure_one()
-        
+
         # Determine recipients based on escalation level
         if self.escalation_level == 1:
             # Escalate to supervisor
             recipients = [self.supervisor_id.user_id.email] if self.supervisor_id.user_id.email else []
         elif self.escalation_level == 2:
             # Escalate to admin
-            admin_users = self.env['res.users'].search([('groups_id', 'in', self.env.ref('internship_management.group_internship_admin').id)])
+            admin_users = self.env['res.users'].search(
+                [('groups_id', 'in', self.env.ref('internship_management.group_internship_admin').id)])
             recipients = [user.email for user in admin_users if user.email]
-        
+
         if recipients:
             self._send_email_notification(recipients, 'escalation')
 
     def _send_email_notification(self, recipients, notification_type='alert'):
         """Send email notification to recipients."""
         self.ensure_one()
-        
+
         if not recipients:
             return
-            
+
         # Email template context
         template_context = {
             'alert': self,
@@ -216,7 +216,7 @@ class InternshipAlert(models.Model):
             'supervisor': self.supervisor_id,
             'stage': self.stage_id,
         }
-        
+
         # Send email to each recipient
         for recipient_email in recipients:
             if recipient_email:
@@ -225,13 +225,13 @@ class InternshipAlert(models.Model):
     def _send_single_email(self, recipient_email, context, notification_type):
         """Send single email notification."""
         self.ensure_one()
-        
+
         # Email subject based on notification type
         if notification_type == 'escalation':
             subject = f"🚨 ESCALATED ALERT: {self.title}"
         else:
             subject = f"🚨 ALERT: {self.title}"
-        
+
         # Email body
         body = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -269,7 +269,7 @@ class InternshipAlert(models.Model):
             </div>
         </div>
         """
-        
+
         # Send email
         try:
             self.env['mail.mail'].create({
@@ -278,13 +278,13 @@ class InternshipAlert(models.Model):
                 'email_to': recipient_email,
                 'auto_delete': True,
             }).send()
-            
+
             # Update notification status
             self.write({
                 'notification_sent': True,
                 'notification_date': fields.Datetime.now()
             })
-            
+
         except Exception as e:
             _logger.error(f"Failed to send email notification: {str(e)}")
 
@@ -296,15 +296,16 @@ class InternshipAlert(models.Model):
     def _send_initial_notification(self):
         """Send initial notification when alert is created."""
         self.ensure_one()
-        
+
         # Determine recipients based on alert type and priority
         recipients = []
-        
+
         if self.priority == '1':  # High priority
             # Send to supervisor and admin
             if self.supervisor_id.user_id.email:
                 recipients.append(self.supervisor_id.user_id.email)
-            admin_users = self.env['res.users'].search([('groups_id', 'in', self.env.ref('internship_management.group_internship_admin').id)])
+            admin_users = self.env['res.users'].search(
+                [('groups_id', 'in', self.env.ref('internship_management.group_internship_admin').id)])
             recipients.extend([user.email for user in admin_users if user.email])
         elif self.priority == '2':  # Medium priority
             # Send to supervisor
@@ -314,10 +315,10 @@ class InternshipAlert(models.Model):
             # Send to supervisor only
             if self.supervisor_id.user_id.email:
                 recipients.append(self.supervisor_id.user_id.email)
-        
+
         # Remove duplicates
         recipients = list(set(recipients))
-        
+
         if recipients:
             self._send_email_notification(recipients, 'alert')
 
@@ -332,7 +333,7 @@ class InternshipAlert(models.Model):
             ('deadline', '<', fields.Date.today()),
             ('state', 'in', ['todo', 'in_progress'])
         ])
-        
+
         for task in overdue_tasks:
             self._create_task_overdue_alert(task)
 
@@ -345,7 +346,7 @@ class InternshipAlert(models.Model):
             ('deadline', '>=', fields.Date.today()),
             ('state', 'in', ['todo', 'in_progress'])
         ])
-        
+
         for task in approaching_tasks:
             self._create_deadline_approaching_alert(task)
 
@@ -357,7 +358,7 @@ class InternshipAlert(models.Model):
             ('state', 'in', ['submitted', 'approved']),
             ('write_date', '<', fields.Datetime.now() - timedelta(days=7))
         ])
-        
+
         for stage in blocked_stages:
             self._create_internship_blocked_alert(stage)
 
@@ -368,7 +369,7 @@ class InternshipAlert(models.Model):
             ('task_id', '=', task.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             alert = self.create({
                 'title': f'Task Overdue: {task.title}',
@@ -391,7 +392,7 @@ class InternshipAlert(models.Model):
                     </ul>
                 '''
             })
-            
+
             # Send email notification
             alert._send_initial_notification()
 
@@ -402,7 +403,7 @@ class InternshipAlert(models.Model):
             ('task_id', '=', task.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             days_remaining = (task.deadline - fields.Date.today()).days
             self.create({
@@ -434,7 +435,7 @@ class InternshipAlert(models.Model):
             ('stage_id', '=', stage.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             days_blocked = (fields.Datetime.now() - stage.write_date).days
             self.create({
@@ -468,23 +469,23 @@ class InternshipAlert(models.Model):
     def detect_all_alerts(self):
         """Main method called by cron job to detect all types of alerts."""
         _logger.info("Starting intelligent alerts detection...")
-        
+
         try:
             # Detect task-related alerts
             self.detect_task_overdue_alerts()
             self.detect_deadline_approaching_alerts()
-            
+
             # Detect internship-related alerts
             self.detect_internship_blocked_alerts()
-            
+
             # Detect other types of alerts
             self.detect_document_missing_alerts()
             self.detect_defense_pending_alerts()
             self.detect_supervisor_overload_alerts()
             self.detect_student_inactive_alerts()
-            
+
             _logger.info("Intelligent alerts detection completed successfully")
-            
+
         except Exception as e:
             _logger.error(f"Error during alerts detection: {str(e)}")
             raise
@@ -497,7 +498,7 @@ class InternshipAlert(models.Model):
             ('state', 'in', ['in_progress', 'completed']),
             ('document_ids', '=', False)
         ])
-        
+
         for stage in stages_without_docs:
             self._create_document_missing_alert(stage)
 
@@ -508,7 +509,7 @@ class InternshipAlert(models.Model):
             ('state', '=', 'completed'),
             ('defense_date', '=', False)
         ])
-        
+
         for stage in ready_for_defense:
             self._create_defense_pending_alert(stage)
 
@@ -516,7 +517,7 @@ class InternshipAlert(models.Model):
     def detect_supervisor_overload_alerts(self):
         """Detect supervisors with too many active internships."""
         supervisors = self.env['internship.supervisor'].search([])
-        
+
         for supervisor in supervisors:
             active_count = len(supervisor.stage_ids.filtered(lambda s: s.state == 'in_progress'))
             if active_count > 5:  # Threshold for overload
@@ -528,7 +529,7 @@ class InternshipAlert(models.Model):
         inactive_students = self.env['internship.student'].search([
             ('write_date', '<', fields.Datetime.now() - timedelta(days=14))
         ])
-        
+
         for student in inactive_students:
             if student.internship_ids.filtered(lambda s: s.state == 'in_progress'):
                 self._create_student_inactive_alert(student)
@@ -540,7 +541,7 @@ class InternshipAlert(models.Model):
             ('stage_id', '=', stage.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             self.create({
                 'title': f'Missing Documents: {stage.title}',
@@ -570,7 +571,7 @@ class InternshipAlert(models.Model):
             ('stage_id', '=', stage.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             self.create({
                 'title': f'Defense Pending: {stage.title}',
@@ -600,7 +601,7 @@ class InternshipAlert(models.Model):
             ('supervisor_id', '=', supervisor.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             self.create({
                 'title': f'Supervisor Overload: {supervisor.name}',
@@ -629,7 +630,7 @@ class InternshipAlert(models.Model):
             ('student_id', '=', student.id),
             ('state', '=', 'active')
         ])
-        
+
         if not existing_alert:
             self.create({
                 'title': f'Student Inactive: {student.name}',
@@ -659,7 +660,7 @@ class InternshipAlert(models.Model):
     def create_test_alerts(self):
         """Create test alerts for demonstration purposes."""
         _logger.info("Creating test alerts...")
-        
+
         # Create a test overdue task alert
         test_alert = self.create({
             'title': 'Test Alert: Task Overdue',
@@ -679,10 +680,10 @@ class InternshipAlert(models.Model):
                 </ul>
             '''
         })
-        
+
         # Send test notification
         test_alert._send_initial_notification()
-        
+
         _logger.info(f"Test alert created with ID: {test_alert.id}")
         return test_alert
 
@@ -690,23 +691,23 @@ class InternshipAlert(models.Model):
     def run_alert_detection_test(self):
         """Run alert detection for testing purposes."""
         _logger.info("Running alert detection test...")
-        
+
         try:
             # Run all detection methods
             self.detect_all_alerts()
-            
+
             # Count created alerts
             total_alerts = self.search_count([])
             active_alerts = self.search_count([('state', '=', 'active')])
-            
+
             _logger.info(f"Alert detection completed. Total alerts: {total_alerts}, Active: {active_alerts}")
-            
+
             return {
                 'total_alerts': total_alerts,
                 'active_alerts': active_alerts,
                 'message': 'Alert detection test completed successfully'
             }
-            
+
         except Exception as e:
             _logger.error(f"Alert detection test failed: {str(e)}")
             return {

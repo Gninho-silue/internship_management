@@ -31,8 +31,8 @@ A comprehensive solution for managing internships with the following features:
 
 Developed as a professional-grade application following Odoo best practices.
     """,
-    'author': 'SILUE - Techpal Casablanca',
-    'website': 'https://techpal.ma',
+    'author': 'SILUE Intern- Techpal Casablanca',
+    'website': 'https://www.techpalservices.com/',
     'license': 'LGPL-3',
     'support': 'internship@techpal.ma',
 

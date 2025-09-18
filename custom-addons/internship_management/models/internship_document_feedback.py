@@ -2,6 +2,7 @@
 """Internship Document Feedback Model"""
 
 import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 

@@ -105,28 +105,28 @@ class InternshipDocument(models.Model):
         readonly=True,
         help="User who reviewed this document"
     )
-        # ===============================
+    # ===============================
     # FEEDBACK INTEGRATION
     # ===============================
-    
+
     feedback_ids = fields.One2many(
         'internship.document.feedback',
         'document_id',
         string='Feedback',
         help="All feedback received on this document"
     )
-    
+
     communication_ids = fields.One2many(
         'internship.communication',
         'document_id',
         string='Related Communications',
         help="Communications related to this document"
     )
-    
+
     # ===============================
     # FEEDBACK STATISTICS
     # ===============================
-    
+
     @api.depends('feedback_ids')
     def _compute_feedback_stats(self):
         for doc in self:
@@ -137,19 +137,19 @@ class InternshipDocument(models.Model):
             doc.approved_feedback = len(doc.feedback_ids.filtered(
                 lambda f: f.feedback_type == 'approval'
             ))
-    
+
     total_feedback = fields.Integer(
         string='Total Feedback',
         compute='_compute_feedback_stats',
         store=True
     )
-    
+
     pending_feedback = fields.Integer(
         string='Pending Feedback',
         compute='_compute_feedback_stats',
         store=True
     )
-    
+
     approved_feedback = fields.Integer(
         string='Approved Feedback',
         compute='_compute_feedback_stats',
@@ -443,7 +443,7 @@ class InternshipDocument(models.Model):
             'url': f'/web/content?model=internship.document&id={self.id}&field=file&filename_field=filename&download=true',
             'target': 'new',
         }
-    
+
     def action_add_feedback(self):
         """Add feedback to this document."""
         self.ensure_one()
@@ -459,7 +459,7 @@ class InternshipDocument(models.Model):
             },
             'target': 'current',
         }
-    
+
     def action_view_feedback(self):
         """View all feedback for this document."""
         self.ensure_one()
@@ -476,15 +476,10 @@ class InternshipDocument(models.Model):
             'target': 'current',
         }
 
-
-    # ===============================
-    # UTILITY METHODS
-    # ===============================
-
     # ===============================
     # FEEDBACK STATISTICS
     # ===============================
-    
+
     @api.depends('feedback_ids')
     def _compute_feedback_stats(self):
         for doc in self:
@@ -499,31 +494,35 @@ class InternshipDocument(models.Model):
             else:
                 doc.last_feedback_date = False
                 doc.last_reviewer_id = False
-    
+
     feedback_count = fields.Integer(
         string='Feedback Count',
         compute='_compute_feedback_stats',
         store=True
     )
-    
+
     pending_feedback_count = fields.Integer(
         string='Pending Feedback Count',
         compute='_compute_feedback_stats',
         store=True
     )
-    
+
     last_feedback_date = fields.Datetime(
         string='Last Feedback Date',
         compute='_compute_feedback_stats',
         store=True
     )
-    
+
     last_reviewer_id = fields.Many2one(
         'res.users',
         string='Last Reviewer',
         compute='_compute_feedback_stats',
         store=True
     )
+
+    # ===============================
+    # UTILITY METHODS
+    # ===============================
 
     def name_get(self):
         """Custom name display: Name (Type)."""

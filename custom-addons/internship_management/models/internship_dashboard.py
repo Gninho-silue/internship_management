@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
-from datetime import datetime, timedelta
+from datetime import timedelta
+
+from odoo import models, fields, api
 
 
 class InternshipDashboard(models.TransientModel):
-
     """
     Internship Dashboard Model
 
@@ -56,7 +55,7 @@ class InternshipDashboard(models.TransientModel):
     # Meeting Statistics
     total_meetings = fields.Integer(string='Total Meetings', compute='_compute_statistics')
     upcoming_meetings = fields.Integer(string='Upcoming Meetings', compute='_compute_statistics')
-    
+
     # Alert Statistics
     total_alerts = fields.Integer(string='Total Alerts', compute='_compute_statistics')
     active_alerts = fields.Integer(string='Active Alerts', compute='_compute_statistics')
@@ -67,13 +66,12 @@ class InternshipDashboard(models.TransientModel):
     total_communications = fields.Integer(string='Total Communications', compute='_compute_statistics')
     unread_communications = fields.Integer(string='Unread Communications', compute='_compute_statistics')
 
-   
     @api.depends('dashboard_type', 'date_from', 'date_to')
     def _compute_statistics(self):
         """Compute dashboard statistics based on user role and date range."""
         for dashboard in self:
             domain = self._get_base_domain()
-            
+
             # Internship Statistics
             dashboard.total_internships = self.env['internship.stage'].search_count(domain)
             dashboard.active_internships = self.env['internship.stage'].search_count(
@@ -130,7 +128,7 @@ class InternshipDashboard(models.TransientModel):
             dashboard.upcoming_meetings = self.env['internship.meeting'].search_count(
                 meeting_domain + [('date', '>', fields.Datetime.now())]
             )
-            
+
             # Alert Statistics
             alert_domain = self._get_alert_domain()
             dashboard.total_alerts = self.env['internship.alert'].search_count(alert_domain)
@@ -154,7 +152,7 @@ class InternshipDashboard(models.TransientModel):
     def _get_base_domain(self):
         """Get base domain based on dashboard type and user role."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees only supervised internships
             domain = [('supervisor_id.user_id', '=', self.env.user.id)]
@@ -165,19 +163,19 @@ class InternshipDashboard(models.TransientModel):
                 domain = [('student_id', '=', student.id)]
             else:
                 domain = [('id', '=', False)]  # No internships if no student record
-        
+
         # Add date filter
         if self.date_from:
             domain.append(('create_date', '>=', self.date_from))
         if self.date_to:
             domain.append(('create_date', '<=', self.date_to))
-            
+
         return domain
 
     def _get_student_domain(self):
         """Get student domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees students from supervised internships
             supervised_stages = self.env['internship.stage'].search([
@@ -188,13 +186,13 @@ class InternshipDashboard(models.TransientModel):
         elif self.dashboard_type == 'student':
             # Student sees only themselves
             domain = [('user_id', '=', self.env.user.id)]
-        
+
         return domain
 
     def _get_supervisor_domain(self):
         """Get supervisor domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees only themselves
             domain = [('user_id', '=', self.env.user.id)]
@@ -206,13 +204,13 @@ class InternshipDashboard(models.TransientModel):
                 domain = [('id', 'in', supervisor_ids)]
             else:
                 domain = [('id', '=', False)]
-        
+
         return domain
 
     def _get_document_domain(self):
         """Get document domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees documents from supervised internships
             supervised_stages = self.env['internship.stage'].search([
@@ -228,13 +226,13 @@ class InternshipDashboard(models.TransientModel):
                 domain = [('stage_id', 'in', stage_ids)]
             else:
                 domain = [('id', '=', False)]
-        
+
         return domain
 
     def _get_presentation_domain(self):
         """Get presentation domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees presentations from supervised internships
             supervised_stages = self.env['internship.stage'].search([
@@ -250,13 +248,13 @@ class InternshipDashboard(models.TransientModel):
                 domain = [('stage_id', 'in', stage_ids)]
             else:
                 domain = [('id', '=', False)]
-        
+
         return domain
 
     def _get_task_domain(self):
         """Get task domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees tasks from supervised internships
             supervised_stages = self.env['internship.stage'].search([
@@ -272,26 +270,26 @@ class InternshipDashboard(models.TransientModel):
                 domain = [('stage_id', 'in', stage_ids)]
             else:
                 domain = [('id', '=', False)]
-        
+
         return domain
 
     def _get_meeting_domain(self):
         """Get meeting domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees meetings they organize or participate in
             domain = ['|', ('organizer_id', '=', self.env.user.id), ('participant_ids', 'in', self.env.user.id)]
         elif self.dashboard_type == 'student':
             # Student sees meetings they organize or participate in
             domain = ['|', ('organizer_id', '=', self.env.user.id), ('participant_ids', 'in', self.env.user.id)]
-        
+
         return domain
 
     def _get_alert_domain(self):
         """Get alert domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees alerts for their supervised internships
             supervised_stages = self.env['internship.stage'].search([
@@ -307,22 +305,21 @@ class InternshipDashboard(models.TransientModel):
                 domain = [('stage_id', 'in', stage_ids)]
             else:
                 domain = [('id', '=', False)]
-        
+
         return domain
 
     def _get_communication_domain(self):
         """Get communication domain based on dashboard type."""
         domain = []
-        
+
         if self.dashboard_type == 'supervisor':
             # Supervisor sees communications they sent or received
             domain = ['|', ('sender_id', '=', self.env.user.id), ('recipient_ids', 'in', self.env.user.id)]
         elif self.dashboard_type == 'student':
             # Student sees communications they sent or received
             domain = ['|', ('sender_id', '=', self.env.user.id), ('recipient_ids', 'in', self.env.user.id)]
-        
-        return domain
 
+        return domain
 
     def action_refresh_dashboard(self):
         """Refresh dashboard data."""

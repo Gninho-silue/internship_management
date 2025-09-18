@@ -51,8 +51,6 @@ class InternshipStage(models.Model):
         ('professional_internship', 'Professional Internship')
     ], string='Internship Type', required=True, tracking=True)
 
-
-
     # ===============================
     # RELATIONSHIP FIELDS
     # ===============================
@@ -72,7 +70,7 @@ class InternshipStage(models.Model):
         ondelete='restrict',
         help="Academic or professional supervisor"
     )
-    
+
     area_id = fields.Many2one(
         'internship.area',
         string='Area of Expertise',
@@ -142,7 +140,7 @@ class InternshipStage(models.Model):
         ('modifications_requested', 'Modifications Requested'),
         ('rejected', 'Rejected')
     ], string='Proposal Status', default='draft', tracking=True,
-       help="Status of the subject proposal")
+        help="Status of the subject proposal")
 
     proposal_feedback = fields.Html(
         string='Proposal Feedback',
@@ -194,7 +192,7 @@ class InternshipStage(models.Model):
             # Calculate based on completed tasks if available
             total_tasks = len(stage.task_ids)
             if total_tasks > 0:
-                completed_tasks = len(stage.task_ids.filtered(lambda t: t.state == 'completed'))
+                completed_tasks = len(stage.task_ids.filtered(lambda t: t.state == 'done'))
                 progress_value = (completed_tasks / total_tasks) * 100.0
             else:
                 # Fallback: time-based calculation
@@ -246,11 +244,10 @@ class InternshipStage(models.Model):
         help="All documents related to this internship"
     )
 
-    
     # ===============================
     # COMMUNICATION INTEGRATION
     # ===============================
-    
+
     communication_ids = fields.One2many(
         'internship.communication',
         'stage_id',
@@ -264,11 +261,11 @@ class InternshipStage(models.Model):
         string='Document Feedback',
         help="All feedback on documents for this internship"
     )
-    
+
     # ===============================
     # COMMUNICATION STATISTICS
     # ===============================
-    
+
     @api.depends('communication_ids', 'document_feedback_ids')
     def _compute_communication_stats(self):
         for stage in self:
@@ -313,25 +310,25 @@ class InternshipStage(models.Model):
             stage.upcoming_meeting_count = len(stage.meeting_ids.filtered(
                 lambda m: m.date and m.date > fields.Datetime.now()
             ))
-    
+
     total_communications = fields.Integer(
         string='Total Communications',
         compute='_compute_communication_stats',
         store=True
     )
-    
+
     unread_communications = fields.Integer(
         string='Unread Communications',
         compute='_compute_communication_stats',
         store=True
     )
-    
+
     pending_feedback = fields.Integer(
         string='Pending Feedback',
         compute='_compute_communication_stats',
         store=True
     )
-    
+
     total_document_feedback = fields.Integer(
         string='Total Document Feedback',
         compute='_compute_communication_stats',
@@ -400,7 +397,7 @@ class InternshipStage(models.Model):
         string='Defense Date',
         help="Scheduled date for defense presentation"
     )
-    
+
     defense_location = fields.Char(
         string='Defense Location',
         help="Location where the defense will take place"
@@ -426,7 +423,7 @@ class InternshipStage(models.Model):
         string='Presentations',
         help="Student presentations for defense"
     )
-    
+
     final_presentation_id = fields.Many2one(
         'internship.presentation',
         string='Final Presentation',
@@ -434,14 +431,14 @@ class InternshipStage(models.Model):
         store=True,
         help="Final approved presentation for defense"
     )
-    
+
     presentation_count = fields.Integer(
         string='Presentation Count',
         compute='_compute_presentation_stats',
         store=True,
         help="Total number of presentations"
     )
-    
+
     pending_presentation_count = fields.Integer(
         string='Pending Presentations',
         compute='_compute_presentation_stats',
@@ -551,7 +548,7 @@ class InternshipStage(models.Model):
         self.ensure_one()
         if self.state != 'completed':
             raise ValidationError(_("Only completed internships can have their defense scheduled."))
-        
+
         # Create communication for defense scheduling
         self.env['internship.communication'].create({
             'subject': f'Defense Scheduling Required: {self.title}',
@@ -573,7 +570,7 @@ class InternshipStage(models.Model):
             'priority': '2',
             'state': 'sent'
         })
-        
+
         # Just send notification, don't change state
         return {
             'type': 'ir.actions.client',
@@ -585,32 +582,31 @@ class InternshipStage(models.Model):
             }
         }
 
-
     def action_evaluate(self):
         """Mark internship as evaluated."""
         self.ensure_one()
         if self.state != 'completed':
             raise ValidationError(_("Only completed internships can be evaluated."))
-        
+
         # Validate defense configuration before evaluation
         if not self.defense_date:
             raise ValidationError(_("Defense date must be set before evaluation."))
-        
+
         if not self.jury_member_ids:
             raise ValidationError(_("At least one jury member must be assigned before evaluation."))
-        
+
         if not self.defense_grade:
             raise ValidationError(_("Defense grade must be set before evaluation."))
-        
+
         if not self.final_grade:
             raise ValidationError(_("Final grade must be set before evaluation."))
-        
+
         # Update defense status to completed
         self.write({
             'state': 'evaluated',
             'defense_status': 'completed'
         })
-        
+
         # Create communication for evaluation completion
         self.env['internship.communication'].create({
             'subject': f'Internship Evaluated: {self.title}',
@@ -656,13 +652,13 @@ class InternshipStage(models.Model):
         self.ensure_one()
         if not self.subject_proposal:
             raise ValidationError(_("Please provide a subject proposal before submitting."))
-        
+
         self.write({
             'proposal_status': 'proposed',
             'proposal_date': fields.Datetime.now(),
             'state': 'submitted'  # Automatically move to submitted state
         })
-        
+
         # Create communication notification
         if self.student_id and self.student_id.user_id:
             self.env['internship.communication'].create({
@@ -682,7 +678,7 @@ class InternshipStage(models.Model):
                 'priority': '2',
                 'state': 'sent'
             })
-        
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -698,16 +694,16 @@ class InternshipStage(models.Model):
         self.ensure_one()
         if self.proposal_status != 'proposed':
             raise ValidationError(_("Only proposed subjects can be accepted."))
-        
+
         self.write({
             'proposal_status': 'accepted',
             'proposal_accepted_date': fields.Datetime.now(),
             'state': 'approved'  # Automatically move to approved state
         })
-        
+
         # Automatically start the internship
         self.action_start()
-        
+
         # Create communication notification
         self.env['internship.communication'].create({
             'subject': f'Subject Proposal Accepted: {self.title}',
@@ -733,15 +729,15 @@ class InternshipStage(models.Model):
         self.ensure_one()
         if self.proposal_status != 'proposed':
             raise ValidationError(_("Only proposed subjects can be requested for modifications."))
-        
+
         if not self.proposal_feedback:
             raise ValidationError(_("Please provide feedback explaining the requested modifications."))
-        
+
         self.write({
             'proposal_status': 'modifications_requested',
             'state': 'draft'  # Return to draft state for modifications
         })
-        
+
         # Create communication notification
         self.env['internship.communication'].create({
             'subject': f'Subject Proposal Modifications Requested: {self.title}',
@@ -771,11 +767,11 @@ class InternshipStage(models.Model):
         self.ensure_one()
         if self.proposal_status not in ['proposed', 'modifications_requested']:
             raise ValidationError(_("Only proposed or modification-requested subjects can be rejected."))
-        
+
         self.write({
             'proposal_status': 'rejected'
         })
-        
+
         # Create communication notification
         self.env['internship.communication'].create({
             'subject': f'Subject Proposal Rejected: {self.title}',
@@ -827,7 +823,7 @@ class InternshipStage(models.Model):
             },
             'target': 'new',
         }
-    
+
     def action_open_document_feedback(self):
         """Open document feedback for this internship."""
         self.ensure_one()
@@ -843,7 +839,6 @@ class InternshipStage(models.Model):
             },
             'target': 'current',
         }
-
 
     # ===============================
     # UTILITY METHODS

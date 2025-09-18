@@ -20,7 +20,7 @@
 
         <!-- People Section -->
         <menuitem id="menu_internship_people"
-                  name="People"
+                  name="Users"
                   parent="menu_internship_root"
                   sequence="20"/>
 

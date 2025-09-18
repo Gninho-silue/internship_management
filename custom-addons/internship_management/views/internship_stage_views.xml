@@ -122,7 +122,57 @@
                                        placeholder="List the educational and professional objectives..."
                                        class="oe_form_field_html"/>
                             </page>
-                                <!-- Tasks Page -->
+
+                            <!-- Subject Proposal Page -->
+                            <page name="subject_proposal" string="Subject Proposal">
+                                <header>
+                                    <button name="action_propose_subject"
+                                            string="Propose Subject"
+                                            type="object"
+                                            class="btn-primary"
+                                            invisible="proposal_status != 'draft' or not subject_proposal"/>
+                                    <button name="action_accept_proposal"
+                                            string="Accept Proposal"
+                                            type="object"
+                                            class="btn-success"
+                                            invisible="proposal_status != 'proposed'"/>
+                                    <button name="action_request_modifications"
+                                            string="Request Modifications"
+                                            type="object"
+                                            class="btn-warning"
+                                            invisible="proposal_status != 'proposed'"/>
+                                    <button name="action_reject_proposal"
+                                            string="Reject Proposal"
+                                            type="object"
+                                            class="btn-danger"
+                                            invisible="proposal_status not in ['proposed', 'modifications_requested']"/>
+                                    <field name="proposal_status" widget="statusbar"
+                                           statusbar_visible="draft,proposed,accepted,modifications_requested,rejected"/>
+                                </header>
+
+                                <group>
+                                    <group string="Proposal Information">
+                                        <field name="proposal_date"/>
+                                        <field name="proposal_accepted_date"/>
+                                    </group>
+                                </group>
+
+                                <separator string="Subject Proposal"/>
+                                <div class="oe_form_field_html" style="margin: 10px 0;">
+                                    <field name="subject_proposal" nolabel="1" widget="html"
+                                           placeholder="Enter the subject proposal here..."
+                                           style="min-height: 200px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
+                                </div>
+
+                                <separator string="Feedback" invisible="proposal_status not in ['modifications_requested', 'rejected']"/>
+                                <div class="oe_form_field_html" style="margin: 10px 0;" invisible="proposal_status not in ['modifications_requested', 'rejected']">
+                                    <field name="proposal_feedback" nolabel="1" widget="html"
+                                           placeholder="Enter feedback on the proposal..."
+                                           style="min-height: 150px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
+                                </div>
+                            </page>
+
+                            <!-- Tasks Page -->
                             <page name="tasks" string="Tasks">
                                 <div class="oe_button_box" name="button_box">
                                     <button name="action_create_task" string="Create Task" type="object"
@@ -153,56 +203,6 @@
                                     </field>
                                 </group>
                             </page>
-
-                            <!-- Subject Proposal Page -->
-                            <page name="subject_proposal" string="Subject Proposal">
-                                <header>
-                                    <button name="action_propose_subject" 
-                                            string="Propose Subject" 
-                                            type="object" 
-                                            class="btn-primary"
-                                            invisible="proposal_status != 'draft' or not subject_proposal"/>
-                                    <button name="action_accept_proposal" 
-                                            string="Accept Proposal" 
-                                            type="object" 
-                                            class="btn-success"
-                                            invisible="proposal_status != 'proposed'"/>
-                                    <button name="action_request_modifications" 
-                                            string="Request Modifications" 
-                                            type="object" 
-                                            class="btn-warning"
-                                            invisible="proposal_status != 'proposed'"/>
-                                    <button name="action_reject_proposal" 
-                                            string="Reject Proposal" 
-                                            type="object" 
-                                            class="btn-danger"
-                                            invisible="proposal_status not in ['proposed', 'modifications_requested']"/>
-                                    <field name="proposal_status" widget="statusbar" 
-                                           statusbar_visible="draft,proposed,accepted,modifications_requested,rejected"/>
-                                </header>
-                                
-                                <group>
-                                    <group string="Proposal Information">
-                                        <field name="proposal_date"/>
-                                        <field name="proposal_accepted_date"/>
-                                    </group>
-                                </group>
-                                
-                                <separator string="Subject Proposal"/>
-                                <div class="oe_form_field_html" style="margin: 10px 0;">
-                                    <field name="subject_proposal" nolabel="1" widget="html"
-                                           placeholder="Enter the subject proposal here..."
-                                           style="min-height: 200px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
-                                </div>
-                                
-                                <separator string="Feedback" invisible="proposal_status not in ['modifications_requested', 'rejected']"/>
-                                <div class="oe_form_field_html" style="margin: 10px 0;" invisible="proposal_status not in ['modifications_requested', 'rejected']">
-                                    <field name="proposal_feedback" nolabel="1" widget="html"
-                                           placeholder="Enter feedback on the proposal..."
-                                           style="min-height: 150px; width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;"/>
-                                </div>
-                            </page>
-                            
 
                             <!-- Meetings Page -->
                             <page name="meetings" string="Meetings">
@@ -269,6 +269,45 @@
                                 </group>
                             </page>
 
+                            <!-- Presentations Page -->
+                            <page name="presentations" string="Presentations">
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="action_create_presentation"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            icon="fa-upload"
+                                            string="Upload Presentation"
+                                            help="Upload a new presentation"/>
+                                    <button name="%(action_internship_presentation)d"
+                                            type="action"
+                                            class="oe_stat_button"
+                                            icon="fa-file-powerpoint-o"
+                                            string="All Presentations"
+                                            help="View all presentations"/>
+                                </div>
+
+                                <group>
+                                    <group string="Presentation Statistics">
+                                        <field name="presentation_count" widget="statinfo" string="Total Presentations"/>
+                                        <field name="pending_presentation_count" widget="statinfo" string="Pending Review"/>
+                                    </group>
+                                    <group string="Final Presentation">
+                                        <field name="final_presentation_id"/>
+                                    </group>
+                                </group>
+
+                                <separator string="Recent Presentations"/>
+                                <field name="presentation_ids" readonly="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="version"/>
+                                        <field name="status" widget="badge"/>
+                                        <field name="file_type"/>
+                                        <field name="submission_date"/>
+                                        <field name="is_final_version"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <!-- Defense & Evaluation Page -->
                             <page name="defense_evaluation" string="Defense &amp; Evaluation"
                                   invisible="state not in ['completed', 'evaluated']">
@@ -296,45 +335,6 @@
                                 </div>
                             </page>
 
-                            <!-- Presentations Page -->
-                            <page name="presentations" string="Presentations">
-                                <div class="oe_button_box" name="button_box">
-                                    <button name="action_create_presentation" 
-                                            type="object" 
-                                            class="oe_stat_button" 
-                                            icon="fa-upload"
-                                            string="Upload Presentation"
-                                            help="Upload a new presentation"/>
-                                    <button name="%(action_internship_presentation)d" 
-                                            type="action" 
-                                            class="oe_stat_button" 
-                                            icon="fa-file-powerpoint-o"
-                                            string="All Presentations"
-                                            help="View all presentations"/>
-                                </div>
-                                
-                                <group>
-                                    <group string="Presentation Statistics">
-                                        <field name="presentation_count" widget="statinfo" string="Total Presentations"/>
-                                        <field name="pending_presentation_count" widget="statinfo" string="Pending Review"/>
-                                    </group>
-                                    <group string="Final Presentation">
-                                        <field name="final_presentation_id"/>
-                                    </group>
-                                </group>
-                                
-                                <separator string="Recent Presentations"/>
-                                <field name="presentation_ids" readonly="1">
-                                    <tree>
-                                        <field name="name"/>
-                                        <field name="version"/>
-                                        <field name="status" widget="badge"/>
-                                        <field name="file_type"/>
-                                        <field name="submission_date"/>
-                                        <field name="is_final_version"/>
-                                    </tree>
-                                </field>
-                            </page>
                              <!-- Reports and Documents Page -->
                             <page name="reports" string="Reports and Documents">
                                 <div class="oe_button_box" name="button_box">

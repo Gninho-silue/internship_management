@@ -2,6 +2,7 @@
 """Internship Auxiliary Models"""
 
 import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
@@ -54,7 +55,7 @@ class InternshipSkill(models.Model):
         ('certification', 'Certifications'),
         ('other', 'Other')
     ], string='Category', required=True,
-       help="Category this skill belongs to")
+        help="Category this skill belongs to")
 
     subcategory = fields.Char(
         string='Subcategory',
@@ -68,7 +69,7 @@ class InternshipSkill(models.Model):
         ('advanced', 'Advanced'),
         ('expert', 'Expert')
     ], string='Required Level', default='intermediate',
-       help="Minimum proficiency level required")
+        help="Minimum proficiency level required")
 
     difficulty_level = fields.Selection([
         ('1', 'Very Easy'),
@@ -77,7 +78,7 @@ class InternshipSkill(models.Model):
         ('4', 'Hard'),
         ('5', 'Very Hard')
     ], string='Difficulty Level', default='3',
-       help="Difficulty level of acquiring this skill")
+        help="Difficulty level of acquiring this skill")
 
     # ===============================
     # CERTIFICATION FIELDS
@@ -486,7 +487,7 @@ class InternshipTodo(models.Model):
         ('done', 'Done'),
         ('cancelled', 'Cancelled')
     ], string='Status', default='todo', tracking=True, required=True,
-       help="Current status of the task")
+        help="Current status of the task")
 
     priority = fields.Selection([
         ('0', 'Low'),
@@ -494,7 +495,7 @@ class InternshipTodo(models.Model):
         ('2', 'High'),
         ('3', 'Very High')
     ], string='Priority', default='1', tracking=True,
-       help="Priority level of the task")
+        help="Priority level of the task")
 
     deadline = fields.Datetime(
         string='Deadline',
@@ -604,14 +605,6 @@ class InternshipTodo(models.Model):
         """Start working on the task."""
         self.write({'state': 'in_progress'})
 
-    def action_mark_done(self):
-        """Mark task as completed."""
-        self.write({
-            'state': 'done',
-            'completion_date': fields.Datetime.now(),
-            'progress_percentage': 100.0
-        })
-
     def action_cancel(self):
         """Cancel the task."""
         self.write({'state': 'cancelled'})
@@ -624,11 +617,6 @@ class InternshipTodo(models.Model):
             'completion_date': False
         })
 
-    def action_start(self):
-        """Start the task."""
-        self.write({
-            'state': 'in_progress'
-        })
 
     def action_complete(self):
         """Complete the task."""
@@ -702,29 +690,24 @@ class InternshipTodo(models.Model):
         """Override create to automatically assign tasks based on creator."""
         # Get the creator
         creator = self.env.user
-        
-        # Debug logging
-        _logger.info(f"Task creator: {creator.name} (ID: {creator.id})")
-        
         # Check if creator is a student
         student = self.env['internship.student'].search([('user_id', '=', creator.id)], limit=1)
-        _logger.info(f"Found student: {student.full_name if student else 'None'}")
-        
+
         # Check if creator is a supervisor
         supervisor = self.env['internship.supervisor'].search([('user_id', '=', creator.id)], limit=1)
-        _logger.info(f"Found supervisor: {supervisor.name if supervisor else 'None'}")
-        
+
         # Auto-assign based on creator type
         if student and not vals.get('assigned_to'):
             # Student creates task → assign to themselves
             vals['assigned_to'] = creator.id
             _logger.info(f"Task auto-assigned to student: {creator.name}")
-            
+
         elif supervisor and not vals.get('assigned_to'):
             # Supervisor creates task → assign to student of the stage
             if vals.get('stage_id'):
                 stage = self.env['internship.stage'].browse(vals['stage_id'])
-                _logger.info(f"Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
+                _logger.info(
+                    f"Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
                 if stage.student_id and stage.student_id.user_id:
                     vals['assigned_to'] = stage.student_id.user_id.id
                     _logger.info(f"Task auto-assigned to student: {stage.student_id.full_name}")
@@ -738,7 +721,8 @@ class InternshipTodo(models.Model):
                 # User has supervisor role → assign to student of the stage
                 if vals.get('stage_id'):
                     stage = self.env['internship.stage'].browse(vals['stage_id'])
-                    _logger.info(f"Fallback: Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
+                    _logger.info(
+                        f"Fallback: Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
                     if stage.student_id and stage.student_id.user_id:
                         vals['assigned_to'] = stage.student_id.user_id.id
                         _logger.info(f"Task auto-assigned to student (fallback): {stage.student_id.full_name}")
@@ -751,8 +735,9 @@ class InternshipTodo(models.Model):
                 vals['assigned_to'] = creator.id
                 _logger.info(f"Task auto-assigned to student (fallback): {creator.name}")
             else:
-                _logger.info(f"No auto-assignment: student={bool(student)}, supervisor={bool(supervisor)}, assigned_to={vals.get('assigned_to')}")
-        
+                _logger.info(
+                    f"No auto-assignment: student={bool(student)}, supervisor={bool(supervisor)}, assigned_to={vals.get('assigned_to')}")
+
         return super().create(vals)
 
     @api.model
@@ -769,7 +754,6 @@ class InternshipTodo(models.Model):
 
         _logger.info(f"Checked {len(overdue_tasks)} overdue tasks and sent alerts")
         return len(overdue_tasks)
-
 
     # ===============================
     # UTILITY METHODS
@@ -806,5 +790,6 @@ class InternshipTodo(models.Model):
             'days_to_deadline': (self.deadline - fields.Datetime.now()).days if self.deadline else None,
             'is_overdue': self.deadline and self.deadline < fields.Datetime.now() and self.state != 'done',
             'completion_time': (self.completion_date - self.create_date).days if self.completion_date else None,
-            'efficiency': (self.actual_hours / self.estimated_hours * 100) if self.estimated_hours and self.actual_hours else None,
+            'efficiency': (
+                        self.actual_hours / self.estimated_hours * 100) if self.estimated_hours and self.actual_hours else None,
         }

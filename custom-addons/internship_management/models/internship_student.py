@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Internship Student Model """
 
-import re
 import logging
+import re
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
@@ -89,6 +90,7 @@ class InternshipStudent(models.Model):
         ('bachelor_1', 'Bachelor Year 1'),
         ('bachelor_2', 'Bachelor Year 2'),
         ('bachelor_3', 'Bachelor Year 3'),
+        ('engineer', 'Engineer'),
         ('master_1', 'Master Year 1'),
         ('master_2', 'Master Year 2'),
         ('phd', 'PhD')
@@ -347,7 +349,6 @@ class InternshipStudent(models.Model):
             result.append((student.id, name))
         return result
 
- 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
         """Custom search: search by name, email, or student ID."""

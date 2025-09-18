@@ -295,6 +295,7 @@ class InternshipSupervisor(models.Model):
                       ('position', operator, name)]
 
         return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
+
     @api.model
     def get_available_supervisors(self, expertise_area=None):
         """Get list of available supervisors, optionally filtered by expertise area."""

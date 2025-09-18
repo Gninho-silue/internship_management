@@ -41,6 +41,7 @@ class InternshipPresentation(models.Model):
         string='Supervisor',
         related='stage_id.supervisor_id',
         store=True,
+
         help="Supervisor of the internship"
     )
 
