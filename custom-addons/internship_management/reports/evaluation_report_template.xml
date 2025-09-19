@@ -247,19 +247,21 @@
                     <div class="row">
                         <div class="col-6">
                             <div style="text-align: center;">
-                                <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 60px;">
+                                <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 20px;">
                                     <strong>Supervisor</strong><br/>
                                     <span t-esc="data[stage.id]['supervisor_name']"/><br/>
-                                    <small style="color: #7f8c8d;">Date &amp; Signature</small>
+                                    <img t-if="stage.supervisor_signature" t-att-src="image_data_uri(stage.supervisor_signature)" style="max-height:80px; max-width:100%; margin: 10px 0;"/><br/>
+                                    <small style="color: #7f8c8d;">Date: <span t-esc="data[stage.id]['current_date']"/></small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div style="text-align: center;">
-                                <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 60px;">
+                                <div style="border-top: 1px solid #34495e; padding-top: 10px; margin-top: 20px;">
                                     <strong>HR Director</strong><br/>
                                     TechPal Management<br/>
-                                    <small style="color: #7f8c8d;">Date &amp; Signature</small>
+                                    <img t-if="stage.jury_signature" t-att-src="image_data_uri(stage.jury_signature)" style="max-height:80px; max-width:100%; margin: 10px 0;"/><br/>
+                                    <small style="color: #7f8c8d;">Date: <span t-esc="data[stage.id]['current_date']"/></small>
                                 </div>
                             </div>
                         </div>

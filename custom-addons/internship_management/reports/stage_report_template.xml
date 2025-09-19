@@ -27,7 +27,7 @@
                         <div class="col-4 text-right">
                             <div style="color: #7f8c8d; font-size: 12px;">
                                 <strong>Report ID:</strong> <span t-field="stage.reference_number"/><br/>
-                                <strong>Generated:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')"/><br/>
+                                <strong>Generated:</strong> <span t-esc="current_date_english"/><br/>
                                 <strong>Status:</strong> <span t-field="stage.state" t-options="{'widget': 'badge'}"/>
                             </div>
                         </div>

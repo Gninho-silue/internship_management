@@ -416,6 +416,25 @@ class InternshipStage(models.Model):
         help="Supervisors assigned as jury members"
     )
 
+    # ===============================
+    # SIGNATURE FIELDS
+    # ===============================
+
+    supervisor_signature = fields.Binary(
+        string='Supervisor Signature',
+        help='Digital signature of the supervisor'
+    )
+
+    student_signature = fields.Binary(
+        string='Student Signature', 
+        help='Digital signature of the student'
+    )
+
+    jury_signature = fields.Binary(
+        string='Jury Signature',
+        help='Digital signature of the jury president'
+    )
+
     # PRESENTATION MANAGEMENT
     presentation_ids = fields.One2many(
         'internship.presentation',

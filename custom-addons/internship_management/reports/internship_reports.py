@@ -7,10 +7,41 @@ data preparation and professional formatting.
 """
 
 import logging
+import locale
 from odoo import api, models, fields, _
 from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
+
+
+def format_date_english(date_obj):
+    """Format date in English regardless of system locale"""
+    if not date_obj:
+        return 'N/A'
+    
+    # English month names
+    months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    
+    if isinstance(date_obj, datetime):
+        return f"{months[date_obj.month - 1]} {date_obj.day}, {date_obj.year}"
+    else:  # date object
+        return f"{months[date_obj.month - 1]} {date_obj.day}, {date_obj.year}"
+
+
+def format_datetime_english(datetime_obj):
+    """Format datetime in English regardless of system locale"""
+    if not datetime_obj:
+        return 'To Be Determined'
+    
+    months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    
+    return f"{months[datetime_obj.month - 1]} {datetime_obj.day}, {datetime_obj.year} at {datetime_obj.strftime('%H:%M')}"
 
 
 class InternshipDefenseReport(models.AbstractModel):
@@ -42,12 +73,11 @@ class InternshipDefenseReport(models.AbstractModel):
                 'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else 'N/A',
                 'supervisor_position': stage.supervisor_id.position if stage.supervisor_id else 'Supervisor',
                 'company_name': stage.company_id.name or 'TechPal',
-                'defense_date': stage.defense_date.strftime(
-                    '%B %d, %Y at %H:%M') if stage.defense_date else 'To Be Determined',
+                'defense_date': format_datetime_english(stage.defense_date),
                 'defense_grade': stage.defense_grade or 0,
                 'final_grade': stage.final_grade or 0,
                 'duration': self._calculate_duration(stage.start_date, stage.end_date),
-                'current_date': datetime.now().strftime('%B %d, %Y'),
+                'current_date': format_date_english(datetime.now()),
                 'reference': stage.reference_number or f'INT-{stage.id}',
             }
         return data
@@ -94,10 +124,10 @@ class InternshipConventionReport(models.AbstractModel):
                 'supervisor_position': stage.supervisor_id.position if stage.supervisor_id else '',
                 'supervisor_email': stage.supervisor_id.email if stage.supervisor_id else '',
                 'company_name': stage.company_id.name or 'TechPal',
-                'start_date': stage.start_date.strftime('%B %d, %Y') if stage.start_date else '',
-                'end_date': stage.end_date.strftime('%B %d, %Y') if stage.end_date else '',
+                'start_date': format_date_english(stage.start_date),
+                'end_date': format_date_english(stage.end_date),
                 'duration_weeks': self._calculate_weeks(stage.start_date, stage.end_date),
-                'current_date': datetime.now().strftime('%B %d, %Y'),
+                'current_date': format_date_english(datetime.now()),
                 'reference': stage.reference_number or f'INT-{stage.id}',
                 'objectives': stage.project_description or 'Professional development through practical experience',
             }
@@ -141,11 +171,11 @@ class InternshipAttestationReport(models.AbstractModel):
                 'internship_title': stage.title or stage.name,
                 'company_name': stage.company_id.name or 'TechPal',
                 'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
-                'start_date': stage.start_date.strftime('%B %d, %Y') if stage.start_date else '',
-                'end_date': stage.end_date.strftime('%B %d, %Y') if stage.end_date else '',
+                'start_date': format_date_english(stage.start_date),
+                'end_date': format_date_english(stage.end_date),
                 'duration_days': (stage.end_date - stage.start_date).days if stage.start_date and stage.end_date else 0,
                 'final_grade': stage.final_grade or 0,
-                'current_date': datetime.now().strftime('%B %d, %Y'),
+                'current_date': format_date_english(datetime.now()),
                 'reference': stage.reference_number or f'INT-{stage.id}',
                 'performance': self._get_performance_level(stage.final_grade),
             }
@@ -194,13 +224,49 @@ class InternshipEvaluationReport(models.AbstractModel):
                 'internship_title': stage.title or stage.name,
                 'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
                 'company_name': stage.company_id.name or 'TechPal',
-                'start_date': stage.start_date.strftime('%B %d, %Y') if stage.start_date else '',
-                'end_date': stage.end_date.strftime('%B %d, %Y') if stage.end_date else '',
+                'start_date': format_date_english(stage.start_date),
+                'end_date': format_date_english(stage.end_date),
                 'final_grade': stage.final_grade or 0,
                 'defense_grade': stage.defense_grade or 0,
                 'feedback': stage.evaluation_feedback or 'Satisfactory performance throughout the internship period.',
-                'current_date': datetime.now().strftime('%B %d, %Y'),
+                'current_date': format_date_english(datetime.now()),
                 'reference': stage.reference_number or f'INT-{stage.id}',
                 'completion_rate': stage.completion_percentage or 100,
+            }
+        return data
+
+
+class InternshipStageReport(models.AbstractModel):
+    """Comprehensive Stage Report"""
+    _name = 'report.internship_management.stage_report_document'
+    _description = 'Internship Stage Summary Report'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        """Prepare stage report data"""
+        docs = self.env['internship.stage'].browse(docids)
+
+        return {
+            'doc_ids': docids,
+            'doc_model': 'internship.stage',
+            'docs': docs,
+            'data': self._prepare_stage_data(docs),
+            'company': self.env.company,
+            'current_date_english': format_date_english(datetime.now()),
+        }
+
+    def _prepare_stage_data(self, stages):
+        """Prepare stage data for each stage"""
+        data = {}
+        for stage in stages:
+            data[stage.id] = {
+                'student_name': stage.student_id.full_name if stage.student_id else '',
+                'internship_title': stage.title or stage.name,
+                'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
+                'company_name': stage.company_id.name or 'TechPal',
+                'start_date': format_date_english(stage.start_date),
+                'end_date': format_date_english(stage.end_date),
+                'current_date': format_date_english(datetime.now()),
+                'reference': stage.reference_number or f'INT-{stage.id}',
             }
         return data

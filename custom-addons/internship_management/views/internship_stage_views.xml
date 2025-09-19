@@ -326,6 +326,11 @@
                                         <field name="defense_grade"/>
                                         <field name="final_grade"/>
                                     </group>
+                                    <group string="Digital Signatures">
+                                        <field name="student_signature" widget="signature" options="{'size': [200, 100]}"/>
+                                        <field name="supervisor_signature" widget="signature" options="{'size': [200, 100]}"/>
+                                        <field name="jury_signature" widget="signature" options="{'size': [200, 100]}"/>
+                                    </group>
                                 </group>
                                 <separator string="Evaluation Feedback"/>
                                 <div class="oe_form_field_html" style="margin: 10px 0;">
