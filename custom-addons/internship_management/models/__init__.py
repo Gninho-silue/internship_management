@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . import internship_models
+from . import internship_skill
 from . import internship_student
 from . import internship_stage
 from . import internship_document

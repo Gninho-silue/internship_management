@@ -27,7 +27,7 @@ class InternshipAlert(models.Model):
 
     title = fields.Char(
         string='Alert Title',
-        required=True,
+        required=False,
         tracking=True,
         help="Brief description of the alert"
     )
@@ -40,7 +40,7 @@ class InternshipAlert(models.Model):
         ('defense_pending', 'Defense Pending'),
         ('supervisor_overload', 'Supervisor Overload'),
         ('student_inactive', 'Student Inactive')
-    ], string='Alert Type', required=True, tracking=True)
+    ], string='Alert Type', required=False, tracking=True)
 
     priority = fields.Selection([
         ('1', 'High'),

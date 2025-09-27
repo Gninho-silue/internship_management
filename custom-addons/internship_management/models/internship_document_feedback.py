@@ -42,7 +42,7 @@ class InternshipDocumentFeedback(models.Model):
     reviewer_id = fields.Many2one(
         'res.users',
         string='Reviewer',
-        required=True,
+        required=False,
         default=lambda self: self.env.user,
         tracking=True,
         help="User providing the feedback"
@@ -60,14 +60,14 @@ class InternshipDocumentFeedback(models.Model):
     
     feedback_summary = fields.Char(
         string='Feedback Summary',
-        required=True,
+        required=False,
         size=200,
         help="Brief summary of the feedback"
     )
     
     detailed_feedback = fields.Html(
         string='Detailed Feedback',
-        required=True,
+        required=False,
         help="Detailed feedback content"
     )
     

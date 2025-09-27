@@ -21,7 +21,7 @@ class InternshipDashboard(models.TransientModel):
         ('admin', 'Administrator Dashboard'),
         ('supervisor', 'Supervisor Dashboard'),
         ('student', 'Student Dashboard')
-    ], string='Dashboard Type', required=True, default='admin')
+    ], string='Dashboard Type', required=False, default='admin')
 
     # Date Range
     date_from = fields.Date(string='From Date', default=lambda self: fields.Date.today() - timedelta(days=30))

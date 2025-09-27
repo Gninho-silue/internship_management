@@ -52,7 +52,7 @@ class InternshipMeeting(models.Model):
         ('evaluation', 'Evaluation Meeting'),
         ('emergency', 'Emergency Meeting'),
         ('other', 'Other')
-    ], string='Meeting Type', default='follow_up', tracking=True, required=True,
+    ], string='Meeting Type', default='follow_up', tracking=True, required=False,
         help="Type of meeting being scheduled")
 
     # ===============================
@@ -62,7 +62,7 @@ class InternshipMeeting(models.Model):
     stage_id = fields.Many2one(
         'internship.stage',
         string='Related Internship',
-        required=True,
+        required=False,
         tracking=True,
         ondelete='cascade',
         help="Internship this meeting is related to"
@@ -106,7 +106,7 @@ class InternshipMeeting(models.Model):
 
     date = fields.Datetime(
         string='Meeting Date & Time',
-        required=True,
+        required=False,
         tracking=True,
         help="Scheduled date and time for the meeting"
     )
@@ -192,7 +192,7 @@ class InternshipMeeting(models.Model):
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
         ('postponed', 'Postponed')
-    ], string='Status', default='draft', tracking=True, required=True,
+    ], string='Status', default='draft', tracking=True, required=False,
         help="Current status of the meeting")
 
     # ===============================
@@ -809,14 +809,14 @@ class InternshipMeetingAttendee(models.Model):
     meeting_id = fields.Many2one(
         'internship.meeting',
         string='Meeting',
-        required=True,
+        required=False,
         ondelete='cascade'
     )
 
     user_id = fields.Many2one(
         'res.users',
         string='Attendee',
-        required=True
+        required=False
     )
 
     attendance_status = fields.Selection([

@@ -38,7 +38,7 @@ class InternshipCommunication(models.Model):
 
     content = fields.Html(
         string='Content',
-        required=True,
+        required=False,
         tracking=True,
         help="Main content of the communication"
     )
@@ -76,7 +76,7 @@ class InternshipCommunication(models.Model):
     stage_id = fields.Many2one(
         'internship.stage',
         string='Related Internship',
-        required=True,
+        required=False,
         tracking=True,
         help="Internship this communication is related to"
     )
@@ -84,7 +84,7 @@ class InternshipCommunication(models.Model):
     sender_id = fields.Many2one(
         'res.users',
         string='Sender',
-        required=True,
+        required=False,
         default=lambda self: self.env.user,
         tracking=True,
         help="User who sent this communication"
@@ -122,7 +122,7 @@ class InternshipCommunication(models.Model):
         ('read', 'Read'),
         ('replied', 'Replied'),
         ('archived', 'Archived')
-    ], string='Status', default='draft', tracking=True, required=True,
+    ], string='Status', default='draft', tracking=True, required=False,
         help="Current status of the communication")
 
     # ===============================

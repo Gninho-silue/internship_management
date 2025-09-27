@@ -43,7 +43,7 @@ class InternshipStudent(models.Model):
 
     email = fields.Char(
         string='Email Address',
-        required=True,
+        required=False,
         help="Primary email address for communication"
     )
 
@@ -81,7 +81,7 @@ class InternshipStudent(models.Model):
 
     institution = fields.Char(
         string='Educational Institution',
-        required=True,
+        required=False,
         size=100,
         help="Name of school, university, or college"
     )
@@ -94,11 +94,11 @@ class InternshipStudent(models.Model):
         ('master_1', 'Master Year 1'),
         ('master_2', 'Master Year 2'),
         ('phd', 'PhD')
-    ], string='Education Level', required=True)
+    ], string='Education Level', )
 
     field_of_study = fields.Char(
         string='Field of Study',
-        required=True,
+        required=False,
         size=100,
         help="Major or specialization area"
     )

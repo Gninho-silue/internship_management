@@ -49,7 +49,7 @@ class InternshipStage(models.Model):
         ('summer_internship', 'Summer Internship'),
         ('observation_internship', 'Observation Internship'),
         ('professional_internship', 'Professional Internship')
-    ], string='Internship Type', required=True, tracking=True)
+    ], string='Internship Type', required=False, tracking=True)
 
     # ===============================
     # RELATIONSHIP FIELDS
@@ -79,11 +79,11 @@ class InternshipStage(models.Model):
 
     company_id = fields.Many2one(
         'res.company',
-        string='Host Organization',
-        required=True,
-        tracking=True,
+        string='Entreprise',
         default=lambda self: self.env.company,
-        help="Organization hosting the internship"
+        readonly=True,
+        required=False,
+        help="Entreprise de stage (TechPal par défaut)"
     )
 
     # ===============================
@@ -92,14 +92,14 @@ class InternshipStage(models.Model):
 
     start_date = fields.Date(
         string='Start Date',
-        required=True,
+        required=False,
         tracking=True,
         help="Official start date of the internship"
     )
 
     end_date = fields.Date(
         string='End Date',
-        required=True,
+        required=False,
         tracking=True,
         help="Official end date of the internship"
     )
@@ -163,7 +163,7 @@ class InternshipStage(models.Model):
 
     project_description = fields.Html(
         string='Project Description',
-        required=True,
+        required=False,
         help="Detailed description of the internship project and context"
     )
 
@@ -231,7 +231,7 @@ class InternshipStage(models.Model):
         ('completed', 'Completed'),
         ('evaluated', 'Evaluated'),
         ('cancelled', 'Cancelled')
-    ], string='Status', default='draft', tracking=True, required=True)
+    ], string='Status', default='draft', tracking=True, required=False)
 
     # ===============================
     # RELATIONSHIP FIELDS

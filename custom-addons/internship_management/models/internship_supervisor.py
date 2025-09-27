@@ -51,7 +51,7 @@ class InternshipSupervisor(models.Model):
 
     email = fields.Char(
         string='Email Address',
-        required=True,
+        required=False,
         help="Primary email address for communication"
     )
 
@@ -65,24 +65,25 @@ class InternshipSupervisor(models.Model):
     # PROFESSIONAL INFORMATION
     # ===============================
 
+
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
-        required=True,
+        string='Entreprise',
         default=lambda self: self.env.company,
-        help="Company or organization where supervisor works"
+        readonly=True,
+        required=False,
+        help="Entreprise de stage (TechPal par défaut)"
     )
-
     department = fields.Char(
         string='Department',
-        required=True,
+        required=False,
         size=100,
         help="Department or division within the organization"
     )
 
     position = fields.Char(
         string='Position',
-        required=True,
+        required=False,
         size=100,
         help="Job title or professional position"
     )

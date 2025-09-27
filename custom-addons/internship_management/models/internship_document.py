@@ -37,7 +37,7 @@ class InternshipDocument(models.Model):
 
     name = fields.Char(
         string='Document Title',
-        required=True,
+        required=False,
         tracking=True,
         size=200,
         help="Title or name of the document"
@@ -51,7 +51,7 @@ class InternshipDocument(models.Model):
         ('evaluation', 'Evaluation Form'),
         ('attestation', 'Attestation'),
         ('other', 'Other')
-    ], string='Document Type', required=True, tracking=True,
+    ], string='Document Type', required=False, tracking=True,
         help="Type of document being uploaded")
 
     # ===============================
@@ -61,7 +61,7 @@ class InternshipDocument(models.Model):
     stage_id = fields.Many2one(
         'internship.stage',
         string='Internship',
-        required=True,
+        required=False,
         tracking=True,
         ondelete='cascade',
         help="Internship this document belongs to"

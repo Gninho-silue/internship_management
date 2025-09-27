@@ -32,7 +32,7 @@ class InternshipPresentation(models.Model):
     stage_id = fields.Many2one(
         'internship.stage',
         string='Stage',
-        required=True,
+        required=False,
         ondelete='cascade',
         tracking=True,
         help="Stage associé à cette présentation"
@@ -60,7 +60,7 @@ class InternshipPresentation(models.Model):
 
     presentation_file = fields.Binary(
         string='Fichier de Présentation',
-        required=True,
+        required=False,
         help="Télécharger le fichier de présentation (PDF, PPT, PPTX)"
     )
 
@@ -100,7 +100,7 @@ class InternshipPresentation(models.Model):
         ('approved', 'Approuvé'),
         ('revision_required', 'Révision Requise'),
         ('final', 'Version Finale')
-    ], string='Statut', default='draft', tracking=True, required=True)
+    ], string='Statut', default='draft', tracking=True, required=False)
 
     is_final_version = fields.Boolean(
         string='Version Finale',
