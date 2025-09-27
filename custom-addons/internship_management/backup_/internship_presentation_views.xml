@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Tree View -->
+        <record id="view_internship_presentation_tree" model="ir.ui.view">
+            <field name="name">internship.presentation.tree</field>
+            <field name="model">internship.presentation</field>
+            <field name="arch" type="xml">
+                <tree string="Presentations"
+                      decoration-info="status=='draft'"
+                      decoration-warning="status=='submitted'"
+                      decoration-success="status=='approved'"
+                      decoration-danger="status=='revision_required'"
+                      decoration-bf="status=='final'">
+                    <field name="name"/>
+                    <field name="stage_id"/>
+                    <field name="student_id"/>
+                    <field name="version"/>
+                    <field name="status" widget="badge"/>
+                    <field name="file_type"/>
+                    <field name="file_size"/>
+                    <field name="submission_date"/>
+                    <field name="is_overdue" invisible="1"/>
+                    <field name="is_final_version" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_internship_presentation_form" model="ir.ui.view">
+            <field name="name">internship.presentation.form</field>
+            <field name="model">internship.presentation</field>
+            <field name="arch" type="xml">
+                <form string="Presentation">
+                    <header>
+                        <button name="action_submit"
+                                string="Submit for Review"
+                                type="object"
+                                class="btn-primary"
+                                invisible="status != 'draft'"/>
+                        <button name="action_approve"
+                                string="Approve"
+                                type="object"
+                                class="btn-success"
+                                invisible="status not in ['submitted', 'revision_required']"/>
+                        <button name="action_request_revision"
+                                string="Request Revision"
+                                type="object"
+                                class="btn-warning"
+                                invisible="status != 'submitted'"/>
+                        <button name="action_mark_final"
+                                string="Mark as Final"
+                                type="object"
+                                class="btn-primary"
+                                invisible="status != 'approved'"/>
+                        <button name="action_download"
+                                string="Download"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="not presentation_file"/>
+                        <field name="status" widget="statusbar" statusbar_visible="draft,submitted,approved,final"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_download"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-download"
+                                    invisible="not presentation_file">
+                                <field name="file_size" widget="statinfo" string="Size (MB)"/>
+                            </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Presentation Name"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Basic Information">
+                                <field name="stage_id"/>
+                                <field name="student_id"/>
+                                <field name="supervisor_id"/>
+                                <field name="version"/>
+                            </group>
+                            <group string="File Information">
+                                <field name="filename"/>
+                                <field name="file_type"/>
+                                <field name="file_size"/>
+                                <field name="submission_date"/>
+                                <field name="deadline_date"/>
+                                <field name="is_overdue"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Status">
+                                <field name="status"/>
+                                <field name="is_final_version"/>
+                                <field name="reviewer_id"/>
+                                <field name="review_date"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Presentation File">
+                                <group>
+                                    <field name="presentation_file" widget="binary" filename="filename"/>
+                                </group>
+                            </page>
+
+                            <page string="Review Notes">
+                                <field name="review_notes" widget="text" placeholder="Enter review notes here..."/>
+                            </page>
+
+                            <page string="Feedback">
+                                <field name="feedback_ids" readonly="1">
+                                    <tree>
+                                        <field name="feedback_type"/>
+                                        <field name="feedback_summary"/>
+                                        <field name="reviewer_id"/>
+                                        <field name="status"/>
+                                        <field name="create_date"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Kanban View -->
+        <record id="view_internship_presentation_kanban" model="ir.ui.view">
+            <field name="name">internship.presentation.kanban</field>
+            <field name="model">internship.presentation</field>
+            <field name="arch" type="xml">
+                <kanban string="Presentations">
+                    <field name="name"/>
+                    <field name="status"/>
+                    <field name="student_id"/>
+                    <field name="version"/>
+                    <field name="file_type"/>
+                    <field name="submission_date"/>
+                    <field name="is_final_version"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                            <div class="o_kanban_record_subtitle">
+                                                <field name="student_id"/> - Version <field name="version"/>
+                                            </div>
+                                        </div>
+                                        <div class="o_kanban_record_body">
+                                            <div class="o_kanban_record_bottom">
+                                                <div class="oe_kanban_bottom_left">
+                                                    <span class="badge badge-pill badge-info" t-if="record.file_type.raw_value == 'pdf'">
+                                                        PDF
+                                                    </span>
+                                                    <span class="badge badge-pill badge-primary" t-if="record.file_type.raw_value == 'ppt'">
+                                                        PPT
+                                                    </span>
+                                                    <span class="badge badge-pill badge-primary" t-if="record.file_type.raw_value == 'pptx'">
+                                                        PPTX
+                                                    </span>
+                                                </div>
+                                                <div class="oe_kanban_bottom_right">
+                                                    <span t-if="record.is_final_version.raw_value" class="fa fa-star text-warning" title="Final Version"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_internship_presentation_search" model="ir.ui.view">
+            <field name="name">internship.presentation.search</field>
+            <field name="model">internship.presentation</field>
+            <field name="arch" type="xml">
+                <search string="Search Presentations">
+                    <field name="name"/>
+                    <field name="stage_id"/>
+                    <field name="student_id"/>
+                    <field name="supervisor_id"/>
+                    <field name="version"/>
+                    <field name="filename"/>
+
+                    <filter string="Draft" name="draft" domain="[('status', '=', 'draft')]"/>
+                    <filter string="Submitted" name="submitted" domain="[('status', '=', 'submitted')]"/>
+                    <filter string="Approved" name="approved" domain="[('status', '=', 'approved')]"/>
+                    <filter string="Revision Required" name="revision_required" domain="[('status', '=', 'revision_required')]"/>
+                    <filter string="Final Version" name="final" domain="[('is_final_version', '=', True)]"/>
+                    <filter string="Overdue" name="overdue" domain="[('is_overdue', '=', True)]"/>
+
+                    <separator/>
+                    <filter string="My Presentations" name="my_presentations"
+                            domain="[('student_id.user_id', '=', uid)]"/>
+                    <filter string="To Review" name="to_review"
+                            domain="[('supervisor_id.user_id', '=', uid), ('status', 'in', ['submitted', 'revision_required'])]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Student" name="group_student" context="{'group_by': 'student_id'}"/>
+                        <filter string="Supervisor" name="group_supervisor" context="{'group_by': 'supervisor_id'}"/>
+                        <filter string="File Type" name="group_file_type" context="{'group_by': 'file_type'}"/>
+                        <filter string="Submission Date" name="group_submission_date" context="{'group_by': 'submission_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_internship_presentation" model="ir.actions.act_window">
+            <field name="name">Presentations</field>
+            <field name="res_model">internship.presentation</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_internship_presentation_search"/>
+            <field name="context">{'search_default_submitted': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Upload your defense presentation!
+                </p>
+                <p>
+                    Create and submit your presentation for defense review.
+                </p>
+            </field>
+        </record>
+
+        <!-- My Presentations Action -->
+        <record id="action_my_presentations" model="ir.actions.act_window">
+            <field name="name">My Presentations</field>
+            <field name="res_model">internship.presentation</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_internship_presentation_search"/>
+            <field name="context">{'search_default_my_presentations': 1}</field>
+            <field name="domain">[('student_id.user_id', '=', uid)]</field>
+        </record>
+
+        <!-- Presentations to Review Action -->
+        <record id="action_presentations_to_review" model="ir.actions.act_window">
+            <field name="name">Presentations to Review</field>
+            <field name="res_model">internship.presentation</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_internship_presentation_search"/>
+            <field name="context">{'search_default_to_review': 1}</field>
+            <field name="domain">[('supervisor_id.user_id', '=', uid), ('status', 'in', ['submitted', 'revision_required'])]</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,42 +1,47 @@
+# -*- coding: utf-8 -*-
 {
-    'name': 'Internship Management System',
+    # Informations du module
+    'name': 'Système de Gestion des Stages',
     'version': '17.0.1.0.0',
-    'category': 'Human Resources/Education',
-    'summary': 'Complete internship management platform for educational institutions',
+    'category': 'Ressources Humaines/Éducation',
+    'summary': 'Plateforme complète de gestion des stages pour institutions éducatives',
+
     'description': """
-Internship Management System - Professional Platform
-==================================================
+Système de Gestion des Stages - Plateforme Professionnelle
+===========================================================
 
-A comprehensive solution for managing internships with the following features:
+Une solution complète pour la gestion des stages avec les fonctionnalités suivantes :
 
-**Core Features:**
-* Complete internship lifecycle management
-* Student and supervisor management
-* Document management with automated PDF generation
-* Progress tracking with Kanban boards
-* Automated notifications and alerts
+**Fonctionnalités principales :**
+* Gestion complète du cycle de vie des stages
+* Gestion des étudiants et encadrants
+* Gestion documentaire avec génération automatique de PDF
+* Suivi de progression avec tableaux Kanban
+* Notifications et alertes automatiques
 
-**Advanced Features:**
-* Role-based security system
-* Email integration and templates
-* Meeting scheduling and management
-* Reporting and analytics dashboard
-* Mobile-responsive interface
+**Fonctionnalités avancées :**
+* Système de sécurité basé sur les rôles
+* Intégration email et templates
+* Planification et gestion des réunions
+* Tableau de bord et rapports analytiques
+* Interface responsive mobile
 
-**Target Users:**
-* Educational institutions
-* Corporate HR departments  
-* Training organizations
-* Internship coordinators
+**Utilisateurs cibles :**
+* Institutions éducatives
+* Départements RH d'entreprises
+* Organismes de formation
+* Coordinateurs de stages
 
-Developed as a professional-grade application following Odoo best practices.
+Développé comme application professionnelle suivant les meilleures pratiques Odoo.
     """,
-    'author': 'SILUE Intern- Techpal Casablanca',
+
+    # Métadonnées
+    'author': 'SILUE Stagiaire - TechPal Casablanca',
     'website': 'https://www.techpalservices.com/',
     'license': 'LGPL-3',
     'support': 'internship@techpal.ma',
 
-    # Dependencies
+    # Dépendances
     'depends': [
         'base',
         'mail',
@@ -46,72 +51,77 @@ Developed as a professional-grade application following Odoo best practices.
         'calendar',
     ],
 
-    # Data files
+    # Fichiers de données (ORDRE CRITIQUE!)
     'data': [
-        # Security (critical order!)
-        'security/internship_security.xml',
-        'security/ir.model.access.csv',
+    # Security
+    'security/internship_security.xml',
+    'security/ir.model.access.csv',
 
-        # Base data
-        'data/sequences.xml',
-        'data/internship_cron.xml',
+    # Data
+    'data/sequences.xml',
+    'data/internship_cron.xml',
 
-        # Reports
-        'reports/defense_report_template.xml',
-        'reports/convention_attestation_template.xml',
-        'reports/evaluation_report_template.xml',
-        'reports/stage_report_template.xml',
-        'reports/internship_reports.xml',
+    # Reports
+    'reports/defense_report_template.xml',
+    'reports/convention_attestation_template.xml',
+    'reports/evaluation_report_template.xml',
+    'reports/stage_report_template.xml',
+    'reports/internship_reports.xml',
 
-        # Views
-        'views/internship_presentation_views.xml',
-        'views/internship_stage_views.xml',
-        'views/internship_student_views.xml',
-        'views/internship_supervisor_views.xml',
-        'views/internship_config_views.xml',
-        'views/internship_security_views.xml',
-        'views/internship_document_views.xml',
-        'views/internship_meeting_views.xml',
-        'views/internship_communication_views.xml',
-        'views/internship_document_feedback_views.xml',
-        'views/internship_todo_views.xml',
-        'views/internship_alert_views.xml',
-        'views/internship_dashboard_views.xml',
+    # Views (NOUVEL ORDRE!)
+    'views/internship_presentation_views.xml',
+    'views/internship_meeting_views.xml',        # ← DÉPLACER ICI (AVANT stage)
+    'views/internship_stage_views.xml',          # ← APRÈS meeting
+    'views/internship_student_views.xml',
+    'views/internship_supervisor_views.xml',
+    'views/internship_config_views.xml',
+    'views/internship_security_views.xml',
+    'views/internship_document_views.xml',
+    'views/internship_communication_views.xml',
+    'views/internship_document_feedback_views.xml',
+    'views/internship_todo_views.xml',
+    'views/internship_alert_views.xml',
+    'views/internship_dashboard_views.xml',
 
-        # Menus (last)
-        'views/internship_menus.xml',
-    ],
+    # Menus
+    'views/internship_menus.xml',
+],
 
-    # Assets 
+    # Assets (JavaScript/CSS)
     'assets': {
         'web.assets_backend': [
-    
+            # Les assets OWL seront ajoutés ici
+            # 'internship_management/static/src/dashboard/dashboard.js',
+            # 'internship_management/static/src/dashboard/dashboard.xml',
         ],
     },
-    # Demo data
+
+    # Données de démonstration
     'demo': [
-        'data/internship_demo_data.xml',
+        # 'data/internship_demo_data.xml',
     ],
 
-    # Technical settings
+    # Paramètres techniques
     'installable': True,
     'application': True,
     'auto_install': False,
     'sequence': 15,
 
-    # External dependencies
+    # Dépendances externes Python
     'external_dependencies': {
         'python': ['python-dateutil', 'reportlab'],
     },
 
-    # Images and screenshots
+    # Images et captures d'écran
     'images': [
+        # 'static/description/banner.png',
+        'static/description/icon.png',
     ],
 
-    # Pricing (for Odoo Apps Store)
+    # Tarification (Odoo Apps Store)
     'price': 0.00,
     'currency': 'EUR',
 
-    # Version info
+    # Informations de version
     'live_test_url': 'https://demo.techpal.ma/internship',
 }
