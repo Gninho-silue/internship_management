@@ -4,8 +4,8 @@
 
         <!-- Security Categories -->
         <record id="module_category_internship" model="ir.module.category">
-            <field name="name">Internship Management</field>
-            <field name="description">Complete internship and student management system</field>
+            <field name="name">Gestion des Stages</field>
+            <field name="description">Système complet de gestion des stages et des étudiants</field>
             <field name="sequence">10</field>
         </record>
 
@@ -15,41 +15,38 @@
 
         <!-- Group: Student/Intern -->
         <record id="group_internship_student" model="res.groups">
-            <field name="name">Student/Intern</field>
+            <field name="name">Étudiant/Stagiaire</field>
             <field name="category_id" ref="module_category_internship"/>
-            <field name="comment">Read/write access to own internships and documents</field>
+            <field name="comment">Accès lecture/écriture à ses propres stages et documents</field>
         </record>
 
         <!-- Group: Supervisor -->
         <record id="group_internship_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
+            <field name="name">Encadrant</field>
             <field name="category_id" ref="module_category_internship"/>
-            <field name="comment">Manage assigned students and validate internships</field>
+            <field name="comment">Gérer les étudiants assignés et valider les stages</field>
         </record>
 
         <!-- Group: Internship Coordinator -->
         <record id="group_internship_coordinator" model="res.groups">
-            <field name="name">Internship Coordinator</field>
+            <field name="name">Coordinateur de Stages</field>
             <field name="category_id" ref="module_category_internship"/>
-            <field name="implied_ids" eval="[(4, ref('group_internship_supervisor'))]"/>
-            <field name="comment">General coordination of internships and assignments</field>
+            <field name="comment">Coordination générale des stages et assignations</field>
         </record>
 
         <!-- Group: System Administrator -->
         <record id="group_internship_admin" model="res.groups">
-            <field name="name">System Administrator</field>
+            <field name="name">Administrateur Système</field>
             <field name="category_id" ref="module_category_internship"/>
-            <field name="implied_ids" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="comment">Full access to all internship management modules</field>
+            <field name="comment">Accès complet à tous les modules de gestion des stages</field>
         </record>
-
         <!-- =============================================== -->
         <!-- RECORD RULES (SECURITY POLICIES) -->
         <!-- =============================================== -->
 
         <!-- Rule: Students - View only own data -->
         <record id="internship_student_rule_own" model="ir.rule">
-            <field name="name">Students: Own data only</field>
+            <field name="name">Étudiants: Données personnelles uniquement</field>
             <field name="model_id" ref="model_internship_student"/>
             <field name="domain_force">[('user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
@@ -58,9 +55,10 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-                <!-- Rule: Students - Supervisors see their assigned students -->
+
+        <!-- Rule: Students - Supervisors see their assigned students -->
         <record id="internship_student_rule_supervisor" model="ir.rule">
-            <field name="name">Students: Supervisor sees assigned students</field>
+            <field name="name">Étudiants: Encadrant voit ses étudiants assignés</field>
             <field name="model_id" ref="model_internship_student"/>
             <field name="domain_force">[('internship_ids.supervisor_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
@@ -69,9 +67,10 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+
         <!-- Rule: Internships - Students see only their internships -->
         <record id="internship_stage_rule_student" model="ir.rule">
-            <field name="name">Internships: Student sees own internships</field>
+            <field name="name">Stages: Étudiant voit ses propres stages</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
@@ -83,7 +82,7 @@
 
         <!-- Rule: Internships - Supervisors see assigned internships (read-only) -->
         <record id="internship_stage_rule_supervisor" model="ir.rule">
-            <field name="name">Internships: Supervisor sees assigned internships (read-only)</field>
+            <field name="name">Stages: Encadrant voit ses stages assignés (lecture seule)</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[('supervisor_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
@@ -95,9 +94,11 @@
 
         <!-- Rule: Documents - Students see their own documents -->
         <record id="internship_document_rule_student" model="ir.rule">
-            <field name="name">Documents: Student sees own documents</field>
+            <field name="name">Documents: Étudiant voit ses propres documents</field>
             <field name="model_id" ref="model_internship_document"/>
-            <field name="domain_force">['|', ('student_id.user_id', '=', user.id), ('stage_id.student_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">['|', ('student_id.user_id', '=', user.id), ('stage_id.student_id.user_id', '=',
+                user.id)]
+            </field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
@@ -105,10 +106,9 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
-        
         <!-- Rule: Documents - Supervisors see documents of their assigned students -->
         <record id="internship_document_rule_supervisor" model="ir.rule">
-            <field name="name">Documents: Supervisor sees assigned students' documents</field>
+            <field name="name">Documents: Encadrant voit les documents de ses étudiants</field>
             <field name="model_id" ref="model_internship_document"/>
             <field name="domain_force">[('supervisor_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
@@ -118,13 +118,14 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-                <!-- Rule: Meetings - Students see meetings they participate in -->
+        <!-- Rule: Meetings - Students see meetings they participate in -->
         <record id="internship_meeting_rule_student" model="ir.rule">
-            <field name="name">Meetings: Student sees participated meetings</field>
+            <field name="name">Réunions: Étudiant voit les réunions où il participe</field>
             <field name="model_id" ref="model_internship_meeting"/>
-            <field name="domain_force">['|', 
-                ('organizer_id', '=', user.id), 
-                ('participant_ids', 'in', user.id)]</field>
+            <field name="domain_force">['|',
+                ('organizer_id', '=', user.id),
+                ('participant_ids', 'in', user.id)]
+            </field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -134,21 +135,22 @@
 
         <!-- Rule: Meetings - Supervisors see meetings they organize or participate in -->
         <record id="internship_meeting_rule_supervisor" model="ir.rule">
-            <field name="name">Meetings: Supervisor sees organized and participated meetings</field>
+            <field name="name">Réunions: Encadrant voit les réunions qu'il organise ou où il participe</field>
             <field name="model_id" ref="model_internship_meeting"/>
-            <field name="domain_force">['|', 
-                ('organizer_id', '=', user.id), 
-                ('participant_ids', 'in', user.id)]</field>
+            <field name="domain_force">['|',
+                ('organizer_id', '=', user.id),
+                ('participant_ids', 'in', user.id)]
+            </field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-       
+
         <!-- Rule: Supervisors - Full access to own data -->
         <record id="internship_supervisor_rule_own" model="ir.rule">
-            <field name="name">Supervisors: Own profile access</field>
+            <field name="name">Encadrants: Accès complet à leur profil</field>
             <field name="model_id" ref="model_internship_supervisor"/>
             <field name="domain_force">[('user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
@@ -160,7 +162,7 @@
 
         <!-- Rule: Coordinators and Admins - Full access -->
         <record id="internship_all_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: Full access to internships</field>
+            <field name="name">Coordinateur: Accès complet aux stages</field>
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -171,7 +173,7 @@
         </record>
 
         <record id="internship_student_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: All students access</field>
+            <field name="name">Coordinateur: Accès à tous les étudiants</field>
             <field name="model_id" ref="model_internship_student"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -182,7 +184,7 @@
         </record>
 
         <record id="internship_supervisor_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: All supervisors access</field>
+            <field name="name">Coordinateur: Accès à tous les encadrants</field>
             <field name="model_id" ref="model_internship_supervisor"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -194,7 +196,7 @@
 
         <!-- Rule: Documents - Coordinators and Admins have full access -->
         <record id="internship_document_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: All documents access</field>
+            <field name="name">Coordinateur: Accès à tous les documents</field>
             <field name="model_id" ref="model_internship_document"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -206,7 +208,7 @@
 
         <!-- Rule: Meetings - Coordinators see all meetings -->
         <record id="internship_meeting_rule_coordinator" model="ir.rule">
-            <field name="name">Coordinator: All meetings access</field>
+            <field name="name">Coordinateur: Accès à toutes les réunions</field>
             <field name="model_id" ref="model_internship_meeting"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
@@ -215,8 +217,6 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-       
-
 
         <!-- =============================================== -->
         <!-- DOMAIN RULES FOR TASKS -->
@@ -224,9 +224,11 @@
 
         <!-- Students can only see tasks assigned to them or from their internships -->
         <record id="rule_internship_todo_student" model="ir.rule">
-            <field name="name">Student: Can only see own tasks</field>
+            <field name="name">Étudiant: Peut voir seulement ses tâches</field>
             <field name="model_id" ref="model_internship_todo"/>
-            <field name="domain_force">['|', ('assigned_to.user_id', '=', user.id), ('stage_id.student_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">['|', ('assigned_to.user_id', '=', user.id), ('stage_id.student_id.user_id', '=',
+                user.id)]
+            </field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
@@ -236,9 +238,11 @@
 
         <!-- Supervisors can see tasks from their supervised internships -->
         <record id="rule_internship_todo_supervisor" model="ir.rule">
-            <field name="name">Supervisor: Can see tasks from supervised internships</field>
+            <field name="name">Encadrant: Peut voir les tâches de ses stages encadrés</field>
             <field name="model_id" ref="model_internship_todo"/>
-            <field name="domain_force">['|', ('stage_id.supervisor_id.user_id', '=', user.id), ('assigned_to.user_id', '=', user.id)]</field>
+            <field name="domain_force">['|', ('stage_id.supervisor_id.user_id', '=', user.id), ('assigned_to.user_id',
+                '=', user.id)]
+            </field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
@@ -248,7 +252,7 @@
 
         <!-- Coordinators and Admins can see all tasks -->
         <record id="rule_internship_todo_coordinator" model="ir.rule">
-            <field name="name">Coordinator/Admin: Can see all tasks</field>
+            <field name="name">Coordinateur/Admin: Peut voir toutes les tâches</field>
             <field name="model_id" ref="model_internship_todo"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator')), (4, ref('group_internship_admin'))]"/>
@@ -264,7 +268,7 @@
 
         <!-- Rule: Presentations - Students see their own presentations -->
         <record id="internship_presentation_rule_student" model="ir.rule">
-            <field name="name">Presentations: Student sees own presentations</field>
+            <field name="name">Présentations: Étudiant voit ses propres présentations</field>
             <field name="model_id" ref="model_internship_presentation"/>
             <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
@@ -276,7 +280,7 @@
 
         <!-- Rule: Presentations - Supervisors see presentations of their assigned students -->
         <record id="internship_presentation_rule_supervisor" model="ir.rule">
-            <field name="name">Presentations: Supervisor sees assigned students' presentations</field>
+            <field name="name">Présentations: Encadrant voit les présentations de ses étudiants</field>
             <field name="model_id" ref="model_internship_presentation"/>
             <field name="domain_force">[('supervisor_id.user_id', '=', user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
@@ -288,5 +292,3 @@
 
     </data>
 </odoo>
-
-

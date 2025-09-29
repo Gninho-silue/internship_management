@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="internship_management.Dashboard" owl="1">
+        <div class="o_internship_dashboard">
+            <!-- Loader -->
+            <div t-if="state.loading" class="o_dashboard_loading">
+                <i class="fa fa-spin fa-circle-o-notch fa-3x"/>
+                <p>Chargement des données...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div t-else="" class="o_dashboard_content">
+                <!-- Header adapté au rôle -->
+                <div class="o_dashboard_header">
+                    <h2>
+                        <t t-if="state.isStudent">Mon Tableau de Bord - Stage</t>
+                        <t t-elif="state.isSupervisor">Tableau de Bord - Encadrement</t>
+                        <t t-else="">Tableau de Bord - Gestion des Stages</t>
+                    </h2>
+                    <p class="text-muted">
+                        <t t-if="state.isStudent">Vue d'ensemble de votre stage et progression</t>
+                        <t t-elif="state.isSupervisor">Vue d'ensemble de vos encadrements</t>
+                        <t t-else="">Vue d'ensemble du système de gestion des stages</t>
+                    </p>
+                </div>
+
+                <!-- Main Statistics Row -->
+                <div class="row o_dashboard_row">
+                    <!-- Stages -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="o_dashboard_card bg-primary" t-on-click="openInternships">
+                            <div class="o_card_icon">
+                                <i class="fa fa-briefcase fa-3x"/>
+                            </div>
+                            <div class="o_card_content">
+                                <h3 class="o_card_value" t-esc="state.totalInternships"/>
+                                <p class="o_card_label">
+                                    <t t-if="state.isStudent">Mes Stages</t>
+                                    <t t-elif="state.isSupervisor">Stages Supervisés</t>
+                                    <t t-else="">Stages Total</t>
+                                </p>
+                                <div class="o_card_details">
+                                    <span><i class="fa fa-check-circle"/> <t t-esc="state.completedInternships"/> Complétés</span>
+                                    <span><i class="fa fa-spinner"/> <t t-esc="state.activeInternships"/> En cours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étudiants (masqué pour les étudiants) -->
+                    <div class="col-lg-3 col-md-6 mb-4" t-if="!state.isStudent">
+                        <div class="o_dashboard_card bg-success" t-on-click="openStudents">
+                            <div class="o_card_icon">
+                                <i class="fa fa-users fa-3x"/>
+                            </div>
+                            <div class="o_card_content">
+                                <h3 class="o_card_value" t-esc="state.totalStudents"/>
+                                <p class="o_card_label">
+                                    <t t-if="state.isSupervisor">Mes Étudiants</t>
+                                    <t t-else="">Étudiants</t>
+                                </p>
+                                <div class="o_card_details">
+                                    <span><i class="fa fa-graduation-cap"/> Stagiaires actifs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Présentations -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="o_dashboard_card bg-warning" t-on-click="openPendingPresentations">
+                            <div class="o_card_icon">
+                                <i class="fa fa-file-powerpoint-o fa-3x"/>
+                            </div>
+                            <div class="o_card_content">
+                                <h3 class="o_card_value" t-esc="state.totalPresentations"/>
+                                <p class="o_card_label">
+                                    <t t-if="state.isStudent">Mes Présentations</t>
+                                    <t t-elif="state.isSupervisor">Présentations à Réviser</t>
+                                    <t t-else="">Présentations</t>
+                                </p>
+                                <div class="o_card_details">
+                                    <span><i class="fa fa-clock-o"/> <t t-esc="state.pendingPresentations"/>
+                                        <t t-if="state.isStudent">En attente</t>
+                                        <t t-else="">À réviser</t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alertes -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="o_dashboard_card bg-danger" t-on-click="openAlerts">
+                            <div class="o_card_icon">
+                                <i class="fa fa-exclamation-triangle fa-3x"/>
+                            </div>
+                            <div class="o_card_content">
+                                <h3 class="o_card_value" t-esc="state.activeAlerts"/>
+                                <p class="o_card_label">
+                                    <t t-if="state.isStudent">Mes Alertes</t>
+                                    <t t-else="">Alertes Actives</t>
+                                </p>
+                                <div class="o_card_details">
+                                    <span><i class="fa fa-warning"/> <t t-esc="state.highPriorityAlerts"/> Priorité haute</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Statistics Row -->
+                <div class="row o_dashboard_row">
+                    <!-- Documents -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="o_dashboard_card_secondary" t-on-click="openDocuments">
+                            <div class="o_card_header">
+                                <i class="fa fa-file-text-o fa-2x"/>
+                                <h4>
+                                    <t t-if="state.isStudent">Mes Documents</t>
+                                    <t t-else="">Documents</t>
+                                </h4>
+                            </div>
+                            <div class="o_card_stats">
+                                <div class="o_stat_item">
+                                    <span class="o_stat_value" t-esc="state.totalDocuments"/>
+                                    <span class="o_stat_label">Total</span>
+                                </div>
+                                <div class="o_stat_item">
+                                    <span class="o_stat_value text-warning" t-esc="state.pendingReviews"/>
+                                    <span class="o_stat_label">
+                                        <t t-if="state.isSupervisor">À réviser</t>
+                                        <t t-else="">En révision</t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tâches -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="o_dashboard_card_secondary" t-on-click="openTasks">
+                            <div class="o_card_header">
+                                <i class="fa fa-tasks fa-2x"/>
+                                <h4>
+                                    <t t-if="state.isStudent">Mes Tâches</t>
+                                    <t t-else="">Tâches</t>
+                                </h4>
+                            </div>
+                            <div class="o_card_stats">
+                                <div class="o_stat_item">
+                                    <span class="o_stat_value" t-esc="state.totalTasks"/>
+                                    <span class="o_stat_label">Total</span>
+                                </div>
+                                <div class="o_stat_item">
+                                    <span class="o_stat_value text-success" t-esc="state.completedTasks"/>
+                                    <span class="o_stat_label">Complétées</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Réunions -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="o_dashboard_card_secondary" t-on-click="openMeetings">
+                            <div class="o_card_header">
+                                <i class="fa fa-calendar fa-2x"/>
+                                <h4>
+                                    <t t-if="state.isStudent">Mes Réunions</t>
+                                    <t t-else="">Réunions</t>
+                                </h4>
+                            </div>
+                            <div class="o_card_stats">
+                                <div class="o_stat_item">
+                                    <span class="o_stat_value" t-esc="state.totalMeetings"/>
+                                    <span class="o_stat_label">Total</span>
+                                </div>
+                                <div class="o_stat_item">
+                                    <span class="o_stat_value text-info" t-esc="state.upcomingMeetings"/>
+                                    <span class="o_stat_label">À venir</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Bar adapté aux rôles -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="o_dashboard_quick_stats">
+                            <div class="o_quick_stat" t-if="!state.isStudent">
+                                <i class="fa fa-user-tie"/>
+                                <span>
+                                    <t t-if="state.isSupervisor">
+                                        <t t-esc="state.totalSupervisors"/> Encadrant (Moi)
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="state.totalSupervisors"/> Encadrants
+                                    </t>
+                                </span>
+                            </div>
+                            <div class="o_quick_stat" t-if="state.isStudent">
+                                <i class="fa fa-user-tie"/>
+                                <span>Mon Encadrant</span>
+                            </div>
+
+                            <div class="o_quick_stat">
+                                <i class="fa fa-comments"/>
+                                <span>
+                                    <t t-if="state.isStudent">
+                                        <t t-esc="state.totalCommunications"/> Mes Communications
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="state.totalCommunications"/> Communications
+                                    </t>
+                                </span>
+                            </div>
+
+                            <div class="o_quick_stat">
+                                <i class="fa fa-hourglass-half"/>
+                                <span>
+                                    <t t-esc="state.pendingInternships"/>
+                                    <t t-if="state.isStudent">Mes stages en attente</t>
+                                    <t t-elif="state.isSupervisor">Stages en attente</t>
+                                    <t t-else="">Stages en attente</t>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -140,35 +140,6 @@
             <field name="description">English language proficiency for international business</field>
             <field name="active" eval="True"/>
         </record>
-
-        <!-- ============================================= -->
-        <!-- LANGUAGES (if this model exists) -->
-        <!-- ============================================= -->
-
-        <record id="language_french" model="internship.language">
-            <field name="name">French</field>
-            <field name="code">fr</field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="language_english" model="internship.language">
-            <field name="name">English</field>
-            <field name="code">en</field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="language_arabic" model="internship.language">
-            <field name="name">Arabic</field>
-            <field name="code">ar</field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="language_spanish" model="internship.language">
-            <field name="name">Spanish</field>
-            <field name="code">es</field>
-            <field name="active" eval="True"/>
-        </record>
-
         <!-- ============================================= -->
         <!-- AREAS OF EXPERTISE -->
         <!-- ============================================= -->
