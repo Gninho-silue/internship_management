@@ -124,7 +124,7 @@
             <field name="model_id" ref="model_internship_meeting"/>
             <field name="domain_force">['|',
                 ('organizer_id', '=', user.id),
-                ('participant_ids', 'in', user.id)]
+                ('participant_ids', 'in', [user.id])]
             </field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
             <field name="perm_read" eval="True"/>
@@ -139,7 +139,7 @@
             <field name="model_id" ref="model_internship_meeting"/>
             <field name="domain_force">['|',
                 ('organizer_id', '=', user.id),
-                ('participant_ids', 'in', user.id)]
+                ('participant_ids', 'in', [user.id])]
             </field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
             <field name="perm_read" eval="True"/>
@@ -147,6 +147,7 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
+
 
         <!-- Rule: Supervisors - Full access to own data -->
         <record id="internship_supervisor_rule_own" model="ir.rule">
