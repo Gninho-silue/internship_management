@@ -42,12 +42,11 @@ Plateforme complète de gestion des stages incluant :
         # Data
         'data/sequences.xml',
         'data/internship_cron.xml',
+        'data/internship_meeting_mail_templates.xml',
+        'data/mail_activity_type_data.xml',
 
         # Reports
-        'reports/defense_report_template.xml',
-        'reports/convention_attestation_template.xml',
-        'reports/evaluation_report_template.xml',
-        'reports/stage_report_template.xml',
+        'reports/internship_report_templates.xml',
         'reports/internship_reports.xml',
 
         # Views (ORDRE CORRECT)
@@ -56,7 +55,8 @@ Plateforme complète de gestion des stages incluant :
         'views/internship_stage_views.xml',  # ← AJOUTÉ
         'views/internship_student_views.xml',
         'views/internship_supervisor_views.xml',
-        'views/internship_config_views.xml',
+        'views/internship_area_views.xml',
+        'views/internship_skill_views.xml',
         'views/internship_security_views.xml',
         'views/internship_document_views.xml',
         'views/internship_document_feedback_views.xml',

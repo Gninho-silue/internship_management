@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ================================================================
+    NOTE SUR LES BONNES PRATIQUES APPLIQUÉES ICI :
+    1. web.external_layout : Chaque rapport est enveloppé dans ce layout
+       standard d'Odoo. Il ajoute automatiquement l'en-tête (avec le logo
+       de votre entreprise) et le pied de page, garantissant un aspect
+       professionnel et cohérent sur tous les documents.
+    2. t-field : Nous utilisons t-field au lieu de t-esc pour tous les
+       champs du modèle. Odoo se charge ainsi de formater correctement
+       les données (dates, nombres, champs sélection, etc.) selon la
+       langue de l'utilisateur.
+    3. Accès direct : Plus besoin de passer par un dictionnaire 'data'.
+       On accède directement aux informations via l'objet 'stage'
+       (ex: stage.student_id.name), ce qui est plus simple et plus lisible.
+    ================================================================
+    -->
+
+    <!-- =================================================== -->
+    <!-- TEMPLATE 1 : ATTESTATION DE STAGE                   -->
+    <!-- =================================================== -->
+    <template id="attestation_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2 class="text-center mt-5">ATTESTATION DE FIN DE STAGE</h2>
+
+                        <div class="mt-5 p-4" style="border: 1px solid #dee2e6; border-radius: 5px;">
+                            <p class="lead text-center">
+                                Nous certifions par la présente que :
+                            </p>
+
+                            <h3 class="text-center my-4" style="color: #007bff;">
+                                <strong t-field="stage.student_id.full_name"/>
+                            </h3>
+
+                            <p class="text-center">
+                                Numéro d'étudiant :
+                                <span t-field="stage.student_id.student_id_number"/>
+                            </p>
+
+                            <p class="mt-4" style="line-height: 1.8;">
+                                a effectué avec succès un stage au sein de notre entreprise,
+                                <strong t-field="stage.company_id.name"/>,
+                                du
+                                <strong t-field="stage.start_date" t-options="{'widget': 'date'}"/>
+                                au<strong t-field="stage.end_date" t-options="{'widget': 'date'}"/>.
+                            </p>
+
+                            <p class="mt-3">
+                                <strong>Intitulé du projet :</strong>
+                                <em t-field="stage.title"/>
+                            </p>
+
+                            <div class="text-center my-4">
+                                <span style="background-color: #f0f0f0; padding: 10px 20px; border-radius: 20px; font-size: 1.1em;">
+                                    Note Finale :
+                                    <strong>
+                                        <span t-field="stage.final_grade"/>
+                                        / 20
+                                    </strong>
+                                </span>
+                                <br/>
+                                <small class="text-muted mt-2 d-block">
+                                    Appréciation :
+                                    <strong t-esc="data[stage.id]['performance']"/>
+                                </small>
+                            </div>
+
+                            <p class="mt-5">
+                                Fait à <span t-field="company.city"/>, le<span t-esc="datetime.datetime.now()"
+                                                                              t-options="{'widget': 'date'}"/>.
+                            </p>
+
+                            <div class="row mt-5" style="padding-top: 40px;">
+                                <div class="col-6 text-center">
+                                    <p>
+                                        <strong>L'Encadrant</strong>
+                                    </p>
+                                    <p t-field="stage.supervisor_id.name"/>
+                                    <img t-if="stage.supervisor_signature"
+                                         t-att-src="image_data_uri(stage.supervisor_signature)"
+                                         style="max-height:80px;"/>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <p>
+                                        <strong>Direction des Ressources Humaines</strong>
+                                    </p>
+                                    <p t-field="company.name"/>
+                                    <img t-if="stage.jury_signature" t-att-src="image_data_uri(stage.jury_signature)"
+                                         style="max-height:80px;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- =================================================== -->
+    <!-- TEMPLATE 2 : CONVENTION DE STAGE                    -->
+    <!-- =================================================== -->
+    <template id="convention_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2 class="text-center">CONVENTION DE STAGE</h2>
+                        <p class="text-center">Référence :
+                            <span t-field="stage.reference_number"/>
+                        </p>
+
+                        <h4 class="mt-5">Article 1 : Les Parties Contractantes</h4>
+                        <p>La présente convention est établie entre :</p>
+                        <ul>
+                            <li>
+                                <strong>L'Entreprise :</strong>
+                                <span t-field="stage.company_id.name"/>, représentée par
+                                <span t-field="stage.supervisor_id.name"/>
+                                (<span t-field="stage.supervisor_id.position"/>).
+                            </li>
+                            <li>
+                                <strong>Le Stagiaire :</strong>
+                                <span t-field="stage.student_id.full_name"/>, étudiant à<span
+                                    t-field="stage.student_id.institution"/>.
+                            </li>
+                        </ul>
+
+                        <h4 class="mt-4">Article 2 : Objet du Stage</h4>
+                        <p>
+                            Le stage a pour objet le projet intitulé :
+                            <strong t-field="stage.title"/>.
+                        </p>
+                        <p t-if="stage.project_description">
+                            <strong>Description :</strong>
+                            <span t-field="stage.project_description"/>
+                        </p>
+
+                        <h4 class="mt-4">Article 3 : Durée et Horaires</h4>
+                        <p>
+                            Le stage se déroulera du
+                            <strong t-field="stage.start_date" t-options="{'widget': 'date'}"/>
+                            au<strong t-field="stage.end_date" t-options="{'widget': 'date'}"/>.
+                        </p>
+                        <p>
+                            La durée hebdomadaire de présence du stagiaire est fixée à 40 heures,
+                            selon les horaires en vigueur dans l'entreprise.
+                        </p>
+
+                        <h4 class="mt-4">Article 4 : Engagements</h4>
+                        <p>Le stagiaire s'engage à respecter le règlement intérieur de l'entreprise et les règles de
+                            confidentialité. L'entreprise s'engage à fournir les moyens nécessaires à la bonne
+                            réalisation du stage.
+                        </p>
+
+                        <div class="row" style="margin-top: 100px;">
+                            <div class="col-4 text-center">
+                                <strong>Signature de l'Encadrant</strong>
+                                <br/>
+                                <span t-field="stage.supervisor_id.name"/>
+                                <img t-if="stage.supervisor_signature"
+                                     t-att-src="image_data_uri(stage.supervisor_signature)" style="max-height:80px;"/>
+                            </div>
+                            <div class="col-4 text-center">
+                                <strong>Signature du Stagiaire</strong>
+                                <br/>
+                                <span t-field="stage.student_id.full_name"/>
+                                <img t-if="stage.student_signature" t-att-src="image_data_uri(stage.student_signature)"
+                                     style="max-height:80px;"/>
+                            </div>
+                            <div class="col-4 text-center">
+                                <strong>Cachet de l'Entreprise</strong>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <!-- =================================================== -->
+    <!-- TEMPLATE 3 : PROCÈS-VERBAL DE SOUTENANCE            -->
+    <!-- =================================================== -->
+    <template id="defense_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2 class="text-center">PROCÈS-VERBAL DE SOUTENANCE</h2>
+
+                        <p class="mt-5">
+                            Ce document atteste que la soutenance de fin de stage de
+                            <strong>
+                                <span t-field="stage.student_id.full_name"/>
+                            </strong>
+                            s'est tenue le
+                            <strong>
+                                <span t-field="stage.defense_date" t-options="{'widget': 'datetime'}"/>
+                            </strong>
+                            .
+                        </p>
+
+                        <table class="table table-bordered mt-4">
+                            <tr>
+                                <th style="width: 30%;">Intitulé du Stage</th>
+                                <td>
+                                    <span t-field="stage.title"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Étudiant</th>
+                                <td>
+                                    <span t-field="stage.student_id.full_name"/>
+                                    (ID:<span t-field="stage.student_id.student_id_number"/>)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Encadrant Professionnel</th>
+                                <td>
+                                    <span t-field="stage.supervisor_id.name"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <h4 class="mt-4">Résultats de l'évaluation</h4>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Note de Soutenance</h5>
+                                        <p class="card-text display-4">
+                                            <span t-field="stage.defense_grade"/>
+                                            / 20
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Note Finale de Stage</h5>
+                                        <p class="card-text display-4">
+                                            <span t-field="stage.final_grade"/>
+                                            / 20
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 100px;">
+                            <div class="col-4 text-center">
+                                <strong>Signature de l'Encadrant</strong>
+                                <img t-if="stage.supervisor_signature"
+                                     t-att-src="image_data_uri(stage.supervisor_signature)" style="max-height:80px;"/>
+                            </div>
+                            <div class="col-4 text-center">
+                                <strong>Signature de l'Étudiant</strong>
+                                <img t-if="stage.student_signature" t-att-src="image_data_uri(stage.student_signature)"
+                                     style="max-height:80px;"/>
+                            </div>
+                            <div class="col-4 text-center">
+                                <strong>Président du Jury</strong>
+                                <img t-if="stage.jury_signature" t-att-src="image_data_uri(stage.jury_signature)"
+                                     style="max-height:80px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- =================================================== -->
+    <!-- TEMPLATE 4 : RAPPORT D'ÉVALUATION                   -->
+    <!-- =================================================== -->
+    <template id="evaluation_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2>Rapport d'Évaluation de Stage</h2>
+
+                        <table class="table table-sm table-bordered mt-4">
+                            <tr>
+                                <th>Étudiant :</th>
+                                <td>
+                                    <span t-field="stage.student_id.full_name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Projet :</th>
+                                <td>
+                                    <span t-field="stage.title"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Encadrant :</th>
+                                <td>
+                                    <span t-field="stage.supervisor_id.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Période :</th>
+                                <td>Du
+                                    <span t-field="stage.start_date" t-options="{'widget': 'date'}"/>
+                                    au
+                                    <span t-field="stage.end_date" t-options="{'widget': 'date'}"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <h4 class="mt-4">Évaluation Quantitative</h4>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <h5>Note Projet</h5>
+                                <h3>
+                                    <span t-field="stage.final_grade"/>
+                                    / 20
+                                </h3>
+                            </div>
+                            <div class="col-4">
+                                <h5>Note Soutenance</h5>
+                                <h3>
+                                    <span t-field="stage.defense_grade"/>
+                                    / 20
+                                </h3>
+                            </div>
+                            <div class="col-4">
+                                <h5>Taux d'achèvement</h5>
+                                <h3>
+                                    <span t-field="stage.completion_percentage"/>
+                                    %
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div t-if="stage.evaluation_feedback" class="mt-4">
+                            <h4>Commentaires Qualitatifs de l'Encadrant</h4>
+                            <div class="p-3"
+                                 style="background-color: #f8f9fa; border-radius: 5px; border-left: 3px solid #007bff;">
+                                <p t-field="stage.evaluation_feedback"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 100px;">
+                            <div class="col-6 text-center">
+                                <strong>Approbation de l'Encadrant</strong>
+                                <p t-field="stage.supervisor_id.name"/>
+                                <img t-if="stage.supervisor_signature"
+                                     t-att-src="image_data_uri(stage.supervisor_signature)" style="max-height:80px;"/>
+                            </div>
+                            <div class="col-6 text-center">
+                                <strong>Approbation RH</strong>
+                                <p t-field="company.name"/>
+                                <img t-if="stage.jury_signature" t-att-src="image_data_uri(stage.jury_signature)"
+                                     style="max-height:80px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- =================================================== -->
+    <!-- TEMPLATE 5 : RAPPORT DE SYNTHÈSE DE STAGE           -->
+    <!-- =================================================== -->
+    <template id="stage_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stage">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2>Rapport de Synthèse de Stage</h2>
+                        <p class="text-right">Généré le:
+                            <span t-esc="current_date" t-options="{'widget': 'date'}"/>
+                        </p>
+
+                        <div class="row mt-4">
+                            <div class="col-8">
+                                <h3>
+                                    <span t-field="stage.title"/>
+                                </h3>
+                            </div>
+                            <div class="col-4 text-right">
+                                <h4>Statut :
+                                    <span t-field="stage.state"/>
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3 text-center">
+                            <div class="col-3">
+                                <strong>Progrès</strong>
+                                <br/>
+                                <span t-field="stage.completion_percentage"/>
+                                %
+                            </div>
+                            <div class="col-3">
+                                <strong>Note Finale</strong>
+                                <br/>
+                                <span t-field="stage.final_grade"/>
+                                / 20
+                            </div>
+                            <div class="col-3">
+                                <strong>Durée</strong>
+                                <br/>
+                                <span t-if="stage.start_date and stage.end_date"
+                                      t-esc="(stage.end_date - stage.start_date).days"/>
+                                jours
+                            </div>
+                            <div class="col-3">
+                                <strong>Soutenance</strong>
+                                <br/>
+                                <span t-field="stage.defense_status"/>
+                            </div>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <strong>Étudiant :</strong>
+                                        <span t-field="stage.student_id.name"/>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Encadrant :</strong>
+                                        <span t-field="stage.supervisor_id.name"/>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Entreprise :</strong>
+                                        <span t-field="stage.company_id.name"/>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <strong>Début :</strong>
+                                        <span t-field="stage.start_date" t-options="{'widget': 'date'}"/>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Fin :</strong>
+                                        <span t-field="stage.end_date" t-options="{'widget': 'date'}"/>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>Type :</strong>
+                                        <span t-field="stage.internship_type"/>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div t-if="stage.project_description" class="mt-4">
+                            <h4>Description du Projet</h4>
+                            <p t-field="stage.project_description"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

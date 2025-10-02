@@ -9,345 +9,282 @@ _logger = logging.getLogger(__name__)
 
 
 class InternshipTodo(models.Model):
-    """Todo/Task model for internship management.
+    """
+    Gestion des Tâches et Livrables de Stage.
 
-    This model manages tasks and deliverables within internships,
-    providing a structured way to track progress and assignments.
+    Ce modèle a pour but de gérer toutes les tâches, missions ou livrables
+    associés à un stage. Il permet un suivi structuré de l'avancement,
+    des responsabilités et des échéances.
 
-    Key Features:
-    - Task assignment and tracking
-    - Priority and deadline management
-    - Progress monitoring
-    - Integration with internship stages
-    - Automatic notifications for deadlines
+    Fonctionnalités Clés :
+    - Assignation et suivi des tâches.
+    - Gestion des priorités et des dates limites.
+    - Suivi du pourcentage de progression.
+    - Intégration directe avec le modèle de stage.
+    - Notifications automatiques pour les tâches en retard.
     """
     _name = 'internship.todo'
-    _description = 'Internship Task Management'
+    _description = 'Gestion des Tâches de Stage'
+    # Héritage pour la messagerie, le suivi et les activités
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    # Ordre d'affichage par défaut : séquence, date limite, puis priorité.
     _order = 'sequence, deadline, priority desc, id'
     _rec_name = 'name'
 
-    # ===============================
-    # CORE IDENTIFICATION FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS PRINCIPAUX
+    # ===================================================
 
     name = fields.Char(
-        string='Task Name',
-        required=False,
+        string='Nom de la Tâche',
+        required=True,  # Bonne pratique : une tâche doit toujours avoir un nom.
         tracking=True,
-        size=200,
-        help="Name or title of the task"
+        help="Titre ou nom de la tâche à réaliser."
     )
 
     description = fields.Html(
         string='Description',
-        help="Detailed description of the task and requirements"
+        help="Description détaillée de la tâche, des exigences et des livrables attendus."
     )
 
-    # ===============================
-    # RELATIONSHIP FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS RELATIONNELS
+    # ===================================================
 
     stage_id = fields.Many2one(
         'internship.stage',
-        string='Internship',
-        required=False,
+        string='Stage Associé',
+        required=True,  # Une tâche devrait toujours être liée à un stage pour le contexte.
         ondelete='cascade',
-        help="Internship this task belongs to"
+        help="Stage auquel cette tâche est rattachée."
     )
 
     assigned_to = fields.Many2one(
         'res.users',
-        string='Assigned To',
-        help="User responsible for completing this task"
+        string='Assignée à',
+        tracking=True,
+        help="Utilisateur responsable de la réalisation de cette tâche (généralement l'étudiant)."
     )
 
-    created_by = fields.Many2one(
-        'res.users',
-        string='Created By',
-        default=lambda self: self.env.user,
-        readonly=True,
-        help="User who created this task"
-    )
-
-    # ===============================
-    # TASK MANAGEMENT FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS DE GESTION DE LA TÂCHE
+    # ===================================================
 
     state = fields.Selection([
-        ('todo', 'To Do'),
-        ('in_progress', 'In Progress'),
-        ('done', 'Done'),
-        ('cancelled', 'Cancelled')
-    ], string='Status', default='todo', tracking=True, required=False,
-        help="Current status of the task")
+        ('todo', 'À Faire'),
+        ('in_progress', 'En Cours'),
+        ('done', 'Terminée'),
+        ('cancelled', 'Annulée')
+    ], string='Statut', default='todo', tracking=True, required=True,
+        help="Statut actuel de la tâche.")
 
     priority = fields.Selection([
-        ('0', 'Low'),
-        ('1', 'Normal'),
-        ('2', 'High'),
-        ('3', 'Very High')
-    ], string='Priority', default='1', tracking=True,
-        help="Priority level of the task")
+        ('0', 'Basse'),
+        ('1', 'Normale'),
+        ('2', 'Haute'),
+        ('3', 'Très Haute')
+    ], string='Priorité', default='1', tracking=True,
+        help="Niveau de priorité de la tâche.")
 
     deadline = fields.Datetime(
-        string='Deadline',
+        string='Date Limite',
         tracking=True,
-        help="When this task should be completed"
+        help="Date et heure auxquelles cette tâche doit être terminée."
     )
 
     completion_date = fields.Datetime(
-        string='Completion Date',
+        string='Date de Finalisation',
         readonly=True,
-        help="When this task was actually completed"
+        copy=False,  # Ne pas copier la date de finalisation lors de la duplication.
+        help="Date et heure réelles de finalisation de la tâche."
     )
 
     estimated_hours = fields.Float(
-        string='Estimated Hours',
-        help="Estimated time to complete this task"
+        string='Heures Estimées',
+        help="Temps estimé pour accomplir cette tâche."
     )
 
     actual_hours = fields.Float(
-        string='Actual Hours',
-        help="Actual time spent on this task"
+        string='Heures Réelles',
+        help="Temps réel passé sur cette tâche."
     )
-
-    # ===============================
-    # PROGRESS TRACKING FIELDS
-    # ===============================
 
     progress_percentage = fields.Float(
-        string='Progress %',
+        string='Progression (%)',
         default=0.0,
-        help="Percentage of task completion (0-100)"
+        help="Pourcentage de complétion de la tâche (de 0 à 100)."
     )
 
-    notes = fields.Html(
-        string='Notes',
-        help="Additional notes and comments about the task"
-    )
-
-    # ===============================
-    # ALERT FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS DE SUIVI ET ALERTES
+    # ===================================================
 
     is_overdue = fields.Boolean(
-        string='Overdue',
+        string='En Retard',
         compute='_compute_overdue_status',
         store=True,
-        help="True if task is past its deadline"
+        help="Coché si la tâche a dépassé sa date limite."
     )
 
     days_overdue = fields.Integer(
-        string='Days Overdue',
+        string='Jours de Retard',
         compute='_compute_overdue_status',
         store=True,
-        help="Number of days the task is overdue"
+        help="Nombre de jours de retard de la tâche."
     )
 
-    alert_sent = fields.Boolean(
-        string='Alert Sent',
-        default=False,
-        help="True if overdue alert has been sent"
-    )
-
-    last_alert_date = fields.Datetime(
-        string='Last Alert Date',
-        help="When the last overdue alert was sent"
-    )
-
-    # ===============================
-    # TECHNICAL FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS TECHNIQUES
+    # ===================================================
 
     active = fields.Boolean(
         default=True,
         string='Active',
-        help="Whether this task is active"
+        help="Indique si l'enregistrement est actif ou archivé."
     )
 
     sequence = fields.Integer(
-        string='Sequence',
+        string='Séquence',
         default=10,
-        help="Order of tasks in lists"
+        help="Définit l'ordre d'affichage des tâches dans la vue liste."
     )
 
-    # ===============================
-    # CONSTRAINTS AND VALIDATIONS
-    # ===============================
+    # ===================================================
+    # CONTRAINTES
+    # ===================================================
 
     @api.constrains('progress_percentage')
     def _check_progress_percentage(self):
-        """Ensure progress percentage is between 0 and 100."""
-        for todo in self:
-            if not (0 <= todo.progress_percentage <= 100):
-                raise ValidationError(_("Progress percentage must be between 0 and 100."))
+        """Vérifie que le pourcentage de progression est entre 0 et 100."""
+        for task in self:
+            if not (0 <= task.progress_percentage <= 100):
+                raise ValidationError(_("Le pourcentage de progression doit être compris entre 0 et 100."))
 
-    @api.constrains('deadline')
+    @api.constrains('deadline', 'create_date')
     def _check_deadline(self):
-        """Ensure deadline is in the future for new tasks."""
-        for todo in self:
-            if todo.deadline and todo.state == 'todo' and todo.deadline < fields.Datetime.now():
-                raise ValidationError(_("Deadline must be in the future for new tasks."))
+        """Vérifie que la date limite n'est pas antérieure à la date de création."""
+        for task in self:
+            if task.deadline and task.create_date and task.deadline < task.create_date:
+                raise ValidationError(
+                    _("La date limite ne peut pas être antérieure à la date de création de la tâche."))
 
-    # ===============================
-    # BUSINESS METHODS
-    # ===============================
+    # ===================================================
+    # MÉTHODES DE CALCUL (COMPUTE)
+    # ===================================================
+
+    @api.depends('deadline', 'state')
+    def _compute_overdue_status(self):
+        """Calcule le statut 'en retard' et le nombre de jours de retard."""
+        now = fields.Datetime.now()
+        for task in self:
+            task.is_overdue = False
+            task.days_overdue = 0
+            if task.deadline and task.state in ['todo', 'in_progress']:
+                if task.deadline < now:
+                    task.is_overdue = True
+                    # Calcul de la différence en jours
+                    delta = now - task.deadline
+                    task.days_overdue = delta.days
+
+        @api.model
+        def _cron_detect_overdue_tasks(self):
+            """
+            CRON: Détecte les tâches en retard et planifie une activité pour l'encadrant.
+            """
+            overdue_tasks = self.search([
+                ('deadline', '<', fields.Date.today()),
+                ('state', 'in', ['todo', 'in_progress']),
+                ('activity_ids', '=', False)  # Pour ne pas créer de doublons
+            ])
+
+            for task in overdue_tasks:
+                if task.stage_id.supervisor_id.user_id:
+                    task.activity_schedule(
+                        'internship_management.activity_type_internship_alert',
+                        summary=_("Tâche en retard: %s", task.title),
+                        note=_(
+                            "La date limite du %s est dépassée. Veuillez vérifier avec l'étudiant(e).",
+                            task.deadline.strftime('%d/%m/%Y')
+                        ),
+                        user_id=task.stage_id.supervisor_id.user_id.id
+                    )
+
+    # ===================================================
+    # ACTIONS DES BOUTONS (WORKFLOW)
+    # ===================================================
 
     def action_start(self):
-        """Start working on the task."""
+        """Passe la tâche au statut 'En Cours'."""
+        self.ensure_one()
         self.write({'state': 'in_progress'})
 
-    def action_cancel(self):
-        """Cancel the task."""
-        self.write({'state': 'cancelled'})
-
-    def action_reset_to_pending(self):
-        """Reset task to pending state."""
-        self.write({
-            'state': 'todo',
-            'progress_percentage': 0.0,
-            'completion_date': False
-        })
-
     def action_complete(self):
-        """Complete the task."""
+        """Marque la tâche comme 'Terminée'."""
+        self.ensure_one()
         self.write({
             'state': 'done',
             'completion_date': fields.Datetime.now(),
             'progress_percentage': 100.0
         })
 
-    # ===============================
-    # COMPUTED METHODS
-    # ===============================
+    def action_cancel(self):
+        """Passe la tâche au statut 'Annulée'."""
+        self.ensure_one()
+        self.write({'state': 'cancelled'})
 
-    @api.depends('deadline', 'state')
-    def _compute_overdue_status(self):
-        """Compute overdue status and days overdue."""
-        today = fields.Datetime.now()
-        for todo in self:
-            if todo.deadline and todo.state in ['todo', 'in_progress']:
-                if todo.deadline < today:
-                    todo.is_overdue = True
-                    delta = today - todo.deadline
-                    todo.days_overdue = delta.days
-                else:
-                    todo.is_overdue = False
-                    todo.days_overdue = 0
-            else:
-                todo.is_overdue = False
-                todo.days_overdue = 0
+    def action_reset_to_todo(self):
+        """Réinitialise la tâche au statut 'À Faire'."""
+        self.ensure_one()
+        self.write({
+            'state': 'todo',
+            'progress_percentage': 0.0,
+            'completion_date': False
+        })
 
-    # ===============================
-    # NOTIFICATION METHODS
-    # ===============================
+    # ===================================================
+    # LOGIQUE MÉTIER (OVERRIDE)
+    # ===================================================
 
-    @api.model
-    def create(self, vals):
-        """Override create to automatically assign tasks based on creator."""
-        # Get the creator
-        creator = self.env.user
-        # Check if creator is a student
-        student = self.env['internship.student'].search([('user_id', '=', creator.id)], limit=1)
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Surcharge de la méthode de création pour assigner automatiquement
+        la tâche à l'étudiant du stage si elle est créée par un encadrant.
+        """
+        for vals in vals_list:
+            # Si un stage est défini et que personne n'est assigné manuellement
+            if vals.get('stage_id') and not vals.get('assigned_to'):
+                # On vérifie si le créateur est un encadrant
+                is_supervisor = self.env.user.has_group('internship_management.group_internship_supervisor')
 
-        # Check if creator is a supervisor
-        supervisor = self.env['internship.supervisor'].search([('user_id', '=', creator.id)], limit=1)
-
-        # Auto-assign based on creator type
-        if student and not vals.get('assigned_to'):
-            # Student creates task → assign to themselves
-            vals['assigned_to'] = creator.id
-            _logger.info(f"Task auto-assigned to student: {creator.name}")
-
-        elif supervisor and not vals.get('assigned_to'):
-            # Supervisor creates task → assign to student of the stage
-            if vals.get('stage_id'):
-                stage = self.env['internship.stage'].browse(vals['stage_id'])
-                _logger.info(
-                    f"Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
-                if stage.student_id and stage.student_id.user_id:
-                    vals['assigned_to'] = stage.student_id.user_id.id
-                    _logger.info(f"Task auto-assigned to student: {stage.student_id.full_name}")
-                else:
-                    _logger.warning(f"No student found for stage {stage.title}")
-            else:
-                _logger.warning("No stage_id provided for supervisor task creation")
-        elif not vals.get('assigned_to'):
-            # Fallback: Check if user has supervisor role in groups
-            if creator.has_group('internship_management.group_internship_supervisor'):
-                # User has supervisor role → assign to student of the stage
-                if vals.get('stage_id'):
+                if is_supervisor:
                     stage = self.env['internship.stage'].browse(vals['stage_id'])
-                    _logger.info(
-                        f"Fallback: Stage: {stage.title}, Student: {stage.student_id.full_name if stage.student_id else 'None'}")
                     if stage.student_id and stage.student_id.user_id:
                         vals['assigned_to'] = stage.student_id.user_id.id
-                        _logger.info(f"Task auto-assigned to student (fallback): {stage.student_id.full_name}")
+                        _logger.info(
+                            f"Tâche auto-assignée à l'étudiant {stage.student_id.user_id.name} "
+                            f"par l'encadrant {self.env.user.name}."
+                        )
                     else:
-                        _logger.warning(f"No student found for stage {stage.title}")
-                else:
-                    _logger.warning("No stage_id provided for supervisor task creation (fallback)")
-            elif creator.has_group('internship_management.group_internship_student'):
-                # User has student role → assign to themselves
-                vals['assigned_to'] = creator.id
-                _logger.info(f"Task auto-assigned to student (fallback): {creator.name}")
-            else:
-                _logger.info(
-                    f"No auto-assignment: student={bool(student)}, supervisor={bool(supervisor)}, assigned_to={vals.get('assigned_to')}")
+                        _logger.warning(
+                            f"L'encadrant {self.env.user.name} a créé une tâche pour le stage "
+                            f"'{stage.title}', mais aucun étudiant (ou utilisateur lié) n'a été trouvé."
+                        )
 
-        return super().create(vals)
+        return super().create(vals_list)
 
-    @api.model
-    def check_overdue_tasks(self):
-        """Check for overdue tasks and send alerts."""
-        overdue_tasks = self.search([
-            ('deadline', '<', fields.Datetime.now()),
-            ('state', 'in', ['todo', 'in_progress']),
-            ('alert_sent', '=', False)
-        ])
-
-        for task in overdue_tasks:
-            task.send_overdue_alert()
-
-        _logger.info(f"Checked {len(overdue_tasks)} overdue tasks and sent alerts")
-        return len(overdue_tasks)
-
-    # ===============================
-    # UTILITY METHODS
-    # ===============================
+    # ===================================================
+    # Méthodes pour l'affichage (non modifiées, déjà bonnes)
+    # ===================================================
 
     def name_get(self):
-        """Custom name display: Name (Status)."""
+        """Affichage personnalisé du nom : Nom (Statut)."""
         result = []
+        # Traduction des statuts pour un affichage propre
+        status_translations = dict(self._fields['state'].selection)
+
         for todo in self:
-            name = todo.name
-            if todo.state:
-                state_name = dict(todo._fields['state'].selection).get(todo.state)
-                name = f"{name} ({state_name})"
-            result.append((todo.id, name))
+            name = todo.name or ''
+            state_name = status_translations.get(todo.state, '')
+            result.append((todo.id, f"{name} ({state_name})"))
         return result
-
-    @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
-        """Custom search: search by name or description."""
-        args = args or []
-        domain = []
-
-        if name:
-            domain = ['|',
-                      ('name', operator, name),
-                      ('description', operator, name)]
-
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
-
-    def get_task_statistics(self):
-        """Return statistical data for this task."""
-        self.ensure_one()
-        return {
-            'days_to_deadline': (self.deadline - fields.Datetime.now()).days if self.deadline else None,
-            'is_overdue': self.deadline and self.deadline < fields.Datetime.now() and self.state != 'done',
-            'completion_time': (self.completion_date - self.create_date).days if self.completion_date else None,
-            'efficiency': (
-                    self.actual_hours / self.estimated_hours * 100) if self.estimated_hours and self.actual_hours else None,
-        }

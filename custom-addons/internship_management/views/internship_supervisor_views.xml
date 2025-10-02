@@ -2,12 +2,13 @@
 <odoo>
     <data>
 
-        <!-- Supervisor List View -->
+        <!-- Vue liste (tree) pour les encadrants -->
         <record id="internship_supervisor_tree_view" model="ir.ui.view">
             <field name="name">internship.supervisor.tree</field>
             <field name="model">internship.supervisor</field>
             <field name="arch" type="xml">
-                <tree string="Internship Supervisors">
+                <!-- TRADUCTION: Tous les libellés sont en français -->
+                <tree string="Encadrants de Stage">
                     <field name="name"/>
                     <field name="company_id"/>
                     <field name="department"/>
@@ -23,32 +24,32 @@
             </field>
         </record>
 
-        <!-- Supervisor Form View -->
+        <!-- Vue formulaire pour un encadrant -->
         <record id="internship_supervisor_form_view" model="ir.ui.view">
             <field name="name">internship.supervisor.form</field>
             <field name="model">internship.supervisor</field>
             <field name="arch" type="xml">
-                <form string="Internship Supervisor">
+                <form string="Encadrant de Stage">
                     <header>
-                        <field name="availability" widget="statusbar"
-                               statusbar_colors="{'available':'success','busy':'warning','unavailable':'danger'}"/>
+                        <!-- CORRECTION ODOO 17: 'statusbar_colors' est déprécié. Les couleurs sont automatiques. -->
+                        <field name="availability" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <field name="profile_image" widget="image" class="oe_avatar"
-                               options="{'size': [90, 90]}"/>
+                        <field name="profile_image" widget="image" class="oe_avatar"/>
                         <div class="oe_title">
                             <h1>
-                                <field name="name" placeholder="Full Name"/>
+                                <field name="name" placeholder="Nom complet"/>
                             </h1>
                         </div>
 
                         <group>
-                            <group name="contact" string="Contact Information">
-                                <field name="email"/>
-                                <field name="phone"/>
+                            <!-- TRADUCTION: Titres des sections -->
+                            <group name="contact" string="Informations de Contact">
+                                <field name="email" widget="email"/>
+                                <field name="phone" widget="phone"/>
                                 <field name="user_id" options="{'no_create': True}"/>
                             </group>
-                            <group name="professional" string="Professional Information">
+                            <group name="professional" string="Informations Professionnelles">
                                 <field name="company_id"/>
                                 <field name="department"/>
                                 <field name="position"/>
@@ -56,33 +57,32 @@
                         </group>
 
                         <group>
-                            <group name="capacity" string="Supervision Capacity">
+                            <group name="capacity" string="Capacité d'Encadrement">
                                 <field name="max_students"/>
-                                <field name="current_students_count" readonly="1"/>
-                                <field name="workload_percentage" widget="progressbar" readonly="1"/>
-                                <field name="stage_count" readonly="1"/>
+                                <field name="current_students_count"/>
+                                <field name="workload_percentage" widget="progressbar"/>
+                                <field name="stage_count"/>
                             </group>
-                            <group name="status" string="Status">
+                            <group name="status" string="Statut">
                                 <field name="active"/>
                             </group>
                         </group>
 
-                        <group string="Areas of Expertise">
-                            <field name="expertise_area_ids" widget="many2many_tags"
-                                   options="{'color_field': 'name', 'no_create': True}"/>
+                        <group string="Domaines d'Expertise">
+                            <field name="expertise_area_ids" widget="many2many_tags"/>
                         </group>
 
                         <notebook>
-                            <page string="Supervised Internships">
+                            <page string="Stages Encadrés">
                                 <div class="oe_button_box" name="button_box">
                                     <button name="action_view_supervised_internships"
                                             type="object"
                                             class="oe_stat_button"
                                             icon="fa-graduation-cap">
-                                        <field string="Internships" name="stage_count" widget="statinfo"/>
+                                        <field string="Stages" name="stage_count" widget="statinfo"/>
                                     </button>
                                 </div>
-                                <field name="stage_ids">
+                                <field name="stage_ids" readonly="1">
                                     <tree decoration-info="state=='draft'"
                                           decoration-warning="state=='approved'"
                                           decoration-primary="state=='in_progress'"
@@ -100,23 +100,23 @@
                     </sheet>
 
                     <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/>
-                        <field name="message_ids" widget="message"/>
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
                     </div>
                 </form>
             </field>
         </record>
 
-        <!-- Enhanced Supervisor Kanban View -->
+        <!-- Vue Kanban améliorée pour les encadrants -->
         <record id="view_internship_supervisor_kanban" model="ir.ui.view">
             <field name="name">internship.supervisor.kanban</field>
             <field name="model">internship.supervisor</field>
             <field name="arch" type="xml">
                 <kanban default_group_by="availability" class="o_kanban_small_column">
+                    <field name="id"/>
                     <field name="name"/>
                     <field name="email"/>
-                    <field name="phone"/>
                     <field name="company_id"/>
                     <field name="department"/>
                     <field name="position"/>
@@ -130,34 +130,47 @@
                             <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                                 <div class="o_kanban_image">
                                     <img t-att-src="kanban_image('internship.supervisor', 'profile_image', record.id.raw_value)"
-                                         alt="Supervisor" class="o_kanban_image_inner_pic"/>
+                                         alt="Encadrant" class="o_kanban_image_inner_pic"/>
                                 </div>
                                 <div class="oe_kanban_details">
                                     <strong class="o_kanban_record_title">
                                         <field name="name"/>
                                     </strong>
                                     <div class="o_kanban_tags_section">
-                                        <div><i class="fa fa-envelope" title="Email"/> <field name="email"/></div>
-                                        <div><i class="fa fa-briefcase" title="Company"/> <field name="company_id"/></div>
-                                        <div><i class="fa fa-building" title="Department"/>
-                                             <field name="department"/> - <field name="position"/></div>
+                                        <div>
+                                            <i class="fa fa-envelope" title="Email"/>
+                                            <field name="email"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-briefcase" title="Entreprise"/>
+                                            <field name="company_id"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-building" title="Département"/>
+                                            <field name="department"/>
+                                            -
+                                            <field name="position"/>
+                                        </div>
                                     </div>
 
-                                    <!-- Workload Progress Bar -->
+                                    <!-- Barre de progression de la charge de travail -->
                                     <div class="mt-2">
+                                        <!-- TRADUCTION: Libellés dans la vue kanban -->
                                         <div class="text-muted small">
-                                            Workload: <field name="current_students_count"/>/<field name="max_students"/> students
+                                            Charge:<field name="current_students_count"/>/
+                                            <field name="max_students"/>
+                                            étudiant(s)
                                         </div>
                                         <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar"
-                                                 t-attf-style="width: #{record.workload_percentage.raw_value}%"
-                                                 t-attf-class="progress-bar #{record.workload_percentage.raw_value >= 100 ? 'bg-danger' : (record.workload_percentage.raw_value >= 80 ? 'bg-warning' : 'bg-success')}"/>
+                                            <div t-attf-class="progress-bar #{record.workload_percentage.raw_value >= 100 ? 'bg-danger' : (record.workload_percentage.raw_value >= 80 ? 'bg-warning' : 'bg-success')}"
+                                                 t-attf-style="width: #{record.workload_percentage.raw_value}%"/>
                                         </div>
                                     </div>
 
                                     <div class="o_kanban_record_bottom mt-2">
                                         <div class="oe_kanban_bottom_left">
-                                            <i class="fa fa-users" title="Max Students"/> <field name="max_students"/>
+                                            <i class="fa fa-users" title="Capacité max"/>
+                                            <field name="max_students"/>
                                         </div>
                                         <div class="oe_kanban_bottom_right">
                                             <field name="availability" widget="label_selection"
@@ -172,18 +185,19 @@
             </field>
         </record>
 
-        <!-- Supervisor Action -->
+        <!-- Action pour les encadrants -->
         <record id="action_internship_supervisor_list" model="ir.actions.act_window">
-            <field name="name">Supervisors</field>
+            <!-- TRADUCTION: Nom de l'action et message d'aide -->
+            <field name="name">Encadrants</field>
             <field name="res_model">internship.supervisor</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Add your first supervisor
+                    Ajoutez votre premier encadrant
                 </p>
                 <p>
-                    Manage supervisor profiles, expertise areas, and supervision capacity.
+                    Gérez les profils des encadrants, leurs domaines d'expertise et leur capacité de supervision.
                 </p>
             </field>
         </record>

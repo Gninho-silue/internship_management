@@ -1,157 +1,82 @@
 # -*- coding: utf-8 -*-
 """
-Professional Internship Reports
-===============================
-Enhanced reporting system for internship management with comprehensive
-data preparation and professional formatting.
+Rapports de Stage
+================================
+Système de reporting  pour la gestion des stages, avec une préparation
+complète des données et une mise en forme.
 """
 
 import logging
-import locale
-from odoo import api, models, fields, _
-from datetime import datetime, timedelta
+from datetime import datetime
+
+from odoo import api, models, _
 
 _logger = logging.getLogger(__name__)
 
 
-def format_date_english(date_obj):
-    """Format date in English regardless of system locale"""
-    if not date_obj:
-        return 'N/A'
-    
-    # English month names
-    months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ]
-    
-    if isinstance(date_obj, datetime):
-        return f"{months[date_obj.month - 1]} {date_obj.day}, {date_obj.year}"
-    else:  # date object
-        return f"{months[date_obj.month - 1]} {date_obj.day}, {date_obj.year}"
-
-
-def format_datetime_english(datetime_obj):
-    """Format datetime in English regardless of system locale"""
-    if not datetime_obj:
-        return 'To Be Determined'
-    
-    months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ]
-    
-    return f"{months[datetime_obj.month - 1]} {datetime_obj.day}, {datetime_obj.year} at {datetime_obj.strftime('%H:%M')}"
-
-
 class InternshipDefenseReport(models.AbstractModel):
-    """Defense Proceedings Report"""
+    """
+    Modèle abstrait pour le rapport de Procès-Verbal de Soutenance.
+
+    Ce modèle prépare les données nécessaires à la génération du PDF du
+    procès-verbal de la soutenance d'un stage.
+    """
     _name = 'report.internship_management.defense_report_document'
-    _description = 'Internship Defense Proceedings'
+    _description = 'Procès-Verbal de Soutenance de Stage'
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        """Prepare defense report data"""
+        """
+        Prépare les valeurs pour le rapport de soutenance.
+        Cette méthode est l'entrée standard pour le moteur de reporting d'Odoo.
+        """
         docs = self.env['internship.stage'].browse(docids)
-
         return {
             'doc_ids': docids,
             'doc_model': 'internship.stage',
             'docs': docs,
-            'data': self._prepare_defense_data(docs),
             'company': self.env.company,
         }
-
-    def _prepare_defense_data(self, stages):
-        """Prepare defense data for each stage"""
-        data = {}
-        for stage in stages:
-            data[stage.id] = {
-                'internship_title': stage.title or stage.name,
-                'student_name': stage.student_id.full_name if stage.student_id else 'N/A',
-                'student_id': stage.student_id.student_id_number if stage.student_id else 'N/A',
-                'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else 'N/A',
-                'supervisor_position': stage.supervisor_id.position if stage.supervisor_id else 'Supervisor',
-                'company_name': stage.company_id.name or 'TechPal',
-                'defense_date': format_datetime_english(stage.defense_date),
-                'defense_grade': stage.defense_grade or 0,
-                'final_grade': stage.final_grade or 0,
-                'duration': self._calculate_duration(stage.start_date, stage.end_date),
-                'current_date': format_date_english(datetime.now()),
-                'reference': stage.reference_number or f'INT-{stage.id}',
-            }
-        return data
-
-    def _calculate_duration(self, start_date, end_date):
-        """Calculate internship duration"""
-        if start_date and end_date:
-            delta = end_date - start_date
-            months = delta.days // 30
-            return f"{months} month{'s' if months != 1 else ''}"
-        return "N/A"
 
 
 class InternshipConventionReport(models.AbstractModel):
-    """Internship Agreement Report"""
+    """
+    Modèle abstrait pour le rapport de Convention de Stage.
+
+    Ce modèle collecte toutes les informations requises pour générer
+    le document officiel de la convention de stage entre l'étudiant,
+    l'entreprise et l'établissement.
+    """
     _name = 'report.internship_management.convention_report_document'
-    _description = 'Internship Agreement'
+    _description = 'Convention de Stage'
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        """Prepare convention report data"""
+        """Prépare les valeurs pour le rapport de convention."""
         docs = self.env['internship.stage'].browse(docids)
-
         return {
             'doc_ids': docids,
             'doc_model': 'internship.stage',
             'docs': docs,
-            'data': self._prepare_convention_data(docs),
             'company': self.env.company,
         }
 
-    def _prepare_convention_data(self, stages):
-        """Prepare convention data for each stage"""
-        data = {}
-        for stage in stages:
-            data[stage.id] = {
-                'internship_title': stage.title or stage.name,
-                'student_name': stage.student_id.full_name if stage.student_id else '',
-                'student_email': stage.student_id.email if stage.student_id else '',
-                'student_phone': stage.student_id.phone if stage.student_id else '',
-                'student_id_number': stage.student_id.student_id_number if stage.student_id else '',
-                'institution': stage.student_id.institution if stage.student_id else '',
-                'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
-                'supervisor_position': stage.supervisor_id.position if stage.supervisor_id else '',
-                'supervisor_email': stage.supervisor_id.email if stage.supervisor_id else '',
-                'company_name': stage.company_id.name or 'TechPal',
-                'start_date': format_date_english(stage.start_date),
-                'end_date': format_date_english(stage.end_date),
-                'duration_weeks': self._calculate_weeks(stage.start_date, stage.end_date),
-                'current_date': format_date_english(datetime.now()),
-                'reference': stage.reference_number or f'INT-{stage.id}',
-                'objectives': stage.project_description or 'Professional development through practical experience',
-            }
-        return data
-
-    def _calculate_weeks(self, start_date, end_date):
-        """Calculate duration in weeks"""
-        if start_date and end_date:
-            delta = end_date - start_date
-            weeks = delta.days // 7
-            return f"{weeks} week{'s' if weeks != 1 else ''}"
-        return "N/A"
-
 
 class InternshipAttestationReport(models.AbstractModel):
-    """Internship Certificate Report"""
+    """
+    Modèle abstrait pour le rapport d'Attestation de Stage.
+
+    Ce modèle est responsable de la préparation des données pour générer
+    l'attestation de fin de stage, certifiant la participation et la
+    performance de l'étudiant.
+    """
     _name = 'report.internship_management.attestation_report_document'
-    _description = 'Internship Certificate'
+    _description = 'Attestation de Stage'
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        """Prepare attestation report data"""
+        """Prépare les valeurs pour le rapport d'attestation."""
         docs = self.env['internship.stage'].browse(docids)
-
         return {
             'doc_ids': docids,
             'doc_model': 'internship.stage',
@@ -161,112 +86,71 @@ class InternshipAttestationReport(models.AbstractModel):
         }
 
     def _prepare_attestation_data(self, stages):
-        """Prepare attestation data for each stage"""
+        """
+        Prépare les données spécifiques à l'attestation, comme le niveau de performance.
+        """
         data = {}
         for stage in stages:
             data[stage.id] = {
-                'student_name': stage.student_id.full_name if stage.student_id else '',
-                'student_id_number': stage.student_id.student_id_number if stage.student_id else '',
-                'institution': stage.student_id.institution if stage.student_id else '',
-                'internship_title': stage.title or stage.name,
-                'company_name': stage.company_id.name or 'TechPal',
-                'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
-                'start_date': format_date_english(stage.start_date),
-                'end_date': format_date_english(stage.end_date),
-                'duration_days': (stage.end_date - stage.start_date).days if stage.start_date and stage.end_date else 0,
-                'final_grade': stage.final_grade or 0,
-                'current_date': format_date_english(datetime.now()),
-                'reference': stage.reference_number or f'INT-{stage.id}',
                 'performance': self._get_performance_level(stage.final_grade),
             }
         return data
 
     def _get_performance_level(self, grade):
-        """Get performance level based on grade"""
-        if not grade:
-            return "Satisfactory"
+        """
+        Retourne une appréciation textuelle basée sur la note finale.
+        Les chaînes de caractères sont traduisibles.
+        """
+        if not grade or grade < 10:
+            return _("Passable")
         elif grade >= 16:
-            return "Excellent"
+            return _("Excellent")
         elif grade >= 14:
-            return "Very Good"
+            return _("Très Bien")
         elif grade >= 12:
-            return "Good"
-        elif grade >= 10:
-            return "Satisfactory"
-        else:
-            return "Needs Improvement"
+            return _("Bien")
+        return _("Assez Bien")
 
 
 class InternshipEvaluationReport(models.AbstractModel):
-    """Evaluation Report"""
+    """
+    Modèle abstrait pour le rapport d'Évaluation de Stage.
+
+    Ce modèle prépare les données pour le rapport d'évaluation détaillé,
+    incluant les notes et les commentaires de l'encadrant.
+    """
     _name = 'report.internship_management.evaluation_report_document'
-    _description = 'Internship Evaluation Report'
+    _description = 'Rapport d\'Évaluation de Stage'
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        """Prepare evaluation report data"""
+        """Prépare les valeurs pour le rapport d'évaluation."""
         docs = self.env['internship.stage'].browse(docids)
-
         return {
             'doc_ids': docids,
             'doc_model': 'internship.stage',
             'docs': docs,
-            'data': self._prepare_evaluation_data(docs),
             'company': self.env.company,
         }
-
-    def _prepare_evaluation_data(self, stages):
-        """Prepare evaluation data for each stage"""
-        data = {}
-        for stage in stages:
-            data[stage.id] = {
-                'student_name': stage.student_id.full_name if stage.student_id else '',
-                'internship_title': stage.title or stage.name,
-                'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
-                'company_name': stage.company_id.name or 'TechPal',
-                'start_date': format_date_english(stage.start_date),
-                'end_date': format_date_english(stage.end_date),
-                'final_grade': stage.final_grade or 0,
-                'defense_grade': stage.defense_grade or 0,
-                'feedback': stage.evaluation_feedback or 'Satisfactory performance throughout the internship period.',
-                'current_date': format_date_english(datetime.now()),
-                'reference': stage.reference_number or f'INT-{stage.id}',
-                'completion_rate': stage.completion_percentage or 100,
-            }
-        return data
 
 
 class InternshipStageReport(models.AbstractModel):
-    """Comprehensive Stage Report"""
+    """
+    Modèle abstrait pour le rapport de Synthèse de Stage.
+
+    Ce modèle fournit un aperçu complet et consolidé de l'état d'un stage.
+    """
     _name = 'report.internship_management.stage_report_document'
-    _description = 'Internship Stage Summary Report'
+    _description = 'Rapport de Synthèse de Stage'
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        """Prepare stage report data"""
+        """Prépare les valeurs pour le rapport de synthèse."""
         docs = self.env['internship.stage'].browse(docids)
-
         return {
             'doc_ids': docids,
             'doc_model': 'internship.stage',
             'docs': docs,
-            'data': self._prepare_stage_data(docs),
             'company': self.env.company,
-            'current_date_english': format_date_english(datetime.now()),
+            'current_date': datetime.now().date(),
         }
-
-    def _prepare_stage_data(self, stages):
-        """Prepare stage data for each stage"""
-        data = {}
-        for stage in stages:
-            data[stage.id] = {
-                'student_name': stage.student_id.full_name if stage.student_id else '',
-                'internship_title': stage.title or stage.name,
-                'supervisor_name': stage.supervisor_id.name if stage.supervisor_id else '',
-                'company_name': stage.company_id.name or 'TechPal',
-                'start_date': format_date_english(stage.start_date),
-                'end_date': format_date_english(stage.end_date),
-                'current_date': format_date_english(datetime.now()),
-                'reference': stage.reference_number or f'INT-{stage.id}',
-            }
-        return data

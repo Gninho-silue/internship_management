@@ -1,0 +1,14 @@
+<odoo>
+    <data noupdate="1">
+        <!--
+            Type d'activité pour les alertes générées automatiquement.
+            Cela permet de les filtrer et de leur donner une icône spécifique.
+        -->
+        <record id="activity_type_internship_alert" model="mail.activity.type">
+            <field name="name">Alerte de Stage</field>
+            <field name="icon">fa-exclamation-triangle</field>
+            <field name="summary">Alerte système</field>
+            <field name="category">default</field>
+        </record>
+    </data>
+</odoo>

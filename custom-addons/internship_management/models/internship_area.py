@@ -1,214 +1,157 @@
 # -*- coding: utf-8 -*-
+"""
+Modèle pour la gestion des Domaines d'Expertise de stage.
+"""
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
 class InternshipArea(models.Model):
-    """Area of expertise model for internship management.
+    """Modèle Domaine d'expertise pour la gestion des stages.
 
-    This model manages different areas of expertise where internships
-    can be conducted, helping to categorize and organize internship
-    opportunities.
+    Ce modèle gère les différents domaines d'expertise dans lesquels les stages
+    peuvent être menés, aidant à catégoriser et organiser les opportunités de stage.
 
-    Key Features:
-    - Hierarchical area structure (parent/child relationships)
-    - Skill associations
-    - Supervisor expertise mapping
-    - Internship categorization
-    - Search and filtering capabilities
+    Fonctionnalités clés :
+    - Structure hiérarchique des domaines (relations parent/enfant)
+    - Association avec les compétences requises
+    - Cartographie de l'expertise des encadrants
+    - Catégorisation des stages
     """
     _name = 'internship.area'
-    _description = 'Internship Area of Expertise'
+    _description = 'Domaine d\'Expertise de Stage'
     _order = 'parent_id, sequence, name'
     _rec_name = 'name'
 
     # ===============================
-    # CORE IDENTIFICATION FIELDS
+    # CHAMPS D'IDENTIFICATION PRINCIPAUX
     # ===============================
 
     name = fields.Char(
-        string='Area Name',
-        required=False,
-        size=100,
-        help="Name of the expertise area (e.g., Software Development, Marketing)"
+        string='Nom du domaine',
+        required=True,
+        help="Nom du domaine d'expertise (ex: Développement Logiciel, Marketing)."
     )
 
     code = fields.Char(
-        string='Area Code',
+        string='Code du domaine',
         size=20,
-        help="Short code for the area (e.g., SWDEV, MKTG)"
+        help="Code court pour le domaine (ex: DEVLOG, MKTG)."
     )
 
     # ===============================
-    # HIERARCHICAL STRUCTURE
+    # STRUCTURE HIÉRARCHIQUE
     # ===============================
 
     parent_id = fields.Many2one(
         'internship.area',
-        string='Parent Area',
+        string='Domaine parent',
         ondelete='cascade',
-        help="Parent area in the hierarchy"
+        help="Domaine parent dans la hiérarchie."
     )
 
     child_ids = fields.One2many(
         'internship.area',
         'parent_id',
-        string='Sub-areas',
-        help="Child areas under this one"
+        string='Sous-domaines',
+        help="Sous-domaines appartenant à celui-ci."
     )
 
     level = fields.Integer(
-        string='Level',
+        string='Niveau',
         compute='_compute_level',
-        recursive=True,
         store=True,
-        help="Hierarchy level (0 for root areas)"
+        help="Niveau dans la hiérarchie (0 pour les domaines racines)."
     )
 
+    @api.depends('parent_id.level')
+    def _compute_level(self):
+        """Calcule le niveau hiérarchique."""
+        for area in self:
+            area.level = area.parent_id.level + 1 if area.parent_id else 0
+
     # ===============================
-    # DESCRIPTION AND METADATA
+    # DESCRIPTION ET MÉTADONNÉES
     # ===============================
 
-    description = fields.Html(
+    description = fields.Text(
         string='Description',
-        help="Detailed description of this area of expertise"
-    )
-
-    objectives = fields.Html(
-        string='Learning Objectives',
-        help="What students can learn in this area"
-    )
-
-    career_paths = fields.Html(
-        string='Career Paths',
-        help="Career opportunities in this area"
+        help="Description détaillée de ce domaine d'expertise."
     )
 
     # ===============================
-    # RELATIONSHIP FIELDS
+    # CHAMPS RELATIONNELS
     # ===============================
 
     skill_ids = fields.Many2many(
         'internship.skill',
-        string='Required Skills',
-        help="Skills commonly needed in this area"
+        string='Compétences requises',
+        help="Compétences généralement nécessaires dans ce domaine."
     )
 
     supervisor_ids = fields.Many2many(
         'internship.supervisor',
-        string='Expert Supervisors',
-        help="Supervisors with expertise in this area"
+        'supervisor_area_rel', 'area_id', 'supervisor_id',
+        string='Encadrants experts',
+        help="Encadrants ayant une expertise dans ce domaine."
     )
 
     internship_ids = fields.One2many(
         'internship.stage',
         'area_id',
-        string='Internships',
-        help="Internships conducted in this area"
+        string='Stages',
+        help="Stages menés dans ce domaine."
     )
 
     # ===============================
-    # COMPUTED FIELDS
+    # CHAMPS CALCULÉS
     # ===============================
 
-    @api.depends('parent_id', 'parent_id.level')
-    def _compute_level(self):
-        """Calculate hierarchy level."""
-        for area in self:
-            level = 0
-            parent = area.parent_id
-            while parent:
-                level += 1
-                parent = parent.parent_id
-            area.level = level
+    internship_count = fields.Integer(
+        string='Nombre de stages',
+        compute='_compute_internship_count',
+        store=True,
+        help="Nombre de stages dans ce domaine."
+    )
 
     @api.depends('internship_ids')
     def _compute_internship_count(self):
-        """Calculate number of internships in this area."""
+        """Calcule le nombre de stages dans ce domaine."""
         for area in self:
             area.internship_count = len(area.internship_ids)
 
-    internship_count = fields.Integer(
-        string='Internship Count',
-        compute='_compute_internship_count',
-        store=True,
-        help="Number of internships in this area"
-    )
-
     # ===============================
-    # TECHNICAL FIELDS
+    # CHAMPS TECHNIQUES
     # ===============================
 
     active = fields.Boolean(
         default=True,
-        string='Active',
-        help="Whether this area is currently available"
+        string='Actif',
+        help="Indique si ce domaine est actuellement disponible."
     )
 
     sequence = fields.Integer(
-        string='Sequence',
+        string='Séquence',
         default=10,
-        help="Order of areas in lists"
+        help="Ordre d'affichage des domaines dans les listes."
     )
 
+    color = fields.Integer(string='Couleur')
+
     # ===============================
-    # CONSTRAINTS AND VALIDATIONS
+    # CONTRAINTES ET VALIDATIONS
     # ===============================
 
     @api.constrains('parent_id')
     def _check_no_circular_hierarchy(self):
-        """Prevent circular parent-child relationships."""
-        for area in self:
-            if area.parent_id:
-                parent = area.parent_id
-                while parent:
-                    if parent == area:
-                        raise ValidationError(_("Circular hierarchy detected."))
-                    parent = parent.parent_id
+        """Empêche les relations hiérarchiques circulaires."""
+        if not self._check_recursion():
+            raise ValidationError(_('Erreur ! Vous ne pouvez pas créer de hiérarchie circulaire.'))
 
     _sql_constraints = [
         ('unique_area_name', 'UNIQUE(name)',
-         'An area with this name already exists.'),
+         'Un domaine avec ce nom existe déjà.'),
         ('unique_area_code', 'UNIQUE(code)',
-         'An area with this code already exists.'),
+         'Un domaine avec ce code existe déjà.'),
     ]
-
-    # ===============================
-    # BUSINESS METHODS
-    # ===============================
-
-    def action_view_internships(self):
-        """Open internships in this area."""
-        self.ensure_one()
-        return {
-            'name': f'Internships in {self.name}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.stage',
-            'view_mode': 'tree,form,kanban',
-            'domain': [('area_id', '=', self.id)],
-            'target': 'current',
-        }
-
-    def action_view_supervisors(self):
-        """Open supervisors with expertise in this area."""
-        self.ensure_one()
-        return {
-            'name': f'Supervisors in {self.name}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.supervisor',
-            'view_mode': 'tree,form,kanban',
-            'domain': [('expertise_area_ids', 'in', [self.id])],
-            'target': 'current',
-        }
-
-    def get_area_statistics(self):
-        """Return statistical data for this area."""
-        self.ensure_one()
-        return {
-            'internship_count': self.internship_count,
-            'supervisor_count': len(self.supervisor_ids),
-            'skill_count': len(self.skill_ids),
-            'sub_area_count': len(self.child_ids),
-            'level': self.level,
-        }

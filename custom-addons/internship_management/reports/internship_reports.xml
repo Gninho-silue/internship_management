@@ -1,68 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- Defense Proceedings Report -->
+    <!-- Procès-Verbal de Soutenance -->
     <record id="action_defense_report" model="ir.actions.report">
-        <field name="name">Defense Proceedings</field>
+        <field name="name">Procès-Verbal de Soutenance</field>
         <field name="model">internship.stage</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">internship_management.defense_report_document</field>
         <field name="report_file">internship_management.defense_report_document</field>
-        <field name="print_report_name">'Defense Proceedings - %s' % (object.title or object.name)</field>
+        <field name="print_report_name">'Procès-Verbal - %s' % (object.title or object.name)</field>
         <field name="binding_model_id" ref="model_internship_stage"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="base.paperformat_euro"/>
     </record>
 
-    <!-- Internship Agreement -->
+    <!-- Convention de Stage -->
     <record id="action_convention_report" model="ir.actions.report">
-        <field name="name">Internship Agreement</field>
+        <field name="name">Convention de Stage</field>
         <field name="model">internship.stage</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">internship_management.convention_report_document</field>
         <field name="report_file">internship_management.convention_report_document</field>
-        <field name="print_report_name">'Internship Agreement - %s' % (object.title or object.name)</field>
+        <field name="print_report_name">'Convention - %s' % (object.title or object.name)</field>
         <field name="binding_model_id" ref="model_internship_stage"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="base.paperformat_euro"/>
     </record>
 
-    <!-- Internship Certificate -->
+    <!-- Attestation de Stage -->
     <record id="action_attestation_report" model="ir.actions.report">
-        <field name="name">Internship Certificate</field>
+        <field name="name">Attestation de Stage</field>
         <field name="model">internship.stage</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">internship_management.attestation_report_document</field>
         <field name="report_file">internship_management.attestation_report_document</field>
-        <field name="print_report_name">'Internship Certificate - %s' % (object.title or object.name)</field>
+        <field name="print_report_name">'Attestation - %s' % (object.title or object.name)</field>
         <field name="binding_model_id" ref="model_internship_stage"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="base.paperformat_euro"/>
     </record>
 
-    <!-- Evaluation Report -->
+    <!-- Rapport d'Évaluation -->
     <record id="action_evaluation_report" model="ir.actions.report">
-        <field name="name">Evaluation Report</field>
+        <field name="name">Rapport d'Évaluation</field>
         <field name="model">internship.stage</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">internship_management.evaluation_report_document</field>
         <field name="report_file">internship_management.evaluation_report_document</field>
-        <field name="print_report_name">'Evaluation Report - %s' % (object.title or object.name)</field>
+        <field name="print_report_name">'Évaluation - %s' % (object.title or object.name)</field>
         <field name="binding_model_id" ref="model_internship_stage"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="base.paperformat_euro"/>
     </record>
 
-    <!-- Comprehensive Stage Report -->
+    <!-- Rapport de Synthèse de Stage -->
     <record id="action_stage_report" model="ir.actions.report">
-        <field name="name">Stage Summary Report</field>
+        <field name="name">Rapport de Synthèse</field>
         <field name="model">internship.stage</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">internship_management.stage_report_document</field>
         <field name="report_file">internship_management.stage_report_document</field>
-        <field name="print_report_name">'Stage Summary Report - %s' % (object.title or object.name)</field>
+        <field name="print_report_name">'Synthèse de Stage - %s' % (object.title or object.name)</field>
         <field name="binding_model_id" ref="model_internship_stage"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="base.paperformat_euro"/>
     </record>
 </odoo>

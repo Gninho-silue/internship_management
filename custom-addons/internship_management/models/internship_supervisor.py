@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Internship Supervisor Model
+Modèle pour la gestion des Encadrants de Stage.
 
-This module handles supervisor management for the internship system,
-including capacity management, expertise areas, and workload tracking.
+Ce module gère les informations des encadrants pour le système de gestion des stages,
+y compris la gestion de leur capacité, leurs domaines d'expertise et le suivi
+de leur charge de travail.
 """
 
 from odoo import models, fields, api, _
@@ -11,167 +12,194 @@ from odoo.exceptions import ValidationError
 
 
 class InternshipSupervisor(models.Model):
-    """Supervisor model for internship management.
+    """Modèle Encadrant pour la gestion des stages.
 
-    This model manages supervisors who guide students during their internships,
-    including their professional information, expertise areas, availability,
-    and current workload tracking.
+    Ce modèle gère les encadrants qui guident les étudiants durant leurs stages.
+    Il inclut leurs informations professionnelles, leurs domaines d'expertise,
+    leur disponibilité et le suivi de leur charge de travail actuelle.
 
-    Key Features:
-    - Supervisor capacity management (max students)
-    - Expertise area tracking
-    - Automatic availability calculation
-    - Workload monitoring
-    - Integration with user accounts
+    Fonctionnalités clés :
+    - Gestion de la capacité d'encadrement (nombre max d'étudiants)
+    - Suivi des domaines d'expertise
+    - Calcul automatique de la disponibilité
+    - Suivi de la charge de travail
+    - Intégration avec les comptes utilisateurs
     """
     _name = 'internship.supervisor'
-    _description = 'Internship Supervisor Management'
+    _description = 'Gestion des Encadrants de Stage'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'name'
     _rec_name = 'name'
 
     # ===============================
-    # CORE IDENTIFICATION FIELDS
+    # CHAMPS D'IDENTIFICATION PRINCIPAUX
     # ===============================
 
     name = fields.Char(
-        string='Full Name',
+        string='Nom complet',
         required=True,
         tracking=True,
-        size=100,
-        help="Supervisor's complete name"
+        help="Nom complet de l'encadrant."
     )
 
     user_id = fields.Many2one(
         'res.users',
-        string='User Account',
+        string='Compte utilisateur',
         ondelete='restrict',
-        help="Associated user account for system access"
+        help="Compte utilisateur associé pour l'accès au système."
     )
 
+    # AMÉLIORATION: Utilisation de champs 'related' pour la cohérence des données.
     email = fields.Char(
-        string='Email Address',
-        required=False,
-        help="Primary email address for communication"
+        related='user_id.login',
+        string='Adresse e-mail',
+        readonly=True,
+        store=True,
+        help="Adresse e-mail principale, liée au compte utilisateur."
     )
 
     phone = fields.Char(
-        string='Phone Number',
-        size=20,
-        help="Primary contact phone number"
+        related='user_id.phone',
+        string='Numéro de téléphone',
+        readonly=False,  # Permet la modification depuis cette vue
+        help="Numéro de téléphone principal, lié au compte utilisateur."
     )
 
     # ===============================
-    # PROFESSIONAL INFORMATION
+    # INFORMATIONS PROFESSIONNELLES
     # ===============================
-
 
     company_id = fields.Many2one(
         'res.company',
         string='Entreprise',
         default=lambda self: self.env.company,
         readonly=True,
-        required=False,
-        help="Entreprise de stage (TechPal par défaut)"
+        help="Entreprise de l'encadrant (par défaut, la société actuelle)."
     )
+
     department = fields.Char(
-        string='Department',
-        required=False,
-        size=100,
-        help="Department or division within the organization"
+        string='Département',
+        help="Département ou division au sein de l'organisation."
     )
 
     position = fields.Char(
-        string='Position',
-        required=False,
-        size=100,
-        help="Job title or professional position"
+        string='Poste',
+        help="Titre du poste ou fonction professionnelle."
     )
 
     expertise_area_ids = fields.Many2many(
         'internship.area',
-        string='Areas of Expertise',
-        help="Professional domains where supervisor can provide guidance"
+        string="Domaines d'expertise",
+        help="Domaines professionnels où l'encadrant peut offrir son expertise."
     )
 
     # ===============================
-    # INTERNSHIP MANAGEMENT
+    # GESTION DES STAGES
     # ===============================
 
     stage_ids = fields.One2many(
         'internship.stage',
         'supervisor_id',
-        string='Supervised Internships',
-        help="All internships supervised by this person"
+        string='Stages encadrés',
+        help="Tous les stages supervisés par cette personne."
     )
 
     max_students = fields.Integer(
-        string='Maximum Students',
+        string='Capacité d\'accueil (étudiants)',
         default=3,
-        help="Maximum number of students this supervisor can handle simultaneously"
+        help="Nombre maximum d'étudiants que cet encadrant peut superviser simultanément."
+    )
+
+    current_students_count = fields.Integer(
+        string='Étudiants actuels',
+        compute='_compute_current_students_count',
+        store=True,
+        help="Nombre d'étudiants actuellement en cours d'encadrement."
     )
 
     @api.depends('stage_ids.state')
     def _compute_current_students_count(self):
-        """Calculate number of currently active students."""
+        """Calcule le nombre d'étudiants activement supervisés."""
         for supervisor in self:
             active_stages = supervisor.stage_ids.filtered(
                 lambda s: s.state in ['approved', 'in_progress']
             )
             supervisor.current_students_count = len(active_stages)
 
-    current_students_count = fields.Integer(
-        string='Current Students',
-        compute='_compute_current_students_count',
-        store=True,
-        help="Number of students currently being supervised"
-    )
-
+    # BONNE PRATIQUE: Remplacer l'@api.onchange par un champ calculé pour la robustesse.
+    # L'inverse permet de modifier manuellement la valeur si nécessaire.
     availability = fields.Selection([
-        ('available', 'Available'),
-        ('busy', 'Busy'),
-        ('unavailable', 'Unavailable')
-    ], string='Availability Status',
+        ('available', 'Disponible'),
+        ('busy', 'Occupé'),
+        ('unavailable', 'Indisponible')
+    ], string='Statut de disponibilité',
         default='available',
+        compute='_compute_availability',
+        inverse='_inverse_availability',
+        store=True,
         tracking=True,
-        help="Current availability for new student assignments")
+        help="Disponibilité actuelle pour de nouvelles affectations de stage.")
+
+    @api.depends('current_students_count', 'max_students')
+    def _compute_availability(self):
+        """Met à jour automatiquement la disponibilité en fonction de la charge de travail."""
+        for supervisor in self:
+            if supervisor.current_students_count >= supervisor.max_students:
+                supervisor.availability = 'busy'
+            else:
+                supervisor.availability = 'available'
+
+    def _inverse_availability(self):
+        """Méthode inverse pour permettre la modification manuelle du statut de disponibilité."""
+        # Cette méthode est intentionnellement vide. Elle permet au champ 'compute'
+        # d'être modifiable manuellement par l'utilisateur. La valeur sera recalculée
+        # au prochain changement de dépendances.
+        return
 
     # ===============================
-    # PROFILE AND STATUS
+    # PROFIL ET STATUT
     # ===============================
 
-    profile_image = fields.Binary(
-        string='Profile Photo',
-        attachment=True,
-        help="Supervisor's profile photograph"
+    # AMÉLIORATION: Utilisation de fields.Image pour une meilleure gestion des images.
+    profile_image = fields.Image(
+        string='Photo de profil',
+        max_width=1920,
+        max_height=1920,
+        help="Photo de profil de l'encadrant."
     )
 
     active = fields.Boolean(
         default=True,
-        string='Active',
-        help="Whether this supervisor record is active"
+        string='Actif',
+        help="Indique si cet enregistrement d'encadrant est actif."
     )
 
     # ===============================
-    # COMPUTED FIELDS
+    # CHAMPS CALCULÉS
     # ===============================
+
+    stage_count = fields.Integer(
+        string='Total des stages encadrés',
+        compute='_compute_stage_count',
+        store=True,
+        help="Nombre total de stages (passés et présents) supervisés par cette personne."
+    )
 
     @api.depends('stage_ids')
     def _compute_stage_count(self):
-        """Calculate total number of internships supervised."""
+        """Calcule le nombre total de stages supervisés."""
         for supervisor in self:
             supervisor.stage_count = len(supervisor.stage_ids)
 
-    stage_count = fields.Integer(
-        string='Total Internships Supervised',
-        compute='_compute_stage_count',
-        store=True,
-        help="Total number of internships supervised by this person"
+    workload_percentage = fields.Float(
+        string='Taux de charge',
+        compute='_compute_workload_percentage',
+        help="Charge de travail actuelle en pourcentage de la capacité maximale."
     )
 
     @api.depends('current_students_count', 'max_students')
     def _compute_workload_percentage(self):
-        """Calculate supervisor workload as percentage."""
+        """Calcule le pourcentage de la charge de travail de l'encadrant."""
         for supervisor in self:
             if supervisor.max_students > 0:
                 workload = (supervisor.current_students_count / supervisor.max_students) * 100
@@ -179,101 +207,41 @@ class InternshipSupervisor(models.Model):
             else:
                 supervisor.workload_percentage = 0.0
 
-    workload_percentage = fields.Float(
-        string='Workload Percentage',
-        compute='_compute_workload_percentage',
-        help="Current workload as percentage of maximum capacity"
-    )
-
     # ===============================
-    # CONSTRAINTS AND VALIDATIONS
+    # CONTRAINTES ET VALIDATIONS
     # ===============================
 
     @api.constrains('max_students')
     def _check_max_students(self):
-        """Ensure maximum students is a positive number."""
+        """Vérifie que la capacité maximale d'accueil est un nombre positif."""
         for supervisor in self:
             if supervisor.max_students < 1:
-                raise ValidationError(_("Maximum students must be at least 1."))
+                raise ValidationError(_("La capacité d'accueil doit être d'au moins 1."))
 
-    @api.constrains('email')
-    def _check_email_format(self):
-        """Validate email format."""
-        import re
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        for supervisor in self:
-            if supervisor.email and not re.match(email_pattern, supervisor.email):
-                raise ValidationError(_("Please enter a valid email address."))
+    # NOTE: La contrainte sur l'email est retirée car le champ est maintenant lié à res.users.
 
     # ===============================
-    # AUTOMATED METHODS
-    # ===============================
-
-    @api.onchange('current_students_count', 'max_students')
-    def _onchange_students_count(self):
-        """Automatically update availability based on workload."""
-        for supervisor in self:
-            if supervisor.current_students_count >= supervisor.max_students:
-                supervisor.availability = 'busy'
-            elif supervisor.current_students_count < supervisor.max_students:
-                if supervisor.availability == 'busy':
-                    supervisor.availability = 'available'
-
-    # ===============================
-    # BUSINESS METHODS
+    # MÉTHODES MÉTIER
     # ===============================
 
     def action_view_supervised_internships(self):
-        """Open supervised internships in dedicated view."""
+        """Ouvre la liste des stages supervisés dans une vue dédiée."""
         self.ensure_one()
         return {
-            'name': f'Internships Supervised by {self.name}',
+            'name': _('Stages encadrés par %s') % self.name,
             'type': 'ir.actions.act_window',
             'res_model': 'internship.stage',
             'view_mode': 'tree,form,kanban',
             'domain': [('supervisor_id', '=', self.id)],
             'context': {'default_supervisor_id': self.id},
-            'target': 'current',
-        }
-
-    def check_availability_for_new_student(self):
-        """Check if supervisor can take on new student."""
-        self.ensure_one()
-        return (
-                self.active and
-                self.availability == 'available' and
-                self.current_students_count < self.max_students
-        )
-
-    def get_supervisor_statistics(self):
-        """Return comprehensive supervisor statistics."""
-        self.ensure_one()
-        total_completed = len(
-            self.stage_ids.filtered(lambda s: s.state in ['completed', 'evaluated'])
-        )
-
-        # Calculate average grade if grades exist
-        graded_stages = self.stage_ids.filtered(lambda s: s.final_grade > 0)
-        avg_grade = (
-            sum(graded_stages.mapped('final_grade')) / len(graded_stages)
-            if graded_stages else 0.0
-        )
-
-        return {
-            'total_supervised': self.stage_count,
-            'currently_active': self.current_students_count,
-            'completed_internships': total_completed,
-            'average_grade': avg_grade,
-            'workload_percentage': self.workload_percentage,
-            'availability_status': self.availability,
         }
 
     # ===============================
-    # UTILITY METHODS
+    # MÉTHODES UTILITAIRES
     # ===============================
 
     def name_get(self):
-        """Custom name display: Name (Department)."""
+        """Affichage personnalisé du nom : Nom (Département)."""
         result = []
         for supervisor in self:
             name = supervisor.name
@@ -283,30 +251,14 @@ class InternshipSupervisor(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
-        """Custom search: search by name, email, department, or position."""
+    def _name_search(self, name='', args=None, operator='ilike', limit=100, order=None):
+        """Recherche personnalisée : par nom, e-mail, département ou poste."""
         args = args or []
         domain = []
-
         if name:
             domain = ['|', '|', '|',
                       ('name', operator, name),
                       ('email', operator, name),
                       ('department', operator, name),
                       ('position', operator, name)]
-
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
-
-    @api.model
-    def get_available_supervisors(self, expertise_area=None):
-        """Get list of available supervisors, optionally filtered by expertise area."""
-        domain = [
-            ('active', '=', True),
-            ('availability', '=', 'available'),
-            ('current_students_count', '<', 'max_students')
-        ]
-
-        if expertise_area:
-            domain.append(('expertise_area_ids', 'in', [expertise_area]))
-
-        return self.search(domain)
+        return self._search(domain + args, limit=limit, order=order)

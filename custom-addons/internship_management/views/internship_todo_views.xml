@@ -3,113 +3,94 @@
     <data>
 
         <!-- ================================= -->
-        <!-- VUES LISTE (TREE) -->
+        <!-- VUE LISTE (TREE) -->
         <!-- ================================= -->
-
-        <!-- Vue liste des tâches -->
         <record id="view_internship_todo_tree" model="ir.ui.view">
             <field name="name">internship.todo.tree</field>
             <field name="model">internship.todo</field>
             <field name="arch" type="xml">
-                <tree string="Tasks" decoration-info="state=='todo'"
+                <tree string="Tâches"
+                      decoration-info="state=='todo'"
                       decoration-warning="state=='in_progress'"
                       decoration-success="state=='done'"
                       decoration-muted="state=='cancelled'"
-                      decoration-danger="is_overdue">
+                      decoration-danger="is_overdue == True">
                     <field name="sequence" widget="handle"/>
-                    <field name="name"/>
-                    <field name="stage_id"/>
-                    <field name="assigned_to"/>
-                    <field name="deadline"/>
-                    <field name="priority" widget="priority"/>
+                    <field name="name" string="Nom de la Tâche"/>
+                    <field name="stage_id" string="Stage"/>
+                    <field name="assigned_to" string="Assignée à"/>
+                    <field name="deadline" string="Date Limite"/>
+                    <field name="priority" widget="priority" string="Priorité"/>
                     <field name="state" widget="badge"
-                           decoration-info="state=='todo'"
-                           decoration-warning="state=='in_progress'"
-                           decoration-success="state=='done'"
-                           decoration-muted="state=='cancelled'"/>
-                    <field name="progress_percentage" widget="progressbar"/>
+                           decoration-info="state == 'todo'"
+                           decoration-warning="state == 'in_progress'"
+                           decoration-success="state == 'done'"/>
+                    <field name="progress_percentage" widget="progressbar" string="Progression"/>
                     <field name="is_overdue" invisible="1"/>
-                    <field name="days_overdue"/>
-                    <field name="create_date"/>
                 </tree>
             </field>
         </record>
 
         <!-- ================================= -->
-        <!-- VUES FORMULAIRE (FORM) -->
+        <!-- VUE FORMULAIRE (FORM) -->
         <!-- ================================= -->
-
-        <!-- Vue formulaire des tâches -->
         <record id="view_internship_todo_form" model="ir.ui.view">
             <field name="name">internship.todo.form</field>
             <field name="model">internship.todo</field>
             <field name="arch" type="xml">
-                <form string="Task">
+                <form string="Tâche">
                     <header>
-                        <!-- Boutons d'action selon l'état -->
-                        <button name="action_start" string="Start" type="object"
-                                class="oe_highlight" invisible="state != 'todo'"/>
-                        <button name="action_complete" string="Complete" type="object"
-                                class="oe_highlight" invisible="state != 'in_progress'"/>
-                        <button name="action_cancel" string="Cancel" type="object"
+                        <button name="action_start" string="Démarrer" type="object"
+                                class="btn-primary" invisible="state != 'todo'"/>
+                        <button name="action_complete" string="Terminer" type="object"
+                                class="btn-primary" invisible="state != 'in_progress'"/>
+                        <button name="action_cancel" string="Annuler" type="object"
                                 invisible="state in ['done', 'cancelled']"/>
-                        <button name="action_reset_to_pending" string="Reset to Pending" type="object"
+                        <button name="action_reset_to_todo" string="Réinitialiser" type="object"
                                 invisible="state == 'todo'"
-                                groups="internship_management.group_internship_supervisor"/>
-
+                                groups="internship_management.group_internship_supervisor"
+                                confirm="Êtes-vous sûr de vouloir réinitialiser cette tâche à 'À Faire' ?"/>
                         <field name="state" widget="statusbar"
-                               statusbar_visible="todo,in_progress,done"
-                               statusbar_colors="{'todo': 'secondary', 'in_progress': 'warning', 'done': 'success'}"/>
+                               statusbar_visible="todo,in_progress,done"/>
                     </header>
-
                     <sheet>
-                        <!-- Titre avec référence -->
                         <div class="oe_title">
-                            <label for="name" string="Task Name"/>
-                            <h1><field name="name" placeholder="Task name..."/></h1>
+                            <label for="name" string="Nom de la Tâche"/>
+                            <h1>
+                                <field name="name" placeholder="Ex: Rédiger le rapport de mi-stage..."/>
+                            </h1>
                         </div>
-
                         <group>
-                            <group name="basic_info" string="Basic Information">
-                                <field name="stage_id" options="{'no_create': True}"/>
-                                <field name="assigned_to" options="{'no_create': True}" readonly="1"/>
-                                <field name="priority" widget="radio" options="{'horizontal': true}"/>
-                                <field name="deadline"/>
+                            <group name="basic_info">
+                                <field name="stage_id" options="{'no_create': True}"
+                                       readonly="state in ['done', 'cancelled']"/>
+                                <field name="assigned_to" options="{'no_create': True}"
+                                       readonly="state in ['done', 'cancelled']"/>
+                                <field name="priority" widget="priority" readonly="state in ['done', 'cancelled']"/>
+                                <field name="deadline" readonly="state in ['done', 'cancelled']"/>
                             </group>
-                            <group name="progress" string="Progress">
-                                <field name="state"/>
-                                <field name="progress_percentage" widget="progressbar"/>
+                            <group name="progress" string="Suivi de Progression">
                                 <field name="estimated_hours"/>
                                 <field name="actual_hours"/>
-                            </group>
-                            <group name="alerts" string="Alert Status" invisible="not is_overdue">
-                                <field name="is_overdue"/>
-                                <field name="days_overdue"/>
-                                <field name="alert_sent"/>
-                                <field name="last_alert_date"/>
+                                <field name="completion_date"/>
+                                <field name="progress_percentage" widget="progressbar"/>
                             </group>
                         </group>
-
+                        <group name="alerts" string="Statut du Retard" invisible="not is_overdue">
+                            <field name="is_overdue"/>
+                            <field name="days_overdue"/>
+                        </group>
                         <notebook>
                             <page name="description" string="Description">
                                 <field name="description" nolabel="1"
-                                       placeholder="Describe the task details, requirements, and deliverables..."
-                                       class="oe_form_field_html"/>
-                            </page>
-
-                            <page name="notes" string="Notes">
-                                <field name="notes" nolabel="1"
-                                       placeholder="Add notes, comments, or additional information..."
-                                       class="oe_form_field_html"/>
+                                       placeholder="Décrivez en détail les objectifs de la tâche, les étapes et les résultats attendus..."/>
                             </page>
                         </notebook>
                     </sheet>
-
-                    <!-- Chatter pour le suivi -->
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
                         <field name="activity_ids"/>
-                        <field name="message_ids"
+                        <field name="message_ids"/>
                     </div>
                 </form>
             </field>
@@ -118,13 +99,11 @@
         <!-- ================================= -->
         <!-- VUE KANBAN -->
         <!-- ================================= -->
-
-        <!-- Vue kanban des tâches -->
         <record id="view_internship_todo_kanban" model="ir.ui.view">
             <field name="name">internship.todo.kanban</field>
             <field name="model">internship.todo</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="state" class="o_kanban_small_column">
+                <kanban default_group_by="state">
                     <field name="name"/>
                     <field name="stage_id"/>
                     <field name="assigned_to"/>
@@ -132,27 +111,39 @@
                     <field name="priority"/>
                     <field name="state"/>
                     <field name="progress_percentage"/>
-                    <field name="estimated_hours"/>
-                    <field name="actual_hours"/>
+                    <field name="is_overdue"/>
                     <templates>
                         <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_card oe_kanban_global_click #{record.state.raw_value == 'done' ? 'oe_kanban_color_success' : record.state.raw_value == 'in_progress' ? 'oe_kanban_color_primary' : record.state.raw_value == 'todo' ? 'oe_kanban_color_info' : 'oe_kanban_color_muted'}">
-                                <div class="oe_kanban_content">
-                                    <div class="oe_kanban_details">
-                                        <strong><field name="name"/></strong>
-                                        <div><i class="fa fa-briefcase" title="Internship"/> <field name="stage_id"/></div>
-                                        <div><i class="fa fa-user" title="Assigned to"/> <field name="assigned_to"/></div>
-                                        <div><i class="fa fa-calendar" title="Deadline"/> <field name="deadline"/></div>
-                                        <div class="o_kanban_record_bottom">
-                                            <div class="oe_kanban_bottom_left">
-                                                <field name="progress_percentage" widget="progressbar"/>
-                                            </div>
-                                            <div class="oe_kanban_bottom_right">
-                                                <field name="priority" widget="priority"/>
-                                                <field name="state" widget="label_selection"
-                                                       options="{'classes': {'todo': 'default', 'in_progress': 'warning', 'done': 'success', 'cancelled': 'muted'}}"/>
-                                            </div>
-                                        </div>
+                            <div t-attf-class="oe_kanban_global_click oe_kanban_card #{record.is_overdue.raw_value ? 'bg-danger-light' : ''}">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <i class="fa fa-briefcase me-2" title="Stage"/>
+                                        <field name="stage_id"/>
+                                    </div>
+                                    <div>
+                                        <i class="fa fa-user me-2" title="Assignée à"/>
+                                        <field name="assigned_to"/>
+                                    </div>
+                                    <div t-if="record.deadline.raw_value">
+                                        <i class="fa fa-calendar me-2" title="Date limite"/>
+                                        <field name="deadline"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="progress_percentage" widget="progressbar"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="state" widget="label_selection"
+                                               options="{'classes': {'todo': 'info', 'in_progress': 'warning', 'done': 'success', 'cancelled': 'muted'}}"/>
                                     </div>
                                 </div>
                             </div>
@@ -165,99 +156,93 @@
         <!-- ================================= -->
         <!-- VUE RECHERCHE (SEARCH) -->
         <!-- ================================= -->
-
-        <!-- Vue recherche des tâches -->
         <record id="view_internship_todo_search" model="ir.ui.view">
             <field name="name">internship.todo.search</field>
             <field name="model">internship.todo</field>
             <field name="arch" type="xml">
-                <search string="Search Tasks">
-                    <field name="name"/>
+                <search string="Rechercher des Tâches">
+                    <field name="name" string="Nom ou Description"/>
                     <field name="stage_id"/>
                     <field name="assigned_to"/>
-                    <field name="description"/>
-                    
-                    <filter string="To Do" name="todo" domain="[('state', '=', 'todo')]"/>
-                    <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
-                    <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
-                    <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
-                    
-                    <filter string="High Priority" name="high_priority" domain="[('priority', '=', '3')]"/>
-                    <filter string="Medium Priority" name="medium_priority" domain="[('priority', '=', '2')]"/>
-                    <filter string="Low Priority" name="low_priority" domain="[('priority', '=', '1')]"/>
-                    
-                    <filter string="Overdue" name="overdue" domain="[('is_overdue', '=', True)]"/>
-                    <filter string="Due Today" name="due_today" domain="[('deadline', '=', context_today())]"/>
-                    <filter string="Due This Week" name="due_this_week" domain="[('deadline', '&gt;=', context_today()), ('deadline', '&lt;=', (context_today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                    
                     <separator/>
-                    <filter string="My Tasks" name="my_tasks" domain="[('assigned_to.user_id', '=', uid)]"/>
-                    <filter string="Tasks I Created" name="created_by_me" domain="[('create_uid', '=', uid)]"/>
-                    
-                    <group expand="0" string="Group By">
-                        <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
-                        <filter string="Priority" name="group_priority" context="{'group_by': 'priority'}"/>
-                        <filter string="Assigned To" name="group_assigned_to" context="{'group_by': 'assigned_to'}"/>
-                        <filter string="Internship" name="group_stage" context="{'group_by': 'stage_id'}"/>
-                        <filter string="Deadline" name="group_deadline" context="{'group_by': 'deadline'}"/>
-                        <filter string="Creation Date" name="group_create_date" context="{'group_by': 'create_date:month'}"/>
+                    <filter string="À Faire" name="todo" domain="[('state', '=', 'todo')]"/>
+                    <filter string="En Cours" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter string="Terminées" name="done" domain="[('state', '=', 'done')]"/>
+                    <separator/>
+                    <filter string="En Retard" name="overdue" domain="[('is_overdue', '=', True)]"/>
+                    <filter string="Pour Aujourd'hui" name="due_today"
+                            domain="[
+                                ('deadline', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                                ('deadline', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
+                            ]"/>
+                    <separator/>
+                    <filter string="Mes Tâches" name="my_tasks" domain="[('assigned_to', '=', uid)]"/>
+                    <group expand="0" string="Regrouper par">
+                        <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Priorité" name="group_priority" context="{'group_by': 'priority'}"/>
+                        <filter string="Assignée à" name="group_assigned_to" context="{'group_by': 'assigned_to'}"/>
+                        <filter string="Stage" name="group_stage" context="{'group_by': 'stage_id'}"/>
+                        <filter string="Date Limite" name="group_deadline" context="{'group_by': 'deadline:day'}"/>
                     </group>
                 </search>
             </field>
         </record>
 
         <!-- ================================= -->
-        <!-- ACTIONS -->
+        <!-- ACTIONS (RÉTABLIES ET TRADUITES) -->
         <!-- ================================= -->
-
-        <!-- Action principale : Liste de toutes les tâches -->
         <record id="action_internship_todo_list" model="ir.actions.act_window">
-            <field name="name">All Tasks</field>
+            <field name="name">Toutes les Tâches</field>
             <field name="res_model">internship.todo</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Create your first task!
+                    Créez votre première tâche de stage !
                 </p>
                 <p>
-                    Manage all tasks and deliverables for internships: creation, assignment, tracking.
+                    Gérez ici toutes les tâches et livrables pour les stages : création, assignation et suivi.
                 </p>
             </field>
         </record>
 
-        <!-- Action : Mes tâches (pour étudiants) -->
+        <!-- Action : Mes tâches -->
+        <!-- C'est l'action qui manquait et causait l'erreur -->
         <record id="action_internship_todo_my" model="ir.actions.act_window">
-            <field name="name">My Tasks</field>
+            <field name="name">Mes Tâches</field>
             <field name="res_model">internship.todo</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="domain">[('assigned_to.user_id', '=', uid)]</field>
-            <field name="context">{'default_assigned_to': [(6, 0, [])]}</field>
+            <field name="domain">[('assigned_to', '=', uid)]</field>
+            <field name="context">{'default_assigned_to': uid}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    No tasks assigned to you yet!
+                    Aucune tâche ne vous est assignée pour le moment.
                 </p>
                 <p>
-                    Tasks assigned to you will appear here for easy tracking and management.
+                    Les tâches qui vous seront assignées apparaîtront ici.
                 </p>
             </field>
         </record>
 
         <!-- Action : Tâches en retard -->
         <record id="action_internship_todo_overdue" model="ir.actions.act_window">
-            <field name="name">Overdue Tasks</field>
+            <field name="name">Tâches en Retard</field>
             <field name="res_model">internship.todo</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="domain">[('deadline', '&lt;', context_today()), ('state', 'in', ['todo', 'in_progress'])]</field>
+            <field name="domain">[('is_overdue', '=', True), ('state', 'in', ['todo', 'in_progress'])]</field>
             <field name="context">{}</field>
         </record>
 
         <!-- Action : Tâches à faire aujourd'hui -->
         <record id="action_internship_todo_due_today" model="ir.actions.act_window">
-            <field name="name">Tasks Due Today</field>
+            <field name="name">Tâches pour Aujourd'hui</field>
             <field name="res_model">internship.todo</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="domain">[('deadline', '=', context_today())]</field>
+            <field name="domain">[
+                ('deadline', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                ('deadline', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
+                ]
+            </field>
             <field name="context">{}</field>
         </record>
 

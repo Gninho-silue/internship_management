@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+"""
+Modèle pour la gestion des Compétences de stage.
+"""
 
 import logging
 
@@ -10,201 +12,157 @@ _logger = logging.getLogger(__name__)
 
 
 class InternshipSkill(models.Model):
-    """Skill model for internship management system.
+    """Modèle Compétence pour le système de gestion des stages.
 
-    This model manages technical and soft skills that can be associated
-    with students, supervisors, and internship requirements.
+    Ce modèle gère les compétences techniques et générales (soft skills) qui peuvent être
+    associées aux étudiants, aux encadrants et aux exigences des stages.
 
-    Key Features:
-    - Skill categorization (technical, soft, language, other)
-    - Difficulty level management
-    - Certification tracking
-    - Prerequisite skill relationships
-    - Integration with student profiles and internship areas
+    Fonctionnalités clés :
+    - Catégorisation des compétences (technique, soft skill, langue, etc.)
+    - Gestion du niveau de difficulté
+    - Suivi des certifications
+    - Relations de prérequis entre compétences
     """
     _name = 'internship.skill'
-    _description = 'Internship Skill Management'
-    _order = 'category, name'
+    _description = 'Gestion des Compétences de Stage'
+    _order = 'category, sequence, name'
     _rec_name = 'name'
 
     # ===============================
-    # CORE IDENTIFICATION FIELDS
+    # CHAMPS D'IDENTIFICATION PRINCIPAUX
     # ===============================
 
     name = fields.Char(
-        string='Skill Name',
+        string='Nom de la compétence',
         required=True,
-        size=100,
-        help="Name of the skill (e.g., Python, Communication, English)"
+        help="Nom de la compétence (ex: Python, Communication, Anglais)."
     )
 
     code = fields.Char(
-        string='Skill Code',
+        string='Code de la compétence',
         size=20,
-        help="Short code for the skill (e.g., PYTHON, COMM, ENG)"
+        help="Code court pour la compétence (ex: PYTHON, COMM, ENG)."
     )
 
     # ===============================
-    # CLASSIFICATION FIELDS
+    # CHAMPS DE CLASSIFICATION
     # ===============================
 
     category = fields.Selection([
-        ('technical', 'Technical Skills'),
-        ('soft', 'Soft Skills'),
-        ('language', 'Languages'),
-        ('certification', 'Certifications'),
-        ('other', 'Other')
-    ], string='Category', required=False,
-        help="Category this skill belongs to")
-
-    subcategory = fields.Char(
-        string='Subcategory',
-        size=50,
-        help="More specific classification within the category"
-    )
+        ('technical', 'Technique'),
+        ('soft', 'Soft Skill'),
+        ('language', 'Langue'),
+        ('certification', 'Certification'),
+        ('other', 'Autre')
+    ], string='Catégorie', required=True, default='technical',
+        help="Catégorie à laquelle cette compétence appartient.")
 
     level_required = fields.Selection([
-        ('beginner', 'Beginner'),
-        ('intermediate', 'Intermediate'),
-        ('advanced', 'Advanced'),
+        ('beginner', 'Débutant'),
+        ('intermediate', 'Intermédiaire'),
+        ('advanced', 'Avancé'),
         ('expert', 'Expert')
-    ], string='Required Level', default='intermediate',
-        help="Minimum proficiency level required")
+    ], string='Niveau de maîtrise requis', default='intermediate',
+        help="Niveau de maîtrise minimum attendu pour cette compétence.")
 
     difficulty_level = fields.Selection([
-        ('1', 'Very Easy'),
-        ('2', 'Easy'),
-        ('3', 'Medium'),
-        ('4', 'Hard'),
-        ('5', 'Very Hard')
-    ], string='Difficulty Level', default='3',
-        help="Difficulty level of acquiring this skill")
+        ('1', 'Très Facile'),
+        ('2', 'Facile'),
+        ('3', 'Moyen'),
+        ('4', 'Difficile'),
+        ('5', 'Très Difficile')
+    ], string='Difficulté d\'apprentissage', default='3',
+        help="Niveau de difficulté pour acquérir cette compétence.")
 
     # ===============================
-    # CERTIFICATION FIELDS
+    # CHAMPS DE CERTIFICATION
     # ===============================
 
     is_certification = fields.Boolean(
-        string='Is Certification',
+        string='Est une certification',
         default=False,
-        help="Whether this skill requires certification"
+        help="Cochez si cette compétence est validée par une certification."
     )
 
     certification_provider = fields.Char(
-        string='Certification Provider',
-        help="Organization that provides the certification"
+        string='Organisme de certification',
+        help="Organisation qui délivre la certification."
     )
 
     certification_validity_months = fields.Integer(
-        string='Certification Validity (Months)',
-        help="How long the certification remains valid"
+        string='Validité de la certification (mois)',
+        help="Durée de validité de la certification en mois."
     )
 
     # ===============================
-    # DESCRIPTION AND METADATA
+    # DESCRIPTION ET MÉTADONNÉES
     # ===============================
 
     description = fields.Text(
         string='Description',
-        help="Detailed description of the skill and its applications"
-    )
-
-    learning_objectives = fields.Html(
-        string='Learning Objectives',
-        help="What students should achieve when learning this skill"
+        help="Description détaillée de la compétence et de ses applications."
     )
 
     prerequisites = fields.Text(
-        string='Prerequisites',
-        help="Skills or knowledge required before learning this skill"
+        string='Prérequis (texte libre)',
+        help="Compétences ou connaissances requises non listées (ex: 'Bac+3 en informatique')."
     )
 
     # ===============================
-    # RELATIONSHIP FIELDS
+    # CHAMPS RELATIONNELS
     # ===============================
 
     prerequisite_skill_ids = fields.Many2many(
         'internship.skill',
         'skill_prerequisite_rel',
         'skill_id', 'prerequisite_id',
-        string='Prerequisite Skills',
-        help="Skills that must be mastered before this one"
+        string='Compétences prérequises',
+        help="Compétences qui doivent être maîtrisées avant celle-ci."
     )
 
     related_area_ids = fields.Many2many(
         'internship.area',
-        string='Related Areas',
-        help="Areas of expertise where this skill is commonly used"
+        string='Domaines liés',
+        help="Domaines d'expertise où cette compétence est couramment utilisée."
     )
 
     # ===============================
-    # TECHNICAL FIELDS
+    # CHAMPS TECHNIQUES
     # ===============================
 
     active = fields.Boolean(
         default=True,
-        string='Active',
-        help="Whether this skill is currently available"
+        string='Actif',
+        help="Indique si cette compétence est actuellement disponible."
     )
 
     sequence = fields.Integer(
-        string='Sequence',
+        string='Séquence',
         default=10,
-        help="Order of skills in lists"
+        help="Ordre d'affichage des compétences dans les listes."
     )
 
     # ===============================
-    # CONSTRAINTS AND VALIDATIONS
+    # CONTRAINTES ET VALIDATIONS
     # ===============================
 
     @api.constrains('certification_validity_months')
     def _check_certification_validity(self):
-        """Ensure certification validity is positive."""
+        """S'assure que la durée de validité de la certification est positive."""
         for skill in self:
             if skill.is_certification and skill.certification_validity_months <= 0:
-                raise ValidationError(_("Certification validity must be positive."))
+                raise ValidationError(_("La validité de la certification doit être un nombre positif de mois."))
 
     @api.constrains('prerequisite_skill_ids')
     def _check_no_circular_prerequisites(self):
-        """Prevent circular prerequisite relationships."""
+        """Empêche les relations de prérequis circulaires."""
         for skill in self:
             if skill in skill.prerequisite_skill_ids:
-                raise ValidationError(_("A skill cannot be a prerequisite of itself."))
+                raise ValidationError(_("Une compétence ne peut pas être un prérequis d'elle-même."))
 
     _sql_constraints = [
         ('unique_skill_name', 'UNIQUE(name)',
-         'A skill with this name already exists.'),
+         'Une compétence avec ce nom existe déjà.'),
         ('unique_skill_code', 'UNIQUE(code)',
-         'A skill with this code already exists.'),
+         'Une compétence avec ce code existe déjà.'),
     ]
-
-    # ===============================
-    # BUSINESS METHODS
-    # ===============================
-
-    def action_view_related_areas(self):
-        """Open related areas in a dedicated view."""
-        self.ensure_one()
-        return {
-            'name': f'Areas Using {self.name}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.area',
-            'view_mode': 'tree,form',
-            'domain': [('skill_ids', 'in', [self.id])],
-            'target': 'current',
-        }
-
-    def get_skill_statistics(self):
-        """Return statistical data for this skill."""
-        self.ensure_one()
-        return {
-            'related_areas_count': len(self.related_area_ids),
-            'prerequisite_count': len(self.prerequisite_skill_ids),
-            'is_certification': self.is_certification,
-            'difficulty_level': self.difficulty_level,
-        }
-
-
-
-
-

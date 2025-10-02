@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Internship Student Model """
+"""
+Modèle pour la gestion des Étudiants Stagiaires.
+"""
 
 import logging
-import re
+
+from psycopg2 import errors
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
@@ -11,156 +14,189 @@ _logger = logging.getLogger(__name__)
 
 
 class InternshipStudent(models.Model):
-    """Student model for internship management system.
+    """Modèle Étudiant pour le système de gestion des stages.
 
-    This model handles all student-related information including
-    personal details, academic background, and internship history.
+    Ce modèle gère toutes les informations relatives à un étudiant, y compris
+    ses détails personnels, son parcours académique et son historique de stages.
     """
     _name = 'internship.student'
-    _description = 'Internship Student'
+    _description = 'Étudiant Stagiaire'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'full_name'
     _rec_name = 'full_name'
 
     # ===============================
-    # PERSONAL INFORMATION FIELDS
+    # CHAMPS D'INFORMATIONS PERSONNELLES
     # ===============================
 
     full_name = fields.Char(
-        string='Full Name',
+        string='Nom complet',
         required=True,
         tracking=True,
         size=100,
-        help="Student's complete name"
+        help="Nom complet de l'étudiant."
     )
 
+    # AMÉLIORATION: Utilisation de champs 'related' pour garantir la cohérence
+    # des données entre l'étudiant et son compte utilisateur.
     user_id = fields.Many2one(
         'res.users',
-        string='User Account',
-        ondelete='restrict',
-        help="Associated user account for system access"
+        string='Compte utilisateur',
+        ondelete='restrict',  # Bonne pratique: empêche la suppression d'un utilisateur lié à un étudiant
+        help="Compte utilisateur associé pour l'accès au système."
     )
 
-    email = fields.Char(
-        string='Email Address',
-        required=False,
-        help="Primary email address for communication"
+    email_from_user = fields.Char(
+        related='user_id.login',
+        string='Adresse e-mail',
+        readonly=True,
+        store=True,
+        help="Adresse e-mail principale pour la communication, liée au compte utilisateur."
     )
 
     phone = fields.Char(
-        string='Phone Number',
+        related='user_id.phone',
+        string='Numéro de téléphone',
+        readonly=False,  # Permet de modifier le tel de l'étudiant et que ca modifie celui de l'user
         size=20,
-        help="Primary contact phone number"
+        help="Numéro de téléphone principal, lié au compte utilisateur."
+    )
+
+    # Champ technique pour la création initiale
+    email = fields.Char(
+        string='Email (pour création)',
+        help="Utilisé uniquement pour créer le compte utilisateur initial."
     )
 
     birth_date = fields.Date(
-        string='Date of Birth',
-        help="Student's birth date"
+        string='Date de naissance',
+        help="Date de naissance de l'étudiant."
     )
 
     linkedin_profile = fields.Char(
-        string='LinkedIn Profile',
-        help="LinkedIn profile URL"
+        string='Profil LinkedIn',
+        help="URL du profil LinkedIn de l'étudiant."
     )
 
     cv_document = fields.Binary(
-        string='CV Document',
+        string='CV',
         attachment=True,
-        help="Upload student's curriculum vitae"
+        help="Téléverser le curriculum vitae de l'étudiant."
     )
+    # AMÉLIORATION: Ajout du champ pour le nom du fichier, nécessaire pour la vue.
+    cv_document_filename = fields.Char(string="Nom du fichier CV")
 
-    profile_image = fields.Binary(
-        string='Profile Photo',
-        attachment=True,
-        help="Student's profile photograph"
+    profile_image = fields.Image(
+        string='Photo de profil',
+        max_width=1920,
+        max_height=1920,
+        help="Photo de profil de l'étudiant."
     )
 
     # ===============================
-    # ACADEMIC INFORMATION FIELDS
+    # CHAMPS D'INFORMATIONS ACADÉMIQUES
     # ===============================
 
     institution = fields.Char(
-        string='Educational Institution',
+        string='Établissement d\'enseignement',
         required=False,
         size=100,
-        help="Name of school, university, or college"
+        help="Nom de l'école, de l'université ou du collège."
     )
 
     education_level = fields.Selection([
-        ('bachelor_1', 'Bachelor Year 1'),
-        ('bachelor_2', 'Bachelor Year 2'),
-        ('bachelor_3', 'Bachelor Year 3'),
-        ('engineer', 'Engineer'),
-        ('master_1', 'Master Year 1'),
-        ('master_2', 'Master Year 2'),
-        ('phd', 'PhD')
-    ], string='Education Level', )
+        ('bachelor_1', 'Licence 1'),
+        ('bachelor_2', 'Licence 2'),
+        ('bachelor_3', 'Licence 3'),
+        ('engineer', 'Cycle Ingénieur'),
+        ('master_1', 'Master 1'),
+        ('master_2', 'Master 2'),
+        ('phd', 'Doctorat')
+    ], string='Niveau d\'études')
 
     field_of_study = fields.Char(
-        string='Field of Study',
+        string='Domaine d\'études',
         required=False,
         size=100,
-        help="Major or specialization area"
+        help="Matière principale ou spécialisation."
     )
 
     student_id_number = fields.Char(
-        string='Student ID Number',
+        string='Numéro d\'étudiant',
         size=20,
-        help="Official student identification number"
+        help="Numéro d'identification officiel de l'étudiant."
     )
 
     expected_graduation_date = fields.Date(
-        string='Expected Graduation',
-        help="Expected graduation date"
+        string='Date de diplomation prévue',
+        help="Date prévue pour l'obtention du diplôme."
     )
 
     # ===============================
-    # RELATIONSHIP FIELDS
+    # CHAMPS RELATIONNELS
     # ===============================
 
     internship_ids = fields.One2many(
         'internship.stage',
         'student_id',
-        string='Internships',
-        help="All internships associated with this student"
+        string='Stages',
+        help="Tous les stages associés à cet étudiant."
     )
 
     skill_ids = fields.Many2many(
         'internship.skill',
-        string='Skills',
-        help="Technical and soft skills possessed by student"
+        string='Compétences',
+        help="Compétences techniques et générales de l'étudiant."
     )
 
     interest_area_ids = fields.Many2many(
         'internship.area',
-        string='Areas of Interest',
-        help="Areas where student is interested to do internship"
+        string='Centres d\'intérêt',
+        help="Domaines dans lesquels l'étudiant souhaite effectuer un stage."
     )
 
     document_ids = fields.One2many(
         'internship.document',
         'student_id',
         string='Documents',
-        help="All documents uploaded by or for this student"
+        help="Tous les documents téléversés par ou pour cet étudiant."
     )
 
     # ===============================
-    # COMPUTED FIELDS
+    # CHAMPS CALCULÉS
     # ===============================
+
+    internship_count = fields.Integer(
+        string='Nombre de stages',
+        compute='_compute_internship_count',
+        store=True,
+        help="Nombre total de stages pour cet étudiant."
+    )
+
+    average_grade = fields.Float(
+        string='Note moyenne',
+        compute='_compute_average_grade',
+        digits=(4, 2),
+        help="Note moyenne de tous les stages terminés."
+    )
+
+    completion_rate = fields.Float(
+        string='Taux de complétion',
+        compute='_compute_completion_rate',
+        help="Taux de complétion global de tous les stages."
+    )
 
     @api.depends('internship_ids')
     def _compute_internship_count(self):
-        """Calculate total number of internships for this student."""
+        """Calcule le nombre total de stages pour cet étudiant."""
         for student in self:
             student.internship_count = len(student.internship_ids)
 
     @api.depends('internship_ids.final_grade')
     def _compute_average_grade(self):
-        """Calculate average grade across all completed internships."""
+        """Calcule la note moyenne de tous les stages terminés."""
         for student in self:
-            completed_internships = student.internship_ids.filtered(
-                lambda x: x.final_grade > 0
-            )
+            completed_internships = student.internship_ids.filtered(lambda i: i.final_grade > 0)
             if completed_internships:
                 total_grade = sum(completed_internships.mapped('final_grade'))
                 student.average_grade = total_grade / len(completed_internships)
@@ -169,104 +205,60 @@ class InternshipStudent(models.Model):
 
     @api.depends('internship_ids.completion_percentage')
     def _compute_completion_rate(self):
-        """Calculate overall completion rate of all internships."""
+        """Calcule le taux de complétion moyen de tous les stages."""
         for student in self:
-            active_internships = student.internship_ids.filtered(
-                lambda x: x.state != 'cancelled'
-            )
+            active_internships = student.internship_ids.filtered(lambda i: i.state != 'cancelled')
             if active_internships:
                 total_progress = sum(active_internships.mapped('completion_percentage'))
                 student.completion_rate = total_progress / len(active_internships)
             else:
                 student.completion_rate = 0.0
 
-    internship_count = fields.Integer(
-        string='Number of Internships',
-        compute='_compute_internship_count',
-        store=True,
-        help="Total number of internships for this student"
-    )
-
-    average_grade = fields.Float(
-        string='Average Grade',
-        compute='_compute_average_grade',
-        digits=(4, 2),
-        help="Average grade across all completed internships"
-    )
-
-    completion_rate = fields.Float(
-        string='Completion Rate',
-        compute='_compute_completion_rate',
-        help="Overall completion rate of all internships"
-    )
-
     # ===============================
-    # TECHNICAL FIELDS
+    # CHAMPS TECHNIQUES
     # ===============================
 
     active = fields.Boolean(
         default=True,
-        string='Active',
-        help="Whether this student record is active"
+        string='Actif',
+        help="Indique si cet enregistrement d'étudiant est actif."
     )
 
     # ===============================
-    # CONSTRAINTS AND VALIDATIONS
+    # CONTRAINTES ET VALIDATIONS
     # ===============================
-
-    @api.constrains('email')
-    def _check_email_format(self):
-        """Validate email format using proper regex pattern."""
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        for student in self:
-            if student.email and not re.match(email_pattern, student.email):
-                raise ValidationError(_("Please enter a valid email address format."))
-
-    @api.constrains('phone')
-    def _check_phone_format(self):
-        """Validate phone number format."""
-        phone_pattern = r'^\+?[\d\s\-\(\)]{8,20}$'
-        for student in self:
-            if student.phone and not re.match(phone_pattern, student.phone):
-                raise ValidationError(_("Please enter a valid phone number format."))
 
     @api.constrains('birth_date')
     def _check_birth_date(self):
-        """Ensure birth date is reasonable (not in future, not too old)."""
-        from datetime import date, timedelta
-        today = date.today()
-        min_date = today - timedelta(days=365 * 80)  # 80 years ago
-
+        """Vérifie que la date de naissance est plausible."""
         for student in self:
-            if student.birth_date:
-                if student.birth_date > today:
-                    raise ValidationError(_("Birth date cannot be in the future."))
-                if student.birth_date < min_date:
-                    raise ValidationError(_("Please verify the birth date."))
+            if student.birth_date and student.birth_date > fields.Date.today():
+                raise ValidationError(_("La date de naissance ne peut pas être dans le futur."))
+
+    # NOTE: Les contraintes sur l'email et le numéro de téléphone ne sont plus nécessaires ici
+    # car ces champs sont maintenant liés au modèle res.users, qui a ses propres validations.
 
     _sql_constraints = [
-        ('unique_email', 'UNIQUE(email)',
-         'This email address is already registered by another student.'),
         ('unique_user_id', 'UNIQUE(user_id)',
-         'This user account is already associated with another student.'),
+         'Ce compte utilisateur est déjà associé à un autre étudiant.'),
         ('unique_student_id', 'UNIQUE(student_id_number)',
-         'This student ID number is already in use.'),
+         'Ce numéro d\'étudiant est déjà utilisé.'),
     ]
 
     # ===============================
-    # CRUD METHODS
+    # MÉTHODES CRUD (Create, Read, Update, Delete)
     # ===============================
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create method with logging and validation."""
-        _logger.info(f"Creating {len(vals_list)} student record(s)")
+        """Surcharge de la méthode 'create' pour la journalisation et la création automatique d'utilisateurs."""
+        _logger.info(f"Création de {len(vals_list)} enregistrement(s) étudiant(s)")
 
         for vals in vals_list:
-            # Auto-generate user account if email provided
+            # Crée automatiquement un compte utilisateur si un email est fourni et qu'aucun utilisateur n'est lié
             if vals.get('email') and not vals.get('user_id'):
                 user_vals = {
-                    'name': vals.get('full_name', 'Student'),
+                    'name': vals.get('full_name', 'Étudiant'),
                     'login': vals['email'],
                     'email': vals['email'],
                     'groups_id': [(4, self.env.ref('internship_management.group_internship_student').id)]
@@ -274,73 +266,41 @@ class InternshipStudent(models.Model):
                 try:
                     user = self.env['res.users'].create(user_vals)
                     vals['user_id'] = user.id
-                    _logger.info(f"Created user account for student: {vals['email']}")
+                    _logger.info(f"Compte utilisateur créé pour l'étudiant : {vals['email']}")
+                except errors.UniqueViolation:
+                    _logger.warning(f"Un utilisateur avec l'email {vals['email']} existe déjà.")
+                    # Vous pourriez ici rechercher l'utilisateur existant et le lier
                 except Exception as e:
-                    _logger.warning(f"Could not create user account: {e}")
+                    _logger.error(f"Impossible de créer le compte utilisateur : {e}")
+
+        # On ne veut pas stocker l'email technique
+        for vals in vals_list:
+            vals.pop('email', None)
 
         return super().create(vals_list)
 
-    def write(self, vals):
-        """Override write method with logging."""
-        if 'active' in vals:
-            action = "activated" if vals['active'] else "deactivated"
-            _logger.info(f"Student {self.full_name} {action}")
-
-        return super().write(vals)
-
     # ===============================
-    # BUSINESS METHODS
+    # MÉTHODES MÉTIER
     # ===============================
 
     def action_view_internships(self):
-        """Open student's internships in a dedicated view."""
+        """Ouvre la liste des stages de l'étudiant dans une nouvelle vue."""
         self.ensure_one()
         return {
-            'name': f'Internships - {self.full_name}',
+            'name': _('Stages - %s') % self.full_name,
             'type': 'ir.actions.act_window',
             'res_model': 'internship.stage',
             'view_mode': 'tree,form,kanban',
             'domain': [('student_id', '=', self.id)],
             'context': {'default_student_id': self.id},
-            'target': 'current',
-        }
-
-    def action_send_welcome_email(self):
-        """Send welcome email to student."""
-        self.ensure_one()
-        if not self.email:
-            raise ValidationError(_("Student must have an email address to send welcome email."))
-
-        # TODO: Implement email template
-        _logger.info(f"Welcome email sent to {self.full_name} at {self.email}")
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _("Welcome Email Sent"),
-                'message': f"Welcome email sent to {self.full_name}",
-                'type': 'success',
-            }
-        }
-
-    def get_student_statistics(self):
-        """Return statistical data for this student."""
-        self.ensure_one()
-        return {
-            'total_internships': self.internship_count,
-            'average_grade': self.average_grade,
-            'completion_rate': self.completion_rate,
-            'active_internships': len(self.internship_ids.filtered(lambda x: x.state == 'in_progress')),
-            'completed_internships': len(self.internship_ids.filtered(lambda x: x.state in ['completed', 'evaluated'])),
         }
 
     # ===============================
-    # UTILITY METHODS
+    # MÉTHODES UTILITAIRES
     # ===============================
 
     def name_get(self):
-        """Custom name display: Full Name (Institution)."""
+        """Affichage personnalisé du nom : Nom Complet (Établissement)."""
         result = []
         for student in self:
             name = student.full_name
@@ -350,15 +310,13 @@ class InternshipStudent(models.Model):
         return result
 
     @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
-        """Custom search: search by name, email, or student ID."""
+    def _name_search(self, name='', args=None, operator='ilike', limit=100, order=None):
+        """Recherche personnalisée : par nom, e-mail ou numéro d'étudiant."""
         args = args or []
         domain = []
-
         if name:
             domain = ['|', '|',
                       ('full_name', operator, name),
-                      ('email', operator, name),
+                      ('email_from_user', operator, name),
                       ('student_id_number', operator, name)]
-
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
+        return self._search(domain + args, limit=limit, order=order)

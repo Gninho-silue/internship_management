@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vue liste (tree) pour les compétences -->
+        <record id="view_internship_skill_tree" model="ir.ui.view">
+            <field name="name">internship.skill.tree</field>
+            <field name="model">internship.skill</field>
+            <field name="arch" type="xml">
+                <tree string="Compétences" multi_edit="1">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="category"/>
+                    <field name="level_required"/>
+                    <field name="difficulty_level"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue formulaire pour les compétences -->
+        <record id="view_internship_skill_form" model="ir.ui.view">
+            <field name="name">internship.skill.form</field>
+            <field name="model">internship.skill</field>
+            <field name="arch" type="xml">
+                <form string="Compétence">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="Nom de la compétence"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="category"/>
+                                <field name="level_required"/>
+                                <field name="difficulty_level"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Certification">
+                                <field name="is_certification"/>
+                                <field name="certification_provider" invisible="is_certification == False"/>
+                                <field name="certification_validity_months" invisible="is_certification == False"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Description">
+                                <group>
+                                    <field name="description" nolabel="1" placeholder="Description détaillée..."/>
+                                </group>
+                            </page>
+                            <page string="Prérequis">
+                                <group>
+                                    <field name="prerequisite_skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="prerequisites" placeholder="Autres prérequis non listés..."/>
+                                </group>
+                            </page>
+                            <page string="Domaines Liés">
+                                <field name="related_area_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue kanban pour les compétences -->
+        <record id="view_internship_skill_kanban" model="ir.ui.view">
+            <field name="name">internship.skill.kanban</field>
+            <field name="model">internship.skill</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="category" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="category"/>
+                    <field name="level_required"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_details">
+                                    <strong><field name="name"/></strong>
+                                    <div>
+                                        <span class="badge text-bg-primary">
+                                            <field name="level_required"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Action du menu pour les compétences -->
+        <record id="action_internship_skill_list" model="ir.actions.act_window">
+            <field name="name">Compétences</field>
+            <field name="res_model">internship.skill</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez votre première compétence
+                </p>
+                <p>
+                    Gérez toutes les compétences disponibles pour les programmes de stage.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

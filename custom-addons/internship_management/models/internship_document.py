@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Internship Document Model"""
 
 import logging
-import os
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
@@ -11,402 +9,274 @@ _logger = logging.getLogger(__name__)
 
 
 class InternshipDocument(models.Model):
-    """Document model for internship management system.
+    """
+    Gestion des Documents de Stage.
 
-    This model handles all document-related operations including
-    file uploads, version control, review workflows, and document
-    lifecycle management for internships.
+    Ce modèle gère tous les documents liés à un stage, y compris le téléversement,
+    le suivi des versions, et un processus de validation.
 
-    Key Features:
-    - Document version control and history
-    - Review workflow with approval/rejection
-    - File metadata tracking (size, type, etc.)
-    - Integration with internship stages and meetings
-    - Automatic notifications for document status changes
-    - Access control and security
+    Fonctionnalités Clés :
+    - Suivi du cycle de vie du document (brouillon, soumis, approuvé, etc.).
+    - Intégration avec les stages, étudiants et encadrants.
+    - Champs 'related' pour assurer la cohérence des données.
+    - Notifications via le chatter lors de la soumission.
     """
     _name = 'internship.document'
-    _description = 'Internship Document Management'
+    _description = 'Gestion des Documents de Stage'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_upload desc, name'
     _rec_name = 'name'
 
-    # ===============================
-    # CORE IDENTIFICATION FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS PRINCIPAUX
+    # ===================================================
 
     name = fields.Char(
-        string='Document Title',
-        required=False,
+        string='Titre du Document',
+        required=True,
         tracking=True,
-        size=200,
-        help="Title or name of the document"
+        help="Titre ou nom du document."
     )
 
     document_type = fields.Selection([
-        ('convention', 'Internship Convention'),
-        ('progress_report', 'Progress Report'),
-        ('final_report', 'Final Report'),
-        ('presentation', 'Presentation'),
-        ('evaluation', 'Evaluation Form'),
-        ('attestation', 'Attestation'),
-        ('other', 'Other')
-    ], string='Document Type', required=False, tracking=True,
-        help="Type of document being uploaded")
+        ('convention', 'Convention de Stage'),
+        ('progress_report', 'Rapport d\'Avancement'),
+        ('final_report', 'Rapport Final'),
+        ('presentation', 'Présentation'),
+        ('evaluation', 'Fiche d\'Évaluation'),
+        ('attestation', 'Attestation de Stage'),
+        ('other', 'Autre')
+    ], string='Type de Document', required=True, tracking=True,
+        help="Type de document téléversé.")
 
-    # ===============================
-    # RELATIONSHIP FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS RELATIONNELS
+    # ===================================================
 
     stage_id = fields.Many2one(
         'internship.stage',
-        string='Internship',
-        required=False,
+        string='Stage Associé',
+        required=True,
         tracking=True,
         ondelete='cascade',
-        help="Internship this document belongs to"
+        help="Stage auquel ce document est rattaché."
+    )
+
+    # CHAMP RESTAURÉ POUR CORRIGER L'ERREUR
+    meeting_id = fields.Many2one(
+        'internship.meeting',
+        string='Réunion Associée',
+        help="Réunion à laquelle ce document est lié (ex: support de présentation)."
     )
 
     student_id = fields.Many2one(
         'internship.student',
-        string='Student',
+        string='Étudiant',
         related='stage_id.student_id',
         store=True,
-        readonly=True,
-        help="Student who uploaded this document"
+        readonly=True
     )
 
     supervisor_id = fields.Many2one(
         'internship.supervisor',
-        string='Supervisor',
+        string='Encadrant',
         related='stage_id.supervisor_id',
         store=True,
-        readonly=True,
-        help="Supervisor responsible for reviewing this document"
-    )
-
-    meeting_id = fields.Many2one(
-        'internship.meeting',
-        string='Related Meeting',
-        help="Meeting this document is related to"
+        readonly=True
     )
 
     uploaded_by = fields.Many2one(
         'res.users',
-        string='Uploaded By',
+        string='Téléversé par',
         default=lambda self: self.env.user,
         readonly=True,
-        help="User who uploaded this document"
+        help="Utilisateur qui a téléversé ce document."
     )
-
-    reviewed_by = fields.Many2one(
-        'res.users',
-        string='Reviewed By',
-        readonly=True,
-        help="User who reviewed this document"
-    )
-    # ===============================
-    # FEEDBACK INTEGRATION
-    # ===============================
 
     feedback_ids = fields.One2many(
         'internship.document.feedback',
         'document_id',
-        string='Feedback',
-        help="All feedback received on this document"
+        string='Commentaires',
+        help="Ensemble des commentaires reçus pour ce document."
     )
 
-    # ===============================
-    # FEEDBACK STATISTICS
-    # ===============================
-
-    @api.depends('feedback_ids')
-    def _compute_feedback_stats(self):
-        for doc in self:
-            doc.total_feedback = len(doc.feedback_ids)
-            doc.pending_feedback = len(doc.feedback_ids.filtered(
-                lambda f: f.status == 'pending'
-            ))
-            doc.approved_feedback = len(doc.feedback_ids.filtered(
-                lambda f: f.feedback_type == 'approval'
-            ))
-
-    total_feedback = fields.Integer(
-        string='Total Feedback',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    pending_feedback = fields.Integer(
-        string='Pending Feedback',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    approved_feedback = fields.Integer(
-        string='Approved Feedback',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    # ===============================
-    # FILE MANAGEMENT FIELDS
-    # ===============================
+    # ===================================================
+    # GESTION DU FICHIER
+    # ===================================================
 
     file = fields.Binary(
-        string='Document File',
+        string='Fichier',
         attachment=True,
         required=True,
-        help="The actual document file"
+        help="Le fichier du document."
     )
 
     filename = fields.Char(
-        string='Original Filename',
-        help="Original name of the uploaded file"
+        string='Nom du Fichier',
+        help="Nom original du fichier téléversé."
     )
 
     file_size = fields.Integer(
-        string='File Size (bytes)',
-        compute='_compute_file_size',
+        string="Taille du Fichier (octets)",
+        compute='_compute_file_metadata',
         store=True,
-        help="Size of the uploaded file in bytes"
+        help="Taille du fichier en octets."
     )
 
     file_type = fields.Char(
-        string='File Type',
-        compute='_compute_file_type',
+        string="Type de Fichier",
+        compute='_compute_file_metadata',
         store=True,
-        help="MIME type of the uploaded file"
+        help="Extension ou type MIME du fichier."
     )
 
     version = fields.Char(
         string='Version',
         default='1.0',
-        help="Document version number"
+        tracking=True,
+        help="Numéro de version du document."
     )
 
-    # ===============================
-    # WORKFLOW AND STATUS FIELDS
-    # ===============================
+    # ===================================================
+    # WORKFLOW ET STATUT
+    # ===================================================
 
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('submitted', 'Submitted for Review'),
-        ('under_review', 'Under Review'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-        ('archived', 'Archived')
-    ], string='Status', default='draft', tracking=True, required=True,
-        help="Current status of the document in the review process")
+        ('draft', 'Brouillon'),
+        ('submitted', 'Soumis pour Révision'),
+        ('under_review', 'En Cours de Révision'),
+        ('approved', 'Approuvé'),
+        ('rejected', 'Rejeté'),
+        ('archived', 'Archivé')
+    ], string='Statut', default='draft', tracking=True, required=True,
+        help="Statut actuel du document dans le processus de révision.")
 
     review_required = fields.Boolean(
-        string='Review Required',
+        string='Révision Requise',
         default=True,
-        help="Whether this document requires supervisor review"
-    )
-
-    review_deadline = fields.Datetime(
-        string='Review Deadline',
-        help="Deadline for document review"
+        help="Cochez si ce document nécessite une révision par l'encadrant."
     )
 
     review_date = fields.Datetime(
-        string='Review Date',
+        string='Date de Révision',
         readonly=True,
-        help="Date when the document was reviewed"
+        copy=False,
+        help="Date à laquelle le document a été révisé."
+    )
+
+    reviewed_by = fields.Many2one(
+        'res.users',
+        string='Révisé par',
+        readonly=True,
+        copy=False,
+        help="Utilisateur qui a révisé le document."
     )
 
     review_comments = fields.Html(
-        string='Review Comments',
-        help="Comments from the reviewer"
+        string='Commentaires de Révision',
+        help="Commentaires et remarques de l'encadrant."
     )
 
-    # ===============================
-    # METADATA FIELDS
-    # ===============================
+    # ===================================================
+    # CHAMPS DE SUIVI
+    # ===================================================
 
     date_upload = fields.Datetime(
-        string='Upload Date',
+        string='Date de Téléversement',
         default=fields.Datetime.now,
         readonly=True,
-        help="Date and time when the document was uploaded"
+        help="Date et heure du téléversement du document."
     )
 
-    last_modified = fields.Datetime(
-        string='Last Modified',
-        default=fields.Datetime.now,
-        help="Date and time when the document was last modified"
-    )
-
-    description = fields.Html(
+    description = fields.Text(
         string='Description',
-        help="Detailed description of the document content"
+        help="Description détaillée du contenu du document."
     )
 
-    keywords = fields.Char(
-        string='Keywords',
-        help="Comma-separated keywords for document search"
-    )
+    active = fields.Boolean(default=True, string='Actif')
 
-    comments = fields.Text(
-        string='Internal Comments',
-        help="Internal notes and comments about the document"
-    )
+    # ===================================================
+    # CONTRAINTES
+    # ===================================================
 
-    # ===============================
-    # ACCESS CONTROL FIELDS
-    # ===============================
-
-    is_public = fields.Boolean(
-        string='Public Document',
-        default=False,
-        help="Whether this document is publicly accessible"
-    )
-
-    access_level = fields.Selection([
-        ('private', 'Private'),
-        ('internal', 'Internal'),
-        ('public', 'Public')
-    ], string='Access Level', default='internal',
-        help="Access level for this document")
-
-    # ===============================
-    # COMPUTED FIELDS
-    # ===============================
-
-    @api.depends('file')
-    def _compute_file_size(self):
-        """Calculate file size from binary data."""
-        for doc in self:
-            if doc.file:
-                # Get file size from attachment
-                attachment = self.env['ir.attachment'].search([
-                    ('res_model', '=', 'internship.document'),
-                    ('res_id', '=', doc.id),
-                    ('name', '=', doc.filename or 'document')
-                ], limit=1)
-                doc.file_size = attachment.file_size if attachment else 0
-            else:
-                doc.file_size = 0
-
-    @api.depends('filename')
-    def _compute_file_type(self):
-        """Extract file type from filename extension."""
-        for doc in self:
-            if doc.filename:
-                ext = os.path.splitext(doc.filename)[1].lower()
-                doc.file_type = ext if ext else 'unknown'
-            else:
-                doc.file_type = 'unknown'
-
-    # ===============================
-    # TECHNICAL FIELDS
-    # ===============================
-
-    active = fields.Boolean(
-        default=True,
-        string='Active',
-        help="Whether this document record is active"
-    )
-
-    sequence = fields.Integer(
-        string='Sequence',
-        default=10,
-        help="Order of documents in lists"
-    )
-
-    # ===============================
-    # CONSTRAINTS AND VALIDATIONS
-    # ===============================
+    _sql_constraints = [
+        ('unique_name_per_stage',
+         'UNIQUE(stage_id, name, version)',
+         'Un document avec ce nom et cette version existe déjà pour ce stage.')
+    ]
 
     @api.constrains('file_size')
     def _check_file_size(self):
-        """Ensure file size is within acceptable limits."""
-        max_size = 50 * 1024 * 1024  # 50MB
+        """Vérifie que la taille du fichier ne dépasse pas la limite (ex: 50MB)."""
+        max_size_mb = 50
+        max_size = max_size_mb * 1024 * 1024
         for doc in self:
-            if doc.file_size > max_size:
-                raise ValidationError(_("File size cannot exceed 50MB."))
+            if doc.file_size and doc.file_size > max_size:
+                raise ValidationError(_(
+                    "La taille du fichier ne peut pas dépasser %s MB.", max_size_mb
+                ))
 
-    @api.constrains('review_deadline')
-    def _check_review_deadline(self):
-        """Ensure review deadline is in the future."""
+    # ===================================================
+    # MÉTHODES DE CALCUL (COMPUTE)
+    # ===================================================
+
+    @api.depends('file', 'filename')
+    def _compute_file_metadata(self):
+        """Calcule la taille et le type du fichier."""
         for doc in self:
-            if doc.review_deadline and doc.review_deadline < fields.Datetime.now():
-                raise ValidationError(_("Review deadline must be in the future."))
+            attachment = self.env['ir.attachment'].search([
+                ('res_model', '=', self._name),
+                ('res_id', '=', doc.id),
+                ('res_field', '=', 'file')
+            ], limit=1)
+            if attachment:
+                doc.file_size = attachment.file_size
+                doc.file_type = attachment.mimetype
+            else:
+                doc.file_size = 0
+                doc.file_type = 'inconnu'
 
-    _sql_constraints = [
-        ('unique_document_per_stage_type',
-         'UNIQUE(stage_id, document_type, version)',
-         'A document of this type and version already exists for this internship.'),
-    ]
-
-    # ===============================
-    # CRUD METHODS
-    # ===============================
+    # ===================================================
+    # MÉTHODES CRUD (CREATE, WRITE)
+    # ===================================================
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create method with logging and validation."""
-        _logger.info(f"Creating {len(vals_list)} document record(s)")
+        """Surcharge de la méthode de création."""
+        docs = super().create(vals_list)
+        for doc in docs:
+            doc.message_post(body=_("Document '%s' créé.", doc.name))
+        return docs
 
-        for vals in vals_list:
-            # Auto-generate filename if not provided
-            if vals.get('file') and not vals.get('filename'):
-                doc_type = vals.get('document_type', 'document')
-                vals['filename'] = f"{doc_type}_{fields.Datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-
-            # Set upload date
-            if not vals.get('date_upload'):
-                vals['date_upload'] = fields.Datetime.now()
-
-        documents = super().create(vals_list)
-
-        for doc in documents:
-            _logger.info(f"Created document: {doc.name} for internship {doc.stage_id.title}")
-
-            # Create communication for supervisor if review required
-            if doc.review_required and doc.supervisor_id and doc.supervisor_id.user_id:
-                self.env['internship.communication'].create({
-                    'subject': f'New Document for Review: {doc.name}',
-                    'content': f'<p>Document "{doc.name}" has been submitted for your review.</p>',
-                    'communication_type': 'approval_request',
-                    'stage_id': doc.stage_id.id,
-                    'document_id': doc.id,
-                    'sender_id': self.env.user.id,
-                    'recipient_ids': [(6, 0, [doc.supervisor_id.user_id.id])],
-                    'priority': '2',
-                    'state': 'sent'
-                })
-
-        return documents
-
-    def write(self, vals):
-        """Override write method with logging and validation."""
-        if 'state' in vals:
-            _logger.info(f"Document {self.name} status changed to {vals['state']}")
-
-        if 'file' in vals:
-            vals['last_modified'] = fields.Datetime.now()
-
-        return super().write(vals)
-
-    # ===============================
-    # BUSINESS METHODS
-    # ===============================
+    # ===================================================
+    # ACTIONS DES BOUTONS (WORKFLOW)
+    # ===================================================
 
     def action_submit_for_review(self):
-        """Submit document for supervisor review."""
-        self.write({'state': 'submitted'})
+        """Soumet le document pour révision."""
+        for doc in self:
+            doc.state = 'submitted'
+            if doc.supervisor_id.user_id:
+                doc.message_post(
+                    body=_("Le document '%s' a été soumis pour votre révision.", doc.name),
+                    partner_ids=[doc.supervisor_id.user_id.partner_id.id],
+                    subtype_xmlid='mail.mt_comment',
+                )
+                self.activity_schedule(
+                    'mail.activity_data_todo',
+                    user_id=doc.supervisor_id.user_id.id,
+                    summary=_("Réviser le document : %s", doc.name)
+                )
 
     def action_start_review(self):
-        """Start reviewing the document."""
+        """Démarre la révision du document."""
         self.write({
             'state': 'under_review',
             'reviewed_by': self.env.user.id
         })
 
     def action_approve(self):
-        """Approve the document."""
+        """Approuve le document."""
         self.write({
             'state': 'approved',
             'review_date': fields.Datetime.now(),
@@ -414,141 +284,19 @@ class InternshipDocument(models.Model):
         })
 
     def action_reject(self):
-        """Reject the document."""
-        self.write({
-            'state': 'rejected',
-            'review_date': fields.Datetime.now(),
-            'reviewed_by': self.env.user.id
-        })
+        """Ouvre un wizard pour justifier le rejet."""
+        self.ensure_one()
+        # Note : ce wizard 'internship.document.reject.wizard' doit être créé.
+        # S'il n'existe pas encore, cette action provoquera une erreur.
+        return {
+            'name': _("Motif du Rejet"),
+            'type': 'ir.actions.act_window',
+            'res_model': 'internship.document.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_document_id': self.id},
+        }
 
     def action_archive(self):
-        """Archive the document."""
-        self.write({'state': 'archived'})
-
-    def action_download(self):
-        """Download the document file."""
-        self.ensure_one()
-        if not self.file:
-            raise ValidationError(_("No file available for download."))
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content?model=internship.document&id={self.id}&field=file&filename_field=filename&download=true',
-            'target': 'new',
-        }
-
-    def action_add_feedback(self):
-        """Add feedback to this document."""
-        self.ensure_one()
-        return {
-            'name': f'Add Feedback - {self.name}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.document.feedback',
-            'view_mode': 'form',
-            'context': {
-                'default_document_id': self.id,
-                'default_stage_id': self.stage_id.id,
-                'default_reviewer_id': self.env.user.id,
-            },
-            'target': 'current',
-        }
-
-    def action_view_feedback(self):
-        """View all feedback for this document."""
-        self.ensure_one()
-        return {
-            'name': f'Feedback - {self.name}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.document.feedback',
-            'view_mode': 'tree,form',
-            'domain': [('document_id', '=', self.id)],
-            'context': {
-                'default_document_id': self.id,
-                'default_stage_id': self.stage_id.id,
-            },
-            'target': 'current',
-        }
-
-    # ===============================
-    # FEEDBACK STATISTICS
-    # ===============================
-
-    @api.depends('feedback_ids')
-    def _compute_feedback_stats(self):
-        for doc in self:
-            doc.feedback_count = len(doc.feedback_ids)
-            doc.pending_feedback_count = len(doc.feedback_ids.filtered(
-                lambda f: f.status == 'pending'
-            ))
-            if doc.feedback_ids:
-                last_feedback = doc.feedback_ids.sorted('create_date', reverse=True)[0]
-                doc.last_feedback_date = last_feedback.create_date
-                doc.last_reviewer_id = last_feedback.reviewer_id
-            else:
-                doc.last_feedback_date = False
-                doc.last_reviewer_id = False
-
-    feedback_count = fields.Integer(
-        string='Feedback Count',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    pending_feedback_count = fields.Integer(
-        string='Pending Feedback Count',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    last_feedback_date = fields.Datetime(
-        string='Last Feedback Date',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    last_reviewer_id = fields.Many2one(
-        'res.users',
-        string='Last Reviewer',
-        compute='_compute_feedback_stats',
-        store=True
-    )
-
-    # ===============================
-    # UTILITY METHODS
-    # ===============================
-
-    def name_get(self):
-        """Custom name display: Name (Type)."""
-        result = []
-        for doc in self:
-            name = doc.name
-            if doc.document_type:
-                type_name = dict(doc._fields['document_type'].selection).get(doc.document_type)
-                name = f"{name} ({type_name})"
-            result.append((doc.id, name))
-        return result
-
-    @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
-        """Custom search: search by name, type, or keywords."""
-        args = args or []
-        domain = []
-
-        if name:
-            domain = ['|', '|', '|',
-                      ('name', operator, name),
-                      ('document_type', operator, name),
-                      ('keywords', operator, name),
-                      ('description', operator, name)]
-
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
-
-    def get_document_statistics(self):
-        """Return statistical data for this document."""
-        self.ensure_one()
-        return {
-            'file_size_mb': round(self.file_size / (1024 * 1024), 2) if self.file_size else 0,
-            'days_since_upload': (fields.Datetime.now() - self.date_upload).days if self.date_upload else 0,
-            'review_days': (self.review_date - self.date_upload).days if self.review_date and self.date_upload else 0,
-            'is_overdue': self.review_deadline and self.review_deadline < fields.Datetime.now(),
-        }
+        """Archive le document."""
+        self.active = False

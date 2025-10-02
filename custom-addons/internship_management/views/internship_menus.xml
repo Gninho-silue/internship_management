@@ -181,7 +181,7 @@
         <menuitem id="menu_internship_presentation_to_review"
                   name="Présentations à Réviser"
                   parent="menu_internship_documents"
-                  action="action_presentations_to_review"
+                  action="action_internship_presentation"
                   sequence="35"
                   groups="group_internship_supervisor"/>
 
@@ -189,7 +189,7 @@
         <menuitem id="menu_internship_presentation_my"
                   name="Mes Présentations"
                   parent="menu_internship_documents"
-                  action="action_my_presentations"
+                  action="action_internship_presentation"
                   sequence="40"
                   groups="group_internship_student"/>
 
@@ -272,6 +272,7 @@
         <menuitem id="menu_internship_templates"
                   name="Modèles de Documents"
                   parent="menu_internship_reports"
+                  action="action_stage_report"
                   sequence="20"
                   groups="group_internship_admin,group_internship_coordinator"/>
 

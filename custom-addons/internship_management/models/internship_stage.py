@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Internship Stage Model"""
+"""
+Modèle pour la gestion des stages (Internship Stage).
+Ce modèle gère le cycle de vie complet d'un stage, de la candidature
+à l'évaluation finale, en incluant le suivi de la progression,
+les évaluations et la gestion documentaire.
+"""
 
 import logging
+from datetime import timedelta
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
@@ -10,71 +16,72 @@ _logger = logging.getLogger(__name__)
 
 
 class InternshipStage(models.Model):
-    """Internship Stage model for managing internship lifecycle.
-
-    This model handles the complete internship process from application
-    to completion, including progress tracking, evaluations, and documentation.
+    """
+    Définit un stage, ses acteurs, son calendrier et son état d'avancement.
+    Hérite de 'mail.thread' et 'mail.activity.mixin' pour intégrer le Chatter
+    et les activités, qui sont les outils standards d'Odoo pour la communication
+    et le suivi des tâches.
     """
     _name = 'internship.stage'
-    _description = 'Internship Management'
+    _description = 'Gestion de Stage'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'start_date desc, title'
     _rec_name = 'title'
 
     # ===============================
-    # CORE IDENTIFICATION FIELDS
+    # CHAMPS D'IDENTIFICATION
     # ===============================
 
     title = fields.Char(
-        string='Internship Title',
+        string='Titre du Stage',
         required=True,
         tracking=True,
-        help="Main subject or title of the internship project"
+        help="Sujet principal ou titre du projet de stage."
     )
 
     reference_number = fields.Char(
-        string='Reference Number',
+        string='Numéro de Référence',
         readonly=True,
         copy=False,
-        default='New',
-        help="Unique reference number for this internship"
+        default='Nouveau',
+        help="Numéro de référence unique pour ce stage."
     )
 
     # ===============================
-    # TYPE AND CLASSIFICATION
+    # CLASSIFICATION
     # ===============================
 
     internship_type = fields.Selection([
-        ('final_project', 'Final Year Project (PFE)'),
-        ('summer_internship', 'Summer Internship'),
-        ('observation_internship', 'Observation Internship'),
-        ('professional_internship', 'Professional Internship')
-    ], string='Internship Type', required=False, tracking=True)
+        ('final_project', 'Projet de Fin d\'Études (PFE)'),
+        ('summer_internship', 'Stage d\'été'),
+        ('observation_internship', 'Stage d\'observation'),
+        ('professional_internship', 'Stage professionnel')
+    ], string='Type de Stage', tracking=True)
 
     # ===============================
-    # RELATIONSHIP FIELDS
+    # CHAMPS RELATIONNELS
     # ===============================
 
     student_id = fields.Many2one(
         'internship.student',
-        string='Student',
+        string='Étudiant(e)',
         tracking=True,
         ondelete='restrict',
-        help="Student assigned to this internship"
+        help="Étudiant(e) assigné(e) à ce stage."
     )
 
     supervisor_id = fields.Many2one(
         'internship.supervisor',
-        string='Supervisor',
+        string='Encadrant(e)',
         tracking=True,
         ondelete='restrict',
-        help="Academic or professional supervisor"
+        help="Encadrant(e) académique ou professionnel."
     )
 
     area_id = fields.Many2one(
         'internship.area',
-        string='Area of Expertise',
-        help="Area of expertise for this internship"
+        string='Domaine d\'Expertise',
+        help="Domaine d'expertise de ce stage."
     )
 
     company_id = fields.Many2one(
@@ -82,31 +89,28 @@ class InternshipStage(models.Model):
         string='Entreprise',
         default=lambda self: self.env.company,
         readonly=True,
-        required=False,
-        help="Entreprise de stage (TechPal par défaut)"
+        help="Entreprise où se déroule le stage."
     )
 
     # ===============================
-    # TIMELINE FIELDS
+    # GESTION DU TEMPS
     # ===============================
 
     start_date = fields.Date(
-        string='Start Date',
-        required=False,
+        string='Date de Début',
         tracking=True,
-        help="Official start date of the internship"
+        help="Date de début officielle du stage."
     )
 
     end_date = fields.Date(
-        string='End Date',
-        required=False,
+        string='Date de Fin',
         tracking=True,
-        help="Official end date of the internship"
+        help="Date de fin officielle du stage."
     )
 
     @api.depends('start_date', 'end_date')
     def _compute_duration_days(self):
-        """Calculate internship duration in days."""
+        """Calcule la durée du stage en jours."""
         for stage in self:
             if stage.start_date and stage.end_date:
                 if stage.end_date >= stage.start_date:
@@ -118,67 +122,71 @@ class InternshipStage(models.Model):
                 stage.duration_days = 0
 
     duration_days = fields.Integer(
-        string='Duration (Days)',
+        string='Durée (Jours)',
         compute='_compute_duration_days',
         store=True,
-        help="Total duration of internship in days"
+        help="Durée totale du stage en jours."
     )
 
     # ===============================
-    # SUBJECT PROPOSAL FIELDS
+    # PROPOSITION DE SUJET
     # ===============================
 
     subject_proposal = fields.Html(
-        string='Subject Proposal',
-        help="Company's proposal for the internship subject (HTML format)"
+        string='Proposition de Sujet',
+        help="Proposition de l'entreprise pour le sujet de stage (format HTML)."
     )
 
     proposal_status = fields.Selection([
-        ('draft', 'Draft'),
-        ('proposed', 'Proposed'),
-        ('accepted', 'Accepted'),
-        ('modifications_requested', 'Modifications Requested'),
-        ('rejected', 'Rejected')
-    ], string='Proposal Status', default='draft', tracking=True,
-        help="Status of the subject proposal")
+        ('draft', 'Brouillon'),
+        ('proposed', 'Proposé'),
+        ('accepted', 'Accepté'),
+        ('modifications_requested', 'Modifications Demandées'),
+        ('rejected', 'Rejeté')
+    ], string='Statut de la Proposition', default='draft', tracking=True,
+        help="Statut de la proposition de sujet.")
 
     proposal_feedback = fields.Html(
-        string='Proposal Feedback',
-        help="Feedback on the subject proposal"
+        string='Feedback sur la Proposition',
+        help="Feedback sur la proposition de sujet."
     )
 
     proposal_date = fields.Datetime(
-        string='Proposal Date',
-        help="Date when the subject was proposed"
+        string='Date de Proposition',
+        help="Date à laquelle le sujet a été proposé."
     )
 
     proposal_accepted_date = fields.Datetime(
-        string='Accepted Date',
-        help="Date when the proposal was accepted"
+        string='Date d\'Acceptation',
+        help="Date à laquelle la proposition a été acceptée."
     )
 
     # ===============================
-    # CONTENT FIELDS
+    # CONTENU DU STAGE
     # ===============================
 
     project_description = fields.Html(
-        string='Project Description',
-        required=False,
-        help="Detailed description of the internship project and context"
+        string='Description du Projet',
+        help="Description détaillée du projet de stage et de son contexte."
     )
 
     learning_objectives = fields.Html(
-        string='Learning Objectives',
-        help="Educational and professional objectives to be achieved"
+        string='Objectifs Pédagogiques',
+        help="Objectifs pédagogiques et professionnels à atteindre."
     )
 
     # ===============================
-    # PROGRESS TRACKING
+    # SUIVI DE LA PROGRESSION
     # ===============================
 
     @api.depends('task_ids.state', 'start_date', 'end_date', 'state')
     def _compute_completion_percentage(self):
-        """Calculate completion percentage based on tasks and timeline."""
+        """
+        Calcule le pourcentage d'achèvement.
+        - Si le stage est terminé ou évalué, le pourcentage est de 100%.
+        - Si des tâches existent, le calcul se base sur le ratio de tâches terminées.
+        - Sinon, il se base sur le temps écoulé par rapport à la durée totale.
+        """
         for stage in self:
             if stage.state in ('completed', 'evaluated'):
                 stage.completion_percentage = 100.0
@@ -188,14 +196,11 @@ class InternshipStage(models.Model):
                 continue
 
             progress_value = 0.0
-
-            # Calculate based on completed tasks if available
             total_tasks = len(stage.task_ids)
             if total_tasks > 0:
                 completed_tasks = len(stage.task_ids.filtered(lambda t: t.state == 'done'))
                 progress_value = (completed_tasks / total_tasks) * 100.0
             else:
-                # Fallback: time-based calculation
                 if stage.start_date and stage.end_date and stage.end_date >= stage.start_date:
                     total_duration = (stage.end_date - stage.start_date).days + 1
                     if total_duration > 0:
@@ -208,704 +213,479 @@ class InternshipStage(models.Model):
                             elapsed_days = (today - stage.start_date).days
                         progress_value = (elapsed_days / total_duration) * 100.0
 
-            # Ensure progress is within 0-100 range
             stage.completion_percentage = max(0.0, min(100.0, round(progress_value, 2)))
 
     completion_percentage = fields.Float(
-        string='Completion %',
+        string='Achèvement %',
         compute='_compute_completion_percentage',
         store=True,
         tracking=True,
-        help="Overall completion percentage of the internship"
+        help="Pourcentage global d'achèvement du stage."
     )
 
     # ===============================
-    # STATE MANAGEMENT
+    # GESTION D'ÉTAT (WORKFLOW)
     # ===============================
 
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('submitted', 'Submitted'),
-        ('approved', 'Approved'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('evaluated', 'Evaluated'),
-        ('cancelled', 'Cancelled')
-    ], string='Status', default='draft', tracking=True, required=False)
+        ('draft', 'Brouillon'),
+        ('submitted', 'Soumis'),
+        ('approved', 'Approuvé'),
+        ('in_progress', 'En Cours'),
+        ('completed', 'Terminé'),
+        ('evaluated', 'Évalué'),
+        ('cancelled', 'Annulé')
+    ], string='Statut', default='draft', tracking=True)
 
     # ===============================
-    # RELATIONSHIP FIELDS
+    # CHAMPS RELATIONNELS (One2many)
     # ===============================
 
     document_ids = fields.One2many(
-        'internship.document',
-        'stage_id',
-        string='Documents',
-        help="All documents related to this internship"
+        'internship.document', 'stage_id', string='Documents',
+        help="Tous les documents liés à ce stage."
+    )
+
+    meeting_ids = fields.One2many(
+        'internship.meeting', 'stage_id', string='Réunions',
+        help="Réunions planifiées pour ce stage."
+    )
+
+    task_ids = fields.One2many(
+        'internship.todo', 'stage_id', string='Tâches',
+        help="Tâches et livrables pour ce stage."
+    )
+
+    presentation_ids = fields.One2many(
+        'internship.presentation', 'stage_id', string='Présentations',
+        help="Présentations de l'étudiant pour la soutenance."
     )
 
     # ===============================
-    # COMMUNICATION INTEGRATION
-    document_feedback_ids = fields.One2many(
-        'internship.document.feedback',
-        'stage_id',
-        string='Document Feedback',
-        help="All feedback on documents for this internship"
-    )
-
+    # STATISTIQUES (CHAMPS CALCULÉS)
     # ===============================
-    # TASK STATISTICS
-    # ===============================
-
 
     @api.depends('task_ids', 'task_ids.state')
     def _compute_task_stats(self):
+        """Calcule les statistiques sur les tâches."""
         for stage in self:
             stage.task_count = len(stage.task_ids)
-            stage.completed_task_count = len(stage.task_ids.filtered(
-                lambda t: t.state == 'done'
-            ))
-            stage.pending_task_count = len(stage.task_ids.filtered(
-                lambda t: t.state in ['todo', 'in_progress']
-            ))
+            stage.completed_task_count = len(stage.task_ids.filtered(lambda t: t.state == 'done'))
+            stage.pending_task_count = len(stage.task_ids.filtered(lambda t: t.state in ['todo', 'in_progress']))
+
+    task_count = fields.Integer(string='Tâches Totales', compute='_compute_task_stats', store=True)
+    completed_task_count = fields.Integer(string='Tâches Terminées', compute='_compute_task_stats', store=True)
+    pending_task_count = fields.Integer(string='Tâches en Attente', compute='_compute_task_stats', store=True)
 
     @api.depends('presentation_ids', 'presentation_ids.status')
     def _compute_presentation_stats(self):
+        """Calcule les statistiques sur les présentations."""
         for stage in self:
             stage.presentation_count = len(stage.presentation_ids)
-            stage.pending_presentation_count = len(stage.presentation_ids.filtered(
-                lambda p: p.status in ['submitted', 'revision_required']
-            ))
+            stage.pending_presentation_count = len(
+                stage.presentation_ids.filtered(lambda p: p.status in ['submitted', 'revision_required']))
 
-    @api.depends('presentation_ids', 'presentation_ids.is_final_version')
+    presentation_count = fields.Integer(string='Nb Présentations', compute='_compute_presentation_stats', store=True)
+    pending_presentation_count = fields.Integer(string='Présentations en Attente',
+                                                compute='_compute_presentation_stats', store=True)
+
+    @api.depends('presentation_ids.status')
     def _compute_final_presentation(self):
+        """Détermine la présentation finale approuvée."""
         for stage in self:
-            final_presentation = stage.presentation_ids.filtered(lambda p: p.is_final_version)
-            stage.final_presentation_id = final_presentation[0] if final_presentation else False
+            approved_presentation = stage.presentation_ids.filtered(lambda p: p.status == 'approved')
+            stage.final_presentation_id = approved_presentation[0] if approved_presentation else False
+
+    final_presentation_id = fields.Many2one(
+        'internship.presentation', string="Présentation Finale Approuvée",
+        compute='_compute_final_presentation', store=True,
+        help="La dernière présentation approuvée pour la soutenance."
+    )
 
     @api.depends('meeting_ids', 'meeting_ids.date')
     def _compute_meeting_stats(self):
+        """Calcule les statistiques sur les réunions."""
         for stage in self:
             stage.meeting_count = len(stage.meeting_ids)
             stage.upcoming_meeting_count = len(stage.meeting_ids.filtered(
                 lambda m: m.date and m.date > fields.Datetime.now()
             ))
 
-    pending_feedback = fields.Integer(
-        string='Pending Feedback',
-        compute='_compute_communication_stats',
-        store=True
-    )
-
-    total_document_feedback = fields.Integer(
-        string='Total Document Feedback',
-        compute='_compute_communication_stats',
-        store=True
-    )
-
-    meeting_ids = fields.One2many(
-        'internship.meeting',
-        'stage_id',
-        string='Meetings',
-        help="Meetings scheduled for this internship"
-    )
-
-    task_ids = fields.One2many(
-        'internship.todo',
-        'stage_id',
-        string='Tasks',
-        help="Tasks and deliverables for this internship"
-    )
-
-    # Task statistics
-    task_count = fields.Integer(
-        string='Total Tasks',
-        compute='_compute_task_stats',
-        store=True
-    )
-
-    completed_task_count = fields.Integer(
-        string='Completed Tasks',
-        compute='_compute_task_stats',
-        store=True
-    )
-
-    pending_task_count = fields.Integer(
-        string='Pending Tasks',
-        compute='_compute_task_stats',
-        store=True
-    )
+    meeting_count = fields.Integer(string='Nb Réunions', compute='_compute_meeting_stats', store=True)
+    upcoming_meeting_count = fields.Integer(string='Réunions à Venir', compute='_compute_meeting_stats', store=True)
 
     # ===============================
-    # EVALUATION FIELDS
+    # ÉVALUATION
     # ===============================
 
-    final_grade = fields.Float(
-        string='Final Grade',
-        digits=(4, 2),
-        help="Final grade for the internship"
-    )
-
-    defense_grade = fields.Float(
-        string='Defense Grade',
-        digits=(4, 2),
-        help="Grade from the defense presentation"
-    )
-
-    evaluation_feedback = fields.Html(
-        string='Evaluation Feedback',
-        help="Detailed feedback from supervisor"
-    )
+    final_grade = fields.Float(string='Note Finale', digits=(4, 2), help="Note finale du stage (sur 20).")
+    defense_grade = fields.Float(string='Note de Soutenance', digits=(4, 2), help="Note de la soutenance (sur 20).")
+    evaluation_feedback = fields.Html(string='Feedback d\'Évaluation', help="Feedback détaillé de l'encadrant(e).")
 
     # ===============================
-    # DEFENSE MANAGEMENT
+    # GESTION DE LA SOUTENANCE
     # ===============================
 
-    defense_date = fields.Datetime(
-        string='Defense Date',
-        help="Scheduled date for defense presentation"
-    )
-
-    defense_location = fields.Char(
-        string='Defense Location',
-        help="Location where the defense will take place"
-    )
-
+    defense_date = fields.Datetime(string='Date de Soutenance', help="Date planifiée pour la soutenance.")
+    defense_location = fields.Char(string='Lieu de la Soutenance', help="Lieu où se déroulera la soutenance.")
     defense_status = fields.Selection([
-        ('scheduled', 'Scheduled'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled')
-    ], string='Defense Status', default='scheduled', tracking=True)
-
-    jury_member_ids = fields.Many2many(
-        'internship.supervisor',
-        string='Jury Members',
-        help="Supervisors assigned as jury members"
-    )
+        ('scheduled', 'Planifiée'),
+        ('in_progress', 'En cours'),
+        ('completed', 'Terminée'),
+        ('cancelled', 'Annulée')
+    ], string='Statut Soutenance', default='scheduled', tracking=True)
+    jury_member_ids = fields.Many2many('internship.supervisor', string='Membres du Jury',
+                                       help="Encadrants assignés comme membres du jury.")
 
     # ===============================
-    # SIGNATURE FIELDS
+    # SIGNATURES
     # ===============================
 
-    supervisor_signature = fields.Binary(
-        string='Supervisor Signature',
-        help='Digital signature of the supervisor'
-    )
-
-    student_signature = fields.Binary(
-        string='Student Signature', 
-        help='Digital signature of the student'
-    )
-
-    jury_signature = fields.Binary(
-        string='Jury Signature',
-        help='Digital signature of the jury president'
-    )
-
-    # PRESENTATION MANAGEMENT
-    presentation_ids = fields.One2many(
-        'internship.presentation',
-        'stage_id',
-        string='Presentations',
-        help="Student presentations for defense"
-    )
-
-    final_presentation_id = fields.Many2one(
-        'internship.presentation',
-        string='Final Presentation',
-        compute='_compute_final_presentation',
-        store=True,
-        help="Final approved presentation for defense"
-    )
-
-    presentation_count = fields.Integer(
-        string='Presentation Count',
-        compute='_compute_presentation_stats',
-        store=True,
-        help="Total number of presentations"
-    )
-
-    pending_presentation_count = fields.Integer(
-        string='Pending Presentations',
-        compute='_compute_presentation_stats',
-        store=True,
-        help="Number of presentations pending review"
-    )
-
-    # Meeting statistics
-    meeting_count = fields.Integer(
-        string='Total Meetings',
-        compute='_compute_meeting_stats',
-        store=True,
-        help="Total number of meetings"
-    )
-
-    upcoming_meeting_count = fields.Integer(
-        string='Upcoming Meetings',
-        compute='_compute_meeting_stats',
-        store=True,
-        help="Number of upcoming meetings"
-    )
+    supervisor_signature = fields.Binary(string='Signature Encadrant(e)',
+                                         help='Signature numérique de l\'encadrant(e).')
+    student_signature = fields.Binary(string='Signature Étudiant(e)', help='Signature numérique de l\'étudiant(e).')
+    jury_signature = fields.Binary(string='Signature Jury', help='Signature numérique du président du jury.')
 
     # ===============================
-    # TECHNICAL FIELDS
+    # CHAMP TECHNIQUE
     # ===============================
 
-    active = fields.Boolean(
-        default=True,
-        string='Active',
-        help="Whether this internship record is active"
-    )
+    active = fields.Boolean(default=True, string='Actif', help="Indique si cet enregistrement de stage est actif.")
 
     # ===============================
-    # CONSTRAINTS AND VALIDATIONS
+    # CONTRAINTES DE VALIDATION
     # ===============================
 
     @api.constrains('start_date', 'end_date')
     def _check_date_consistency(self):
-        """Ensure end date is after start date."""
+        """Vérifie que la date de fin est postérieure à la date de début."""
         for stage in self:
-            if stage.start_date and stage.end_date:
-                if stage.start_date > stage.end_date:
-                    raise ValidationError(_("End date must be after start date."))
+            if stage.start_date and stage.end_date and stage.start_date > stage.end_date:
+                raise ValidationError(_("La date de fin doit être après la date de début."))
 
     @api.constrains('final_grade', 'defense_grade')
     def _check_grade_range(self):
-        """Ensure grades are within valid range (0-20)."""
+        """Vérifie que les notes sont dans une plage valide (0-20)."""
         for stage in self:
             if stage.final_grade and not (0 <= stage.final_grade <= 20):
-                raise ValidationError(_("Final grade must be between 0 and 20."))
+                raise ValidationError(_("La note finale doit être entre 0 et 20."))
             if stage.defense_grade and not (0 <= stage.defense_grade <= 20):
-                raise ValidationError(_("Defense grade must be between 0 and 20."))
+                raise ValidationError(_("La note de soutenance doit être entre 0 et 20."))
 
     # ===============================
-    # CRUD METHODS
+    # MÉTHODES CRUD
     # ===============================
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create method to generate reference numbers."""
+        """Surcharge de la méthode create pour générer les numéros de référence."""
         for vals in vals_list:
-            if vals.get('reference_number', 'New') == 'New':
-                vals['reference_number'] = self.env['ir.sequence'].next_by_code('internship.stage') or 'STG-NEW'
+            if vals.get('reference_number', 'Nouveau') == 'Nouveau':
+                vals['reference_number'] = self.env['ir.sequence'].next_by_code('internship.stage') or 'STG-N/A'
 
         stages = super().create(vals_list)
 
         for stage in stages:
-            _logger.info(f"Created internship: {stage.reference_number} - {stage.title}")
-
-            # Create welcome communication for student
-            if stage.student_id and stage.student_id.user_id:
-                self.env['internship.communication'].create({
-                    'subject': f'New Internship Assigned: {stage.title}',
-                    'content': f'<p>You have been assigned to internship "{stage.title}". Please review the details.</p>',
-                    'communication_type': 'system_notification',
-                    'stage_id': stage.id,
-                    'sender_id': self.env.user.id,
-                    'recipient_ids': [(6, 0, [stage.student_id.user_id.id])],
-                    'priority': '1',
-                    'state': 'sent'
-                })
-
+            _logger.info(f"Stage créé : {stage.reference_number} - {stage.title}")
+            # Notifier l'étudiant via le Chatter
+            if stage.student_id.user_id:
+                stage.message_post(
+                    body=_(
+                        "Bienvenue ! Vous avez été assigné(e) au stage "
+                        "\"<strong>%s</strong>\". Veuillez consulter les détails.",
+                        stage.title
+                    ),
+                    partner_ids=[stage.student_id.user_id.partner_id.id],
+                    message_type='comment',
+                    subtype_xmlid='mail.mt_comment',
+                )
         return stages
 
     # ===============================
-    # BUSINESS METHODS
+    # MÉTHODES MÉTIER (ACTIONS DES BOUTONS)
     # ===============================
 
     def action_submit(self):
-        """Submit internship for approval."""
+        """Soumet le stage pour approbation."""
         self.write({'state': 'submitted'})
 
     def action_approve(self):
-        """Approve internship."""
+        """Approuve le stage."""
         self.write({'state': 'approved'})
 
     def action_start(self):
-        """Start internship."""
+        """Démarre le stage."""
         self.write({'state': 'in_progress'})
 
     def action_complete(self):
-        """Mark internship as completed."""
+        """Marque le stage comme terminé."""
         self.write({'state': 'completed'})
 
     def action_schedule_defense(self):
-        """Schedule defense for completed internship."""
+        """
+        Crée une activité pour l'encadrant afin qu'il planifie la soutenance.
+        """
         self.ensure_one()
         if self.state != 'completed':
-            raise ValidationError(_("Only completed internships can have their defense scheduled."))
+            raise ValidationError(_("Seuls les stages terminés peuvent avoir une soutenance planifiée."))
 
-        # Create communication for defense scheduling
-        self.env['internship.communication'].create({
-            'subject': f'Defense Scheduling Required: {self.title}',
-            'content': f'''
-                <p><strong>Defense Scheduling Required</strong></p>
-                <p>Internship "{self.title}" has been completed and is ready for defense scheduling.</p>
-                <p><strong>Student:</strong> {self.student_id.full_name if self.student_id else 'N/A'}</p>
-                <p><strong>Supervisor:</strong> {self.supervisor_id.name if self.supervisor_id else 'N/A'}</p>
-                <p>Please configure the defense details in the "Defense" tab and assign jury members.</p>
-            ''',
-            'communication_type': 'defense_scheduling',
-            'stage_id': self.id,
-            'sender_id': self.env.user.id,
-            'recipient_ids': [(6, 0, [
-                user_id for user_id in [
-                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
-                ] if user_id
-            ])],
-            'priority': '2',
-            'state': 'sent'
-        })
+        if self.supervisor_id.user_id:
+            self.activity_schedule(
+                'mail.mail_activity_data_todo',
+                summary=_("Planifier la soutenance pour %s", self.title),
+                note=_(
+                    "Le stage est terminé. Veuillez configurer la date, "
+                    "le lieu et les membres du jury dans l'onglet 'Soutenance & Évaluation'."
+                ),
+                user_id=self.supervisor_id.user_id.id,
+            )
 
-        # Just send notification, don't change state
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('Defense Scheduling'),
-                'message': _('Please configure defense details in the Defense tab.'),
+                'title': _('Planification de la Soutenance'),
+                'message': _('Une activité a été créée pour que l\'encadrant(e) configure la soutenance.'),
                 'type': 'info',
             }
         }
 
     def action_evaluate(self):
-        """Mark internship as evaluated."""
+        """Marque le stage comme évalué après vérifications."""
         self.ensure_one()
         if self.state != 'completed':
-            raise ValidationError(_("Only completed internships can be evaluated."))
+            raise ValidationError(_("Seuls les stages terminés peuvent être évalués."))
 
-        # Validate defense configuration before evaluation
-        if not self.defense_date:
-            raise ValidationError(_("Defense date must be set before evaluation."))
+        if not all([self.defense_date, self.jury_member_ids, self.defense_grade, self.final_grade]):
+            raise ValidationError(
+                _("Date de soutenance, membres du jury et notes doivent être renseignés avant d'évaluer."))
 
-        if not self.jury_member_ids:
-            raise ValidationError(_("At least one jury member must be assigned before evaluation."))
+        self.write({'state': 'evaluated', 'defense_status': 'completed'})
 
-        if not self.defense_grade:
-            raise ValidationError(_("Defense grade must be set before evaluation."))
+        # Notifier les parties prenantes via le Chatter
+        partner_ids = []
+        if self.student_id.user_id:
+            partner_ids.append(self.student_id.user_id.partner_id.id)
+        if self.supervisor_id.user_id:
+            partner_ids.append(self.supervisor_id.user_id.partner_id.id)
 
-        if not self.final_grade:
-            raise ValidationError(_("Final grade must be set before evaluation."))
-
-        # Update defense status to completed
-        self.write({
-            'state': 'evaluated',
-            'defense_status': 'completed'
-        })
-
-        # Create communication for evaluation completion
-        self.env['internship.communication'].create({
-            'subject': f'Internship Evaluated: {self.title}',
-            'content': f'''
-                <p><strong>Internship Evaluation Completed</strong></p>
-                <p>Internship "{self.title}" has been fully evaluated.</p>
-                <p><strong>Student:</strong> {self.student_id.full_name if self.student_id else 'N/A'}</p>
-                <p><strong>Defense Grade:</strong> {self.defense_grade}/20</p>
-                <p><strong>Final Grade:</strong> {self.final_grade}/20</p>
-                <p><strong>Defense Date:</strong> {self.defense_date.strftime("%d/%m/%Y %H:%M") if self.defense_date else 'N/A'}</p>
-            ''',
-            'communication_type': 'stage_update',
-            'stage_id': self.id,
-            'sender_id': self.env.user.id,
-            'recipient_ids': [(6, 0, [
-                user_id for user_id in [
-                    self.student_id.user_id.id if self.student_id and self.student_id.user_id else None,
-                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
-                ] if user_id
-            ])],
-            'priority': '1',
-            'state': 'sent'
-        })
+        self.message_post(
+            body=_(
+                "<strong>Évaluation du Stage Terminée</strong><br/>"
+                "Note de Soutenance: <strong>%s/20</strong><br/>"
+                "Note Finale: <strong>%s/20</strong>",
+                self.defense_grade, self.final_grade
+            ),
+            partner_ids=partner_ids,
+            message_type='comment',
+            subtype_xmlid='mail.mt_comment',
+        )
 
     def action_cancel(self):
-        """Cancel internship."""
+        """Annule le stage."""
         if self.state == 'evaluated':
-            raise ValidationError(_("Cannot cancel an evaluated internship."))
+            raise ValidationError(_("Un stage évalué ne peut pas être annulé."))
         self.write({'state': 'cancelled'})
 
     def action_reset_to_draft(self):
-        """Reset internship to draft state."""
+        """Réinitialise le stage à l'état brouillon."""
         if self.state == 'evaluated':
-            raise ValidationError(_("Cannot reset an evaluated internship to draft."))
+            raise ValidationError(_("Un stage évalué ne peut pas être réinitialisé."))
         self.write({'state': 'draft'})
 
     # ===============================
-    # SUBJECT PROPOSAL METHODS
+    # PROPOSITION DE SUJET
     # ===============================
 
     def action_propose_subject(self):
-        """Propose subject to student."""
+        """Propose le sujet à l'étudiant."""
         self.ensure_one()
         if not self.subject_proposal:
-            raise ValidationError(_("Please provide a subject proposal before submitting."))
+            raise ValidationError(_("Veuillez renseigner une proposition de sujet avant de soumettre."))
 
         self.write({
             'proposal_status': 'proposed',
             'proposal_date': fields.Datetime.now(),
-            'state': 'submitted'  # Automatically move to submitted state
+            'state': 'submitted'
         })
 
-        # Create communication notification
-        if self.student_id and self.student_id.user_id:
-            self.env['internship.communication'].create({
-                'subject': f'New Subject Proposal: {self.title}',
-                'content': f'''
-                    <p><strong>New Subject Proposal</strong></p>
-                    <p>You have received a new subject proposal for your internship:</p>
-                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #f9f9f9;">
-                        {self.subject_proposal}
-                    </div>
-                    <p>Please review the proposal and either accept it or request modifications.</p>
-                ''',
-                'communication_type': 'approval_request',
-                'stage_id': self.id,
-                'sender_id': self.env.user.id,
-                'recipient_ids': [(6, 0, [self.student_id.user_id.id])],
-                'priority': '2',
-                'state': 'sent'
-            })
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Subject Proposed'),
-                'message': _('Subject proposal has been sent to the student for review.'),
-                'type': 'success',
-            }
-        }
+        if self.student_id.user_id:
+            self.message_post(
+                body=_(
+                    "<strong>Nouvelle Proposition de Sujet</strong><br/>"
+                    "Veuillez examiner la proposition dans l'onglet 'Proposition de Sujet' et y répondre."
+                ),
+                partner_ids=[self.student_id.user_id.partner_id.id],
+                message_type='comment',
+                subtype_xmlid='mail.mt_comment'
+            )
 
     def action_accept_proposal(self):
-        """Accept the subject proposal."""
+        """Accepte la proposition de sujet."""
         self.ensure_one()
-        if self.proposal_status != 'proposed':
-            raise ValidationError(_("Only proposed subjects can be accepted."))
-
         self.write({
             'proposal_status': 'accepted',
             'proposal_accepted_date': fields.Datetime.now(),
-            'state': 'approved'  # Automatically move to approved state
+            'state': 'approved'
         })
+        self.action_start()  # Démarre automatiquement le stage
 
-        # Automatically start the internship
-        self.action_start()
-
-        # Create communication notification
-        self.env['internship.communication'].create({
-            'subject': f'Subject Proposal Accepted: {self.title}',
-            'content': f'''
-                <p><strong>Subject Proposal Accepted</strong></p>
-                <p>The subject proposal for internship "{self.title}" has been accepted by {self.student_id.full_name if self.student_id else 'the student'}.</p>
-                <p>The internship can now proceed to the next phase.</p>
-            ''',
-            'communication_type': 'approval_request',
-            'stage_id': self.id,
-            'sender_id': self.env.user.id,
-            'recipient_ids': [(6, 0, [
-                user_id for user_id in [
-                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
-                ] if user_id
-            ])],
-            'priority': '3',
-            'state': 'sent'
-        })
+        if self.supervisor_id.user_id:
+            self.message_post(
+                body=_("La proposition de sujet a été <strong>acceptée</strong> par l'étudiant(e)."),
+                partner_ids=[self.supervisor_id.user_id.partner_id.id]
+            )
 
     def action_request_modifications(self):
-        """Request modifications to the subject proposal."""
+        """Demande des modifications sur la proposition."""
         self.ensure_one()
-        if self.proposal_status != 'proposed':
-            raise ValidationError(_("Only proposed subjects can be requested for modifications."))
-
         if not self.proposal_feedback:
-            raise ValidationError(_("Please provide feedback explaining the requested modifications."))
+            raise ValidationError(_("Veuillez fournir un feedback expliquant les modifications demandées."))
 
-        self.write({
-            'proposal_status': 'modifications_requested',
-            'state': 'draft'  # Return to draft state for modifications
-        })
+        self.write({'proposal_status': 'modifications_requested', 'state': 'draft'})
 
-        # Create communication notification
-        self.env['internship.communication'].create({
-            'subject': f'Subject Proposal Modifications Requested: {self.title}',
-            'content': f'''
-                <p><strong>Subject Proposal Modifications Requested</strong></p>
-                <p>The subject proposal for internship "{self.title}" requires modifications.</p>
-                <p><strong>Feedback:</strong></p>
-                <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; background-color: #fff3cd;">
-                    {self.proposal_feedback}
-                </div>
-                <p>Please review the feedback and make the necessary changes.</p>
-            ''',
-            'communication_type': 'approval_request',
-            'stage_id': self.id,
-            'sender_id': self.env.user.id,
-            'recipient_ids': [(6, 0, [
-                user_id for user_id in [
-                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
-                ] if user_id
-            ])],
-            'priority': '1',
-            'state': 'sent'
-        })
+        if self.supervisor_id.user_id:
+            self.message_post(
+                body=_(
+                    "<strong>Modifications Demandées</strong><br/>"
+                    "L'étudiant(e) a demandé des modifications sur la proposition de sujet. "
+                    "Veuillez consulter son feedback dans l'onglet dédié."
+                ),
+                partner_ids=[self.supervisor_id.user_id.partner_id.id]
+            )
 
     def action_reject_proposal(self):
-        """Reject the subject proposal."""
+        """Rejette la proposition de sujet."""
         self.ensure_one()
-        if self.proposal_status not in ['proposed', 'modifications_requested']:
-            raise ValidationError(_("Only proposed or modification-requested subjects can be rejected."))
+        self.write({'proposal_status': 'rejected'})
 
-        self.write({
-            'proposal_status': 'rejected'
-        })
+        if self.supervisor_id.user_id:
+            self.message_post(
+                body=_("La proposition de sujet a été <strong>rejetée</strong>."),
+                partner_ids=[self.supervisor_id.user_id.partner_id.id]
+            )
 
-        # Create communication notification
-        self.env['internship.communication'].create({
-            'subject': f'Subject Proposal Rejected: {self.title}',
-            'content': f'''
-                <p><strong>Subject Proposal Rejected</strong></p>
-                <p>The subject proposal for internship "{self.title}" has been rejected.</p>
-                <p>Please contact the administration for further discussion.</p>
-            ''',
-            'communication_type': 'approval_request',
-            'stage_id': self.id,
-            'sender_id': self.env.user.id,
-            'recipient_ids': [(6, 0, [
-                user_id for user_id in [
-                    self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None
-                ] if user_id
-            ])],
-            'priority': '1',
-            'state': 'sent'
-        })
-
-    def action_open_communications(self):
-        """Open communications for this internship."""
-        self.ensure_one()
-        return {
-            'name': f'Communications - {self.title}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.communication',
-            'view_mode': 'kanban,tree,form',
-            'domain': [('stage_id', '=', self.id)],
-            'context': {
-                'default_stage_id': self.id,
-                'default_sender_id': self.env.user.id,
-            },
-            'target': 'current',
-        }
+    # ===============================
+    # ACTIONS D'OUVERTURE DE VUES
+    # ===============================
 
     def action_create_presentation(self):
-        """Create a new presentation for this internship."""
+        """Ouvre le formulaire pour créer une nouvelle présentation."""
         self.ensure_one()
         return {
-            'name': f'Upload Presentation - {self.title}',
+            'name': _('Téléverser une Présentation - %s', self.title),
             'type': 'ir.actions.act_window',
             'res_model': 'internship.presentation',
             'view_mode': 'form',
             'context': {
                 'default_stage_id': self.id,
-                'default_student_id': self.student_id.id if self.student_id else False,
-                'default_supervisor_id': self.supervisor_id.id if self.supervisor_id else False,
+                'default_student_id': self.student_id.id,
+                'default_supervisor_id': self.supervisor_id.id,
             },
             'target': 'new',
         }
 
-    def action_open_document_feedback(self):
-        """Open document feedback for this internship."""
-        self.ensure_one()
-        return {
-            'name': f'Document Feedback - {self.title}',
-            'type': 'ir.actions.act_window',
-            'res_model': 'internship.document.feedback',
-            'view_mode': 'tree,form',
-            'domain': [('stage_id', '=', self.id)],
-            'context': {
-                'default_stage_id': self.id,
-                'default_reviewer_id': self.env.user.id,
-            },
-            'target': 'current',
-        }
-
-    # ===============================
-    # UTILITY METHODS
-    # ===============================
-
-    def name_get(self):
-        """Custom name display: Reference - Title."""
-        result = []
-        for stage in self:
-            name = f"{stage.reference_number} - {stage.title}"
-            result.append((stage.id, name))
-        return result
-
-    @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
-        """Custom search: search by reference, title, or student name."""
-        args = args or []
-        domain = []
-
-        if name:
-            domain = ['|', '|', '|',
-                      ('title', operator, name),
-                      ('reference_number', operator, name),
-                      ('student_id.full_name', operator, name),
-                      ('project_description', operator, name)]
-
-        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)
-
     def action_create_task(self):
-        """Open form to create a new task for this internship."""
+        """Ouvre le formulaire pour créer une nouvelle tâche."""
         self.ensure_one()
         return {
-            'name': f'Create Task - {self.title}',
+            'name': _('Créer une Tâche - %s', self.title),
             'type': 'ir.actions.act_window',
             'res_model': 'internship.todo',
             'view_mode': 'form',
             'view_id': self.env.ref('internship_management.view_internship_todo_form').id,
             'context': {
                 'default_stage_id': self.id,
-                'default_assigned_to': self.student_id.id if self.student_id else False,
+                'default_assigned_to': self.student_id.id,
             },
             'target': 'new',
         }
 
     def action_open_tasks(self):
-        """Open tasks for this internship."""
+        """Ouvre la liste des tâches de ce stage."""
         self.ensure_one()
         return {
-            'name': f'Tasks - {self.title}',
+            'name': _('Tâches - %s', self.title),
             'type': 'ir.actions.act_window',
             'res_model': 'internship.todo',
             'view_mode': 'kanban,tree,form',
             'domain': [('stage_id', '=', self.id)],
-            'context': {
-                'default_stage_id': self.id,
-                'default_assigned_to': self.student_id.id if self.student_id else False,
-            },
             'target': 'current',
         }
 
     def action_schedule_meeting(self):
-        """Schedule a meeting for this internship."""
+        """Ouvre le formulaire pour planifier une réunion."""
         self.ensure_one()
         return {
-            'name': f'Schedule Meeting - {self.title}',
+            'name': _('Planifier une Réunion - %s', self.title),
             'type': 'ir.actions.act_window',
             'res_model': 'internship.meeting',
             'view_mode': 'form',
             'context': {
                 'default_stage_id': self.id,
-                'default_student_id': self.student_id.id if self.student_id else False,
-                'default_supervisor_id': self.supervisor_id.id if self.supervisor_id else False,
-                'default_organizer_id': self.env.user.id,
-                'default_participant_ids': [(6, 0, [
-                    user_id for user_id in [
-                        self.student_id.user_id.id if self.student_id and self.student_id.user_id else None,
-                        self.supervisor_id.user_id.id if self.supervisor_id and self.supervisor_id.user_id else None,
-                        self.env.user.id
-                    ] if user_id
-                ])],
+                'default_student_id': self.student_id.id,
+                'default_supervisor_id': self.supervisor_id.id,
             },
             'target': 'new',
         }
+
+    # ===============================
+    # TÂCHE AUTOMATISÉE (CRON)
+    # ===============================
+
+    @api.model
+    def _cron_internship_monitoring(self):
+        """
+        Méthode principale appelée par le Cron pour lancer toutes les détections
+        et transformer les problèmes trouvés en Activités.
+        """
+        _logger.info("CRON: Démarrage du suivi des stages...")
+
+        # 1. Détection des tâches en retard (appel de la méthode dédiée)
+        self.env['internship.todo']._cron_detect_overdue_tasks()
+
+        # 2. Détection des stages inactifs
+        fourteen_days_ago = fields.Datetime.now() - timedelta(days=14)
+        inactive_stages = self.search([
+            ('state', '=', 'in_progress'),
+            ('write_date', '<', fourteen_days_ago),
+            ('activity_ids', '=', False)
+        ])
+
+        for stage in inactive_stages:
+            if stage.supervisor_id.user_id:
+                stage.activity_schedule(
+                    'internship_management.activity_type_internship_alert',
+                    summary=_("Stage potentiellement inactif : %s", stage.title),
+                    note=_(
+                        "Aucune modification sur ce stage depuis plus de 14 jours. "
+                        "Un suivi est peut-être nécessaire."
+                    ),
+                    user_id=stage.supervisor_id.user_id.id
+                )
+
+        _logger.info("CRON: Suivi des stages terminé.")
+
+    # ===============================
+    # MÉTHODES UTILITAIRES
+    # ===============================
+
+    def name_get(self):
+        """Affichage personnalisé du nom : [Référence] - Titre."""
+        result = []
+        for stage in self:
+            name = f"[{stage.reference_number}] {stage.title}"
+            result.append((stage.id, name))
+        return result
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None, order=None):
+        """Recherche personnalisée sur la référence, le titre ou le nom de l'étudiant."""
+        args = args or []
+        domain = []
+        if name:
+            domain = ['|', '|',
+                      ('title', operator, name),
+                      ('reference_number', operator, name),
+                      ('student_id.full_name', operator, name)]
+        return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)

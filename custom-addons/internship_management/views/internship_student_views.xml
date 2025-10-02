@@ -2,51 +2,58 @@
 <odoo>
     <data>
 
-        <!-- Vue liste étudiants -->
+        <!-- Vue liste (tree) pour les étudiants (pas de changement ici) -->
         <record id="view_internship_student_tree" model="ir.ui.view">
             <field name="name">internship.student.tree</field>
             <field name="model">internship.student</field>
             <field name="arch" type="xml">
-                <tree string="Students">
+                <tree string="Étudiants">
                     <field name="full_name"/>
-                    <field name="email"/>
+                    <field name="email_from_user"/>
                     <field name="phone"/>
                     <field name="institution"/>
                     <field name="education_level"/>
                     <field name="field_of_study"/>
-                    <field name="internship_count" string="Internships"/>
-                    <field name="average_grade" string="Avg Grade"/>
-                    <field name="active"/>
+                    <field name="internship_count" string="Nb Stages"/>
+                    <field name="average_grade" string="Note Moy."/>
+                    <field name="active" widget="boolean_toggle"/>
                 </tree>
             </field>
         </record>
 
-        <!-- Vue formulaire étudiant -->
+        <!-- Vue formulaire pour un étudiant (CORRIGÉE) -->
         <record id="view_internship_student_form" model="ir.ui.view">
             <field name="name">internship.student.form</field>
             <field name="model">internship.student</field>
             <field name="arch" type="xml">
-                <form string="Student">
+                <form string="Étudiant">
                     <sheet>
-                        <field name="profile_image" widget="image" class="oe_avatar"
-                               options="{'size': [90, 90]}"/>
+                        <field name="profile_image" widget="image" class="oe_avatar"/>
 
                         <div class="oe_title">
                             <h1>
-                                <field name="full_name" placeholder="Full Name"/>
+                                <field name="full_name" placeholder="Nom complet..."/>
                             </h1>
                         </div>
 
                         <group>
-                            <group name="contact" string="Contact Information">
-                                <field name="email"/>
+                            <group name="contact" string="Informations de Contact">
+                                <!--
+                                    CORRECTION ODOO 17: Remplacement de 'attrs' par 'invisible'.
+                                    Le champ 'email' pour la création est visible uniquement si aucun utilisateur n'est encore lié.
+                                    Les autres champs liés à l'utilisateur sont visibles dès qu'un utilisateur est lié.
+                                -->
+                                <field name="email" placeholder="email@exemple.com" invisible="user_id != False"/>
+                                <field name="user_id" readonly="1"
+                                       context="{'form_view_ref':'base.view_users_simple_form'}"
+                                       invisible="user_id == False"/>
+                                <field name="email_from_user" widget="email" invisible="user_id == False"/>
                                 <field name="phone"/>
                                 <field name="birth_date"/>
                                 <field name="linkedin_profile" widget="url"/>
-                                <field name="user_id"/>
                             </group>
 
-                            <group name="academic" string="Academic Information">
+                            <group name="academic" string="Informations Académiques">
                                 <field name="institution"/>
                                 <field name="education_level"/>
                                 <field name="field_of_study"/>
@@ -56,8 +63,8 @@
                         </group>
 
                         <notebook>
-                            <page name="internships" string="Internships">
-                                <field name="internship_ids">
+                            <page name="internships" string="Stages">
+                                <field name="internship_ids" readonly="1">
                                     <tree>
                                         <field name="reference_number"/>
                                         <field name="title"/>
@@ -70,14 +77,13 @@
                                 </field>
 
                                 <group class="oe_subtotal_footer oe_right">
-                                    <field name="internship_count" string="Total Internships"/>
-                                    <field name="average_grade" string="Average Grade"/>
-                                    <field name="completion_rate" string="Completion Rate"
-                                           widget="progressbar"/>
+                                    <field name="internship_count" string="Nombre total de stages"/>
+                                    <field name="average_grade" string="Note moyenne"/>
+                                    <field name="completion_rate" string="Taux de complétion" widget="progressbar"/>
                                 </group>
                             </page>
 
-                            <page name="skills" string="Skills and Interests">
+                            <page name="skills" string="Compétences et Intérêts">
                                 <field name="skill_ids" widget="many2many_tags"/>
                                 <field name="interest_area_ids" widget="many2many_tags"/>
                             </page>
@@ -107,14 +113,14 @@
             </field>
         </record>
 
-        <!-- Vue kanban étudiants -->
+        <!-- Les vues Kanban et Action restent inchangées -->
         <record id="view_internship_student_kanban" model="ir.ui.view">
             <field name="name">internship.student.kanban</field>
             <field name="model">internship.student</field>
             <field name="arch" type="xml">
                 <kanban>
                     <field name="full_name"/>
-                    <field name="email"/>
+                    <field name="email_from_user"/>
                     <field name="institution"/>
                     <field name="education_level"/>
                     <field name="internship_count"/>
@@ -124,7 +130,7 @@
                             <div class="oe_kanban_card oe_kanban_global_click">
                                 <div class="o_kanban_image">
                                     <img t-att-src="kanban_image('internship.student', 'profile_image', record.id.raw_value)"
-                                         alt="Student" class="o_kanban_image_inner_pic"/>
+                                         alt="Étudiant" class="o_kanban_image_inner_pic"/>
                                 </div>
                                 <div class="oe_kanban_details">
                                     <strong class="o_kanban_record_title">
@@ -139,12 +145,12 @@
                                         </div>
                                         <div>
                                             <i class="fa fa-envelope" title="Email"/>
-                                            <field name="email"/>
+                                            <field name="email_from_user"/>
                                         </div>
                                         <div>
-                                            <i class="fa fa-graduation-cap" title="Internships"/>
+                                            <i class="fa fa-graduation-cap" title="Stages"/>
                                             <field name="internship_count"/>
-                                            internships
+                                            stage(s)
                                         </div>
                                     </div>
                                 </div>
@@ -155,17 +161,16 @@
             </field>
         </record>
 
-        <!-- Action liste étudiants -->
         <record id="action_internship_student_list" model="ir.actions.act_window">
-            <field name="name">Students</field>
+            <field name="name">Étudiants</field>
             <field name="res_model">internship.student</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Add your first student!
+                    Ajoutez votre premier étudiant !
                 </p>
                 <p>
-                    Manage student profiles, their skills and internship journey.
+                    Gérez les profils des étudiants, leurs compétences et leur parcours de stage.
                 </p>
             </field>
         </record>
