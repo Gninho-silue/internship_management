@@ -243,40 +243,6 @@ class InternshipTodo(models.Model):
     # NOTIFICATION METHODS
     # ===============================
 
-    def send_overdue_alert(self):
-        """Send overdue alert for this task."""
-        self.ensure_one()
-        if not self.is_overdue or self.alert_sent:
-            return
-
-        # Create communication for overdue alert
-        self.env['internship.communication'].create({
-            'subject': f'⚠️ Task Overdue: {self.name}',
-            'content': f'''
-                <p><strong>Task Overdue Alert</strong></p>
-                <p>Task "{self.name}" is {self.days_overdue} days overdue.</p>
-                <p><strong>Deadline:</strong> {self.deadline.strftime('%Y-%m-%d %H:%M') if self.deadline else 'Not set'}</p>
-                <p><strong>Assigned to:</strong> {self.assigned_to.name if self.assigned_to else 'Not assigned'}</p>
-                <p><strong>Internship:</strong> {self.stage_id.title}</p>
-                <p>Please take action to complete this task as soon as possible.</p>
-            ''',
-            'communication_type': 'alert',
-            'stage_id': self.stage_id.id,
-            'sender_id': self.env.user.id,
-            'recipient_ids': [(6, 0, [
-                self.assigned_to.user_id.id if self.assigned_to and self.assigned_to.user_id else False,
-                self.stage_id.supervisor_id.user_id.id if self.stage_id.supervisor_id and self.stage_id.supervisor_id.user_id else False
-            ])],
-            'priority': '3',  # High priority
-            'state': 'sent'
-        })
-
-        # Update alert status
-        self.write({
-            'alert_sent': True,
-            'last_alert_date': fields.Datetime.now()
-        })
-
     @api.model
     def create(self, vals):
         """Override create to automatically assign tasks based on creator."""

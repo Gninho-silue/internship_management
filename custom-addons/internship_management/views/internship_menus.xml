@@ -24,9 +24,9 @@
                   parent="menu_internship_root"
                   sequence="20"/>
 
-        <!-- Communication Section -->
-        <menuitem id="menu_internship_communication"
-                  name="Communication"
+        <!-- Meeting Section -->
+        <menuitem id="menu_internship_meeting"
+                  name="Planification"
                   parent="menu_internship_root"
                   sequence="30"/>
 
@@ -53,12 +53,6 @@
                   name="Tâches"
                   parent="menu_internship_root"
                   sequence="70"/>
-
-        <!-- Alerts Section -->
-        <menuitem id="menu_internship_alerts"
-                  name="🚨 Alertes"
-                  parent="menu_internship_root"
-                  sequence="80"/>
 
         <!-- ================================= -->
         <!-- INTERNSHIPS SUBMENU -->
@@ -116,13 +110,13 @@
                   groups="group_internship_admin,group_internship_coordinator"/>
 
         <!-- ================================= -->
-        <!-- COMMUNICATION SUBMENU -->
+        <!-- MEETING SUBMENU -->
         <!-- ================================= -->
 
         <!-- All Meetings - Admin et Coordinator -->
         <menuitem id="menu_internship_meeting_all"
                   name="Toutes les Réunions"
-                  parent="menu_internship_communication"
+                  parent="menu_internship_meeting"
                   action="action_internship_meeting_list"
                   sequence="10"
                   groups="group_internship_admin,group_internship_coordinator"/>
@@ -130,26 +124,10 @@
         <!-- Meetings - Supervisor et Student -->
         <menuitem id="menu_internship_meeting_my"
                   name="Réunions"
-                  parent="menu_internship_communication"
+                  parent="menu_internship_meeting"
                   action="action_internship_meeting_my"
                   sequence="15"
                   groups="group_internship_supervisor,group_internship_student"/>
-
-        <!-- Communications - Supervisor et Student -->
-        <menuitem id="menu_internship_communication_my"
-                  name="Communications"
-                  parent="menu_internship_communication"
-                  action="action_internship_communication_my"
-                  sequence="20"
-                  groups="group_internship_supervisor,group_internship_student"/>
-
-        <!-- All Communications - Admin et Coordinator -->
-        <menuitem id="menu_internship_communication_all"
-                  name="Toutes les Communications"
-                  parent="menu_internship_communication"
-                  action="action_internship_communication_list"
-                  sequence="25"
-                  groups="group_internship_admin,group_internship_coordinator"/>
 
         <!-- ================================= -->
         <!-- DOCUMENTS SUBMENU -->
@@ -325,48 +303,6 @@
                   sequence="50"
                   groups="group_internship_admin"/>
 
-        <!-- ================================= -->
-        <!-- ALERTS SUBMENU -->
-        <!-- ================================= -->
-
-        <!-- All Alerts - Admin et Coordinator -->
-        <menuitem id="menu_internship_alerts_all"
-                  name="Toutes les Alertes"
-                  parent="menu_internship_alerts"
-                  action="action_internship_alert"
-                  sequence="10"
-                  groups="group_internship_admin,group_internship_coordinator"/>
-
-        <!-- High Priority Alerts - Admin et Coordinator -->
-        <menuitem id="menu_internship_alerts_high_priority"
-                  name="Alertes Priorité Haute"
-                  parent="menu_internship_alerts"
-                  action="action_internship_alert_high_priority"
-                  sequence="20"
-                  groups="group_internship_admin,group_internship_coordinator"/>
-
-        <!-- My Alerts - Supervisor et Student -->
-        <menuitem id="menu_internship_alerts_my_alerts"
-                  name="Mes Alertes"
-                  parent="menu_internship_alerts"
-                  action="action_internship_alert_my_alerts"
-                  sequence="30"
-                  groups="group_internship_supervisor,group_internship_student"/>
-
-        <!-- Test Actions - Admin uniquement -->
-        <menuitem id="menu_internship_alerts_test"
-                  name="🧪 Test Système d'Alertes"
-                  parent="menu_internship_alerts"
-                  action="action_internship_alert_test"
-                  sequence="40"
-                  groups="group_internship_admin"/>
-
-        <menuitem id="menu_internship_alerts_detection_test"
-                  name="🔍 Lancer Test de Détection"
-                  parent="menu_internship_alerts"
-                  action="action_internship_alert_detection_test"
-                  sequence="50"
-                  groups="group_internship_admin"/>
 
     </data>
 </odoo>

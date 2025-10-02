@@ -318,13 +318,6 @@ class InternshipMeeting(models.Model):
         help="Documents related to this meeting"
     )
 
-    communication_ids = fields.One2many(
-        'internship.communication',
-        'meeting_id',
-        string='Related Communications',
-        help="Communications related to this meeting"
-    )
-
     # ===============================
     # TECHNICAL FIELDS
     # ===============================

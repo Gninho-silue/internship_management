@@ -347,22 +347,6 @@
                                     </tree>
                                 </field>
                             </page>
-
-                            <!-- Meeting Communications Page -->
-                            <page string="Communications" name="communications">
-                                <group string="Meeting Communications">
-                                    <field name="communication_ids" widget="one2many">
-                                        <tree>
-                                            <field name="subject"/>
-                                            <field name="communication_type"/>
-                                            <field name="sender_id"/>
-                                            <field name="priority" widget="priority"/>
-                                            <field name="state"/>
-                                            <field name="create_date"/>
-                                        </tree>
-                                    </field>
-                                </group>
-                            </page>
                         </notebook>
                     </sheet>
 

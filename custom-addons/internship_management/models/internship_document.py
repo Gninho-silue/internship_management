@@ -116,13 +116,6 @@ class InternshipDocument(models.Model):
         help="All feedback received on this document"
     )
 
-    communication_ids = fields.One2many(
-        'internship.communication',
-        'document_id',
-        string='Related Communications',
-        help="Communications related to this document"
-    )
-
     # ===============================
     # FEEDBACK STATISTICS
     # ===============================

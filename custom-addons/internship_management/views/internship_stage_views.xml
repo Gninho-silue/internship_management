@@ -372,34 +372,6 @@
                                             invisible="state != 'evaluated'"/>
                                 </div>
                             </page>
-
-                            <!-- Communications Page -->
-                            <page string="Communications" name="communications">
-                                <group>
-                                    <group string="Communication Statistics">
-                                        <field name="total_communications"/>
-                                        <field name="unread_communications"/>
-                                    </group>
-                                    <group string="Document Feedback Statistics">
-                                        <field name="pending_feedback"/>
-                                        <field name="total_document_feedback"/>
-                                    </group>
-                                </group>
-                                <group string="Recent Communications">
-                                    <field name="communication_ids" widget="one2many">
-                                        <tree>
-                                            <field name="subject"/>
-                                            <field name="communication_type"/>
-                                            <field name="sender_id"/>
-                                            <field name="priority" widget="priority"/>
-                                            <field name="state"/>
-                                            <field name="create_date"/>
-                                        </tree>
-                                    </field>
-                                </group>
-                            </page>
-
-
                         </notebook>
                     </sheet>
 

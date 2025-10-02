@@ -246,15 +246,6 @@ class InternshipStage(models.Model):
 
     # ===============================
     # COMMUNICATION INTEGRATION
-    # ===============================
-
-    communication_ids = fields.One2many(
-        'internship.communication',
-        'stage_id',
-        string='Communications',
-        help="All communications related to this internship"
-    )
-
     document_feedback_ids = fields.One2many(
         'internship.document.feedback',
         'stage_id',
@@ -263,20 +254,9 @@ class InternshipStage(models.Model):
     )
 
     # ===============================
-    # COMMUNICATION STATISTICS
+    # TASK STATISTICS
     # ===============================
 
-    @api.depends('communication_ids', 'document_feedback_ids')
-    def _compute_communication_stats(self):
-        for stage in self:
-            stage.total_communications = len(stage.communication_ids)
-            stage.unread_communications = len(stage.communication_ids.filtered(
-                lambda c: c.state == 'sent' and self.env.user in c.recipient_ids
-            ))
-            stage.pending_feedback = len(stage.document_feedback_ids.filtered(
-                lambda f: f.status == 'pending'
-            ))
-            stage.total_document_feedback = len(stage.document_feedback_ids)
 
     @api.depends('task_ids', 'task_ids.state')
     def _compute_task_stats(self):
@@ -310,18 +290,6 @@ class InternshipStage(models.Model):
             stage.upcoming_meeting_count = len(stage.meeting_ids.filtered(
                 lambda m: m.date and m.date > fields.Datetime.now()
             ))
-
-    total_communications = fields.Integer(
-        string='Total Communications',
-        compute='_compute_communication_stats',
-        store=True
-    )
-
-    unread_communications = fields.Integer(
-        string='Unread Communications',
-        compute='_compute_communication_stats',
-        store=True
-    )
 
     pending_feedback = fields.Integer(
         string='Pending Feedback',

@@ -1,48 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        
-        <!-- Cron for automatic alerts -->
-        <record id="ir_cron_internship_alerts" model="ir.cron">
-            <field name="name">Check internship delays and stagnation</field>
-            <field name="model_id" ref="model_internship_stage"/>
-            <field name="state">code</field>
-            <field name="code">model._check_delays_and_stagnation()</field>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False"/>
-            <field name="active" eval="True"/>
-            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 09:00:00')"/>
-        </record>
 
-        <!-- Cron for task overdue alerts -->
-        <record id="ir_cron_task_overdue_alerts" model="ir.cron">
-            <field name="name">Check overdue tasks and send alerts</field>
-            <field name="model_id" ref="model_internship_todo"/>
-            <field name="state">code</field>
-            <field name="code">model.check_overdue_tasks()</field>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False"/>
-            <field name="active" eval="True"/>
-            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 08:00:00')"/>
-        </record>
-
-        <!-- Cron for intelligent alerts detection -->
-        <record id="ir_cron_intelligent_alerts" model="ir.cron">
-            <field name="name">Detect Intelligent Alerts</field>
-            <field name="model_id" ref="model_internship_alert"/>
-            <field name="state">code</field>
-            <field name="code">model.detect_all_alerts()</field>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False"/>
-            <field name="active" eval="True"/>
-            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 07:00:00')"/>
-        </record>
 
     </data>
 </odoo>

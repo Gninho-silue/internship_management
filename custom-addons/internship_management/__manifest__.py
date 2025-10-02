@@ -59,10 +59,8 @@ Plateforme complète de gestion des stages incluant :
         'views/internship_config_views.xml',
         'views/internship_security_views.xml',
         'views/internship_document_views.xml',
-        'views/internship_communication_views.xml',
         'views/internship_document_feedback_views.xml',
         'views/internship_todo_views.xml',
-        'views/internship_alert_views.xml',
         'views/internship_dashboard_action.xml',  # ← NOUVEAU (OWL)
 
         # Menus
