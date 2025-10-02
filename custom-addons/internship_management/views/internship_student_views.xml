@@ -32,7 +32,9 @@
                                options="{'size': [90, 90]}"/>
 
                         <div class="oe_title">
-                            <h1><field name="full_name" placeholder="Full Name"/></h1>
+                            <h1>
+                                <field name="full_name" placeholder="Full Name"/>
+                            </h1>
                         </div>
 
                         <group>
@@ -99,6 +101,7 @@
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
                         <field name="activity_ids"/>
+                        <field name="message_ids"/>
                     </div>
                 </form>
             </field>
@@ -128,10 +131,21 @@
                                         <field name="full_name"/>
                                     </strong>
                                     <div class="o_kanban_tags_section">
-                                        <div><field name="institution"/></div>
-                                        <div><field name="education_level"/></div>
-                                        <div><i class="fa fa-envelope" title="Email"/> <field name="email"/></div>
-                                        <div><i class="fa fa-graduation-cap" title="Internships"/> <field name="internship_count"/> internships</div>
+                                        <div>
+                                            <field name="institution"/>
+                                        </div>
+                                        <div>
+                                            <field name="education_level"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-envelope" title="Email"/>
+                                            <field name="email"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-graduation-cap" title="Internships"/>
+                                            <field name="internship_count"/>
+                                            internships
+                                        </div>
                                     </div>
                                 </div>
                             </div>
