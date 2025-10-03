@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillStart } from "@odoo/owl";
-import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import {Component, onWillStart, useState} from "@odoo/owl";
+import {registry} from "@web/core/registry";
+import {useService} from "@web/core/utils/hooks";
 
 export class InternshipDashboard extends Component {
     setup() {
@@ -38,9 +38,6 @@ export class InternshipDashboard extends Component {
             totalMeetings: 0,
             upcomingMeetings: 0,
 
-            // Tâches (modèle internship.todo)
-            totalTasks: 0,
-            overdueTasks: 0,
             todayTasks: 0,
             pendingTasks: 0,
 
@@ -126,7 +123,18 @@ export class InternshipDashboard extends Component {
                     documentDomain = [["supervisor_id", "=", supervisorId[0]]];
                     presentationDomain = [["supervisor_id", "=", supervisorId[0]]];
                     todoDomain = [["stage_id.supervisor_id", "=", supervisorId[0]]];
-                    meetingDomain = [["organizer_id", "=", this.env.services.user.userId]];
+                    // Supervisor voit : réunions organisées OU réunions où il participe
+                    const supervisorPartnerId = await this.orm.call("res.users", "read", [
+                        [this.env.services.user.userId],
+                        ["partner_id"]
+                    ]);
+                    const partnerId = supervisorPartnerId[0].partner_id[0];
+
+                    meetingDomain = [
+                        "|",
+                        ["organizer_id", "=", this.env.services.user.userId],
+                        ["partner_ids", "in", [partnerId]]
+                    ];
 
                     // Messages Chatter - utilisateur mentionné ou abonné
                     messageDomain = [["author_id", "!=", this.env.services.user.userId]];
@@ -142,8 +150,13 @@ export class InternshipDashboard extends Component {
                     documentDomain = [["student_id", "=", studentId[0]]];
                     presentationDomain = [["student_id", "=", studentId[0]]];
                     todoDomain = [["stage_id.student_id", "=", studentId[0]]];
-                    meetingDomain = [["participant_ids", "in", [this.env.services.user.userId]]];
-                    
+                    const studentPartnerId = await this.orm.call("res.users", "read", [
+                        [this.env.services.user.userId],
+                        ["partner_id"]
+                    ]);
+                    const partnerId = studentPartnerId[0].partner_id[0];
+
+                    meetingDomain = [["partner_ids", "in", [partnerId]]];
                     // Messages Chatter - étudiant mentionné ou abonné
                     messageDomain = [["author_id", "!=", this.env.services.user.userId]];
 
@@ -228,17 +241,6 @@ export class InternshipDashboard extends Component {
 
             this.state.totalMeetings = await this.orm.call(
                 "internship.meeting", "search_count", [meetingDomain]
-            );
-
-            // Remplacer les communications par les messages Chatter
-            this.state.totalMessages = await this.orm.call(
-                "mail.message", "search_count", [messageDomain]
-            );
-
-            // Messages non lus
-            this.state.unreadMessages = await this.orm.call(
-                "mail.message", "search_count",
-                [messageDomain.concat([["needaction", "=", true]])]
             );
 
             this.state.loading = false;
@@ -358,34 +360,35 @@ export class InternshipDashboard extends Component {
 
     async openMeetings() {
         let domain = [];
+
+        // Récupérer le partner_id de l'utilisateur
+        const userData = await this.orm.call("res.users", "read", [
+            [this.env.services.user.userId],
+            ["partner_id"]
+        ]);
+        const partnerId = userData[0].partner_id[0];
+
         if (this.state.isStudent) {
-            domain = [["participant_ids", "in", [this.env.services.user.userId]]];
+            // Étudiant voit où il participe
+            domain = [["partner_ids", "in", [partnerId]]];
         } else if (this.state.isSupervisor) {
-            domain = [["organizer_id", "=", this.env.services.user.userId]];
+            // Superviseur voit où il organise OU participe
+            domain = [
+                "|",
+                ["organizer_id", "=", this.env.services.user.userId],
+                ["partner_ids", "in", [partnerId]]
+            ];
         }
 
         this.action.doAction({
             type: "ir.actions.act_window",
             res_model: "internship.meeting",
-            views: [[false, "list"], [false, "form"]],
+            views: [[false, "calendar"], [false, "list"], [false, "form"]],
             domain: domain,
             target: "current",
         });
     }
 
-    openMessages() {
-        // Ouvrir les messages Chatter (messages reçus par l'utilisateur)
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "mail.message",
-            views: [[false, "list"], [false, "form"]],
-            domain: [["author_id", "!=", this.env.services.user.userId]],
-            context: {
-                'search_default_my_messages': 1,
-            },
-            target: "current",
-        });
-    }
 }
 
 InternshipDashboard.template = "internship_management.Dashboard";

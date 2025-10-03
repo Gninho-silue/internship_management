@@ -36,23 +36,17 @@
                   parent="menu_internship_root"
                   sequence="40"/>
 
-        <!-- Reports Section -->
-        <menuitem id="menu_internship_reports"
-                  name="Rapports"
+                <!-- Task Section -->
+        <menuitem id="menu_internship_task"
+                  name="Tâches"
                   parent="menu_internship_root"
-                  sequence="50"/>
+                  sequence="70"/>
 
         <!-- Configuration Section -->
         <menuitem id="menu_internship_config"
                   name="Configuration"
                   parent="menu_internship_root"
                   sequence="60"/>
-
-        <!-- Task Section -->
-        <menuitem id="menu_internship_task"
-                  name="Tâches"
-                  parent="menu_internship_root"
-                  sequence="70"/>
 
         <!-- ================================= -->
         <!-- INTERNSHIPS SUBMENU -->
@@ -256,26 +250,6 @@
                   action="action_internship_todo_due_today"
                   sequence="75"
                   groups="group_internship_supervisor"/>
-
-        <!-- ================================= -->
-        <!-- REPORTS SUBMENU -->
-        <!-- ================================= -->
-
-        <!-- Performance Analytics - Admin et Coordinator -->
-        <menuitem id="menu_internship_analytics"
-                  name="Analyses de Performance"
-                  parent="menu_internship_reports"
-                  sequence="10"
-                  groups="group_internship_admin,group_internship_coordinator"/>
-
-        <!-- Document Templates - Admin et Coordinator -->
-        <menuitem id="menu_internship_templates"
-                  name="Modèles de Documents"
-                  parent="menu_internship_reports"
-                  action="action_stage_report"
-                  sequence="20"
-                  groups="group_internship_admin,group_internship_coordinator"/>
-
         <!-- ================================= -->
         <!-- CONFIGURATION SUBMENU -->
         <!-- ================================= -->

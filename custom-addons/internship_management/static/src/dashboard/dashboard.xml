@@ -40,8 +40,12 @@
                                     <t t-else="">Stages Total</t>
                                 </p>
                                 <div class="o_card_details">
-                                    <span><i class="fa fa-check-circle"/> <t t-esc="state.completedInternships"/> Complétés</span>
-                                    <span><i class="fa fa-spinner"/> <t t-esc="state.activeInternships"/> En cours</span>
+                                    <span><i class="fa fa-check-circle"/>
+                                        <t t-esc="state.completedInternships"/>
+                                        Complétés</span>
+                                    <span><i class="fa fa-spinner"/>
+                                        <t t-esc="state.activeInternships"/>
+                                        En cours</span>
                                 </div>
                             </div>
                         </div>
@@ -60,7 +64,8 @@
                                     <t t-else="">Étudiants</t>
                                 </p>
                                 <div class="o_card_details">
-                                    <span><i class="fa fa-graduation-cap"/> Stagiaires actifs</span>
+                                    <span><i class="fa fa-graduation-cap"/>
+                                        Stagiaires actifs</span>
                                 </div>
                             </div>
                         </div>
@@ -75,14 +80,15 @@
                             <div class="o_card_content">
                                 <h3 class="o_card_value" t-esc="state.totalPresentations"/>
                                 <p class="o_card_label">
-                                    <t t-if="state.isStudent">Mes Présentations</t>
-                                    <t t-elif="state.isSupervisor">Présentations à Réviser</t>
-                                    <t t-else="">Présentations</t>
+                                    <t t-if="state.isStudent"> Mes Présentations</t>
+                                    <t t-elif="state.isSupervisor"> Présentations à Réviser</t>
+                                    <t t-else=""> Présentations</t>
                                 </p>
                                 <div class="o_card_details">
-                                    <span><i class="fa fa-clock-o"/> <t t-esc="state.pendingPresentations"/>
-                                        <t t-if="state.isStudent">En attente</t>
-                                        <t t-else="">À réviser</t>
+                                    <span><i class="fa fa-clock-o"/>
+                                        <t t-esc="state.pendingPresentations"/>
+                                        <t t-if="state.isStudent"> En attente</t>
+                                        <t t-else=""> À réviser</t>
                                     </span>
                                 </div>
                             </div>
@@ -102,9 +108,15 @@
                                     <t t-else="">Tâches</t>
                                 </p>
                                 <div class="o_card_details">
-                                    <span><i class="fa fa-warning text-danger"/> <t t-esc="state.overdueTasks"/> En retard</span>
-                                    <span><i class="fa fa-check-circle text-success"/> <t t-esc="state.completedTasks"/> Terminées</span>
-                                    <span><i class="fa fa-calendar"/> <t t-esc="state.todayTasks"/> Aujourd'hui</span>
+                                    <span><i class="fa fa-warning text-danger"/>
+                                        <t t-esc="state.overdueTasks"/>
+                                        En retard</span>
+                                    <span><i class="fa fa-check-circle text-success"/>
+                                        <t t-esc="state.completedTasks"/>
+                                        Terminées</span>
+                                    <span><i class="fa fa-calendar"/>
+                                        <t t-esc="state.todayTasks"/>
+                                        Aujourd'hui</span>
                                 </div>
                             </div>
                         </div>
@@ -171,10 +183,12 @@
                                 <i class="fa fa-user-tie"/>
                                 <span>
                                     <t t-if="state.isSupervisor">
-                                        <t t-esc="state.totalSupervisors"/> Encadrant (Moi)
+                                        <t t-esc="state.totalSupervisors"/>
+                                        Encadrant (Moi)
                                     </t>
                                     <t t-else="">
-                                        <t t-esc="state.totalSupervisors"/> Encadrants
+                                        <t t-esc="state.totalSupervisors"/>
+                                        Encadrants
                                     </t>
                                 </span>
                             </div>
@@ -182,29 +196,13 @@
                                 <i class="fa fa-user-tie"/>
                                 <span>Mon Encadrant</span>
                             </div>
-
-                            <div class="o_quick_stat" t-on-click="openMessages" style="cursor: pointer;">
-                                <i class="fa fa-comments"/>
-                                <span>
-                                    <t t-if="state.isStudent">
-                                        <t t-esc="state.totalMessages"/> Mes Messages
-                                    </t>
-                                    <t t-else="">
-                                        <t t-esc="state.totalMessages"/> Messages Chatter
-                                    </t>
-                                </span>
-                                <t t-if="state.unreadMessages > 0">
-                                    <span class="badge badge-warning"><t t-esc="state.unreadMessages"/> non lus</span>
-                                </t>
-                            </div>
-
                             <div class="o_quick_stat">
                                 <i class="fa fa-hourglass-half"/>
                                 <span>
                                     <t t-esc="state.pendingInternships"/>
-                                    <t t-if="state.isStudent">Mes stages en attente</t>
-                                    <t t-elif="state.isSupervisor">Stages en attente</t>
-                                    <t t-else="">Stages en attente</t>
+                                    <t t-if="state.isStudent"> Mes stages en attente</t>
+                                    <t t-elif="state.isSupervisor"> Stages en attente</t>
+                                    <t t-else=""> Stages en attente</t>
                                 </span>
                             </div>
                         </div>
