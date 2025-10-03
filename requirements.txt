@@ -1,0 +1,28 @@
+# Requirements for Odoo 17 Internship Management System
+# This file contains the Python dependencies needed to run the project
+
+# Core Odoo requirements (from odoo-source/requirements.txt)
+# Note: Use the complete requirements.txt from odoo-source/
+# This file is for reference and quick setup
+
+# Production dependencies
+psycopg2>=2.9.9
+python-dateutil>=2.8.2
+reportlab>=4.1.0
+jinja2>=3.1.2
+werkzeug>=3.0.1
+pillow>=11.1.0
+requests>=2.31.0
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=5.0.0
+
+# System requirements:
+# - Python 3.11+
+# - PostgreSQL 16+
+# - wkhtmltopdf 0.9.6+
+
+# Installation:
+# pip install -r odoo-source/requirements.txt

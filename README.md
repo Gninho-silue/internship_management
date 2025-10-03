@@ -1,265 +1,296 @@
-# 📊 Internship Management System - Status Report
-**TechPal Casablanca - Summer Internship Project**
+# 🎓 Système de Gestion des Stages - TechPal Casablanca
+
+[![Odoo](https://img.shields.io/badge/Odoo-17.0-714B67?style=flat-square&logo=odoo)](https://www.odoo.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python)](https://www.python.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org)
+[![License](https://img.shields.io/badge/License-LGPL--3-blue?style=flat-square)](LICENSE)
+
+> Plateforme complète de gestion des stages développée pour TechPal Casablanca dans le cadre d'un stage d'été 2024-2025.
 
 ---
 
-## 🎯 Executive Summary
+## 📋 Table des Matières
 
-The Internship Management System has **exceeded initial requirements** and is currently at **90% completion**. The project demonstrates professional-level Odoo development with advanced features that go beyond the original specifications.
-
-### 🏆 Key Achievements
-- ✅ **Complete MVP implementation** (All 3 phases)
-- ✅ **Advanced features implemented** (beyond requirements)
-- ✅ **Professional-grade code quality**
-- ✅ **Comprehensive security framework**
-- ✅ **Modern UI/UX design**
-
----
-
-## 📈 Project Completion Status
-
-### ✅ **PHASE 1 - COMPLETED (100%)**
-*Prioritaire: Gestion des utilisateurs, gestion des stages, upload de documents*
-
-| Feature | Status | Implementation Quality |
-|---------|--------|----------------------|
-| User Management & Roles | ✅ Complete | **Advanced** - 4 roles with granular permissions |
-| Authentication System | ✅ Complete | **Professional** - JWT integration ready |
-| Internship Management | ✅ Complete | **Sophisticated** - Full lifecycle management |
-| Document Upload/Management | ✅ Complete | **Advanced** - Version control, review workflow |
-
-### ✅ **PHASE 2 - COMPLETED (100%)**
-*Messagerie interne, notifications, tableau de bord*
-
-| Feature | Status | Implementation Quality |
-|---------|--------|----------------------|
-| Internal Messaging | ✅ Complete | **Professional** - mail.thread integration |
-| Notification System | ✅ Complete | **Advanced** - Email + in-app notifications |
-| Dashboard & Analytics | ✅ Complete | **Sophisticated** - Role-based dashboards |
-| Progress Tracking | ✅ Complete | **Advanced** - Kanban boards, TODO lists |
-
-### 🟡 **PHASE 3 - NEARLY COMPLETE (85%)**
-*Bonus: Statistiques avancées, soutenances, fonctionnalités optionnelles*
-
-| Feature | Status | Implementation Quality |
-|---------|--------|----------------------|
-| Advanced Statistics | ✅ Complete | **Professional** - Comprehensive reporting |
-| Defense Management | ✅ Complete | **Advanced** - Full presentation workflow |
-| LinkedIn Integration | 🔧 **Fixing** | **Issues identified & solutions ready** |
-| Electronic Signature | ⏳ Planned | **To be implemented** |
-| Advanced Search | ⏳ Planned | **To be implemented** |
+- [Vue d'ensemble](#vue-densemble)
+- [Fonctionnalités](#fonctionnalités)
+- [Architecture](#architecture)
+- [Prérequis](#prérequis)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Captures d'écran](#captures-décran)
+- [Technologies](#technologies)
+- [Auteur](#auteur)
 
 ---
 
-## 🚀 What Makes This Project Outstanding
+## 🎯 Vue d'ensemble
 
-### **1. Technical Excellence**
-```python
-# Professional Code Architecture
-- Clean MVC pattern implementation
-- Comprehensive inheritance (mail.thread, mail.activity.mixin)
-- Advanced ORM usage with computed fields and relationships
-- Professional error handling and logging
-- Security-first approach with proper access controls
+Le **Système de Gestion des Stages TechPal** est une solution complète développée sur Odoo 17 permettant de gérer
+l'intégralité du cycle de vie des stages, de la candidature à l'évaluation finale.
+
+### Objectifs du projet
+
+- Centraliser la gestion des stages de TechPal
+- Simplifier la communication entre stagiaires, encadrants et administration
+- Automatiser la génération de documents (conventions, attestations, PV)
+- Assurer un suivi transparent et efficace des stages
+- Fournir des tableaux de bord et statistiques en temps réel
+
+---
+
+## ✨ Fonctionnalités
+
+### 🔐 Gestion des utilisateurs & rôles
+
+- 4 rôles : Admin, Coordinateur, Encadrant, Stagiaire
+- Profils utilisateurs détaillés
+- Sécurité par groupes et règles d'enregistrement
+
+### 📊 Gestion des stages
+
+- Proposition et validation de sujets de stage
+- Affectation automatique des encadrants
+- Suivi de l'avancement (Kanban, To-Do List)
+- Workflow complet : Brouillon → Soumis → Approuvé → En cours → Terminé → Évalué
+
+### 📄 Gestion documentaire
+
+- Upload de documents (CV, rapports, présentations)
+- Workflow de révision et approbation
+- Versioning des documents
+- Système de feedback structuré
+
+### 🎤 Soutenances
+
+- Planification des soutenances
+- Attribution de jury
+- Dépôt et validation de présentations
+- Génération automatique de procès-verbaux
+
+### 📅 Suivi & communication
+
+- Messagerie interne (Chatter Odoo)
+- Système de notifications (email + in-app)
+- Calendrier partagé pour réunions
+- Activités et alertes automatiques
+
+### 📈 Reporting & statistiques
+
+- 5 rapports PDF générés automatiquement :
+    - Convention de stage
+    - Attestation de stage
+    - Procès-verbal de soutenance
+    - Rapport d'évaluation
+    - Rapport de synthèse
+- Dashboard personnalisé par rôle (OWL Component)
+- Statistiques en temps réel
+
+### ✅ Gestion des tâches
+
+- Création et assignation de tâches
+- Suivi de progression
+- Alertes pour tâches en retard
+- Workflow : À faire → En cours → Terminé
+
+---
+
+## 🏗️ Architecture
+
+```
+odoo17-internship/
+├── config/
+│   └── odoo.conf                 # Configuration Odoo
+├── custom-addons/
+│   ├── internship_management/     # Module principal
+│   │   ├── __manifest__.py
+│   │   ├── models/               # Modèles de données
+│   │   │   ├── internship_stage.py
+│   │   │   ├── internship_student.py
+│   │   │   ├── internship_supervisor.py
+│   │   │   ├── internship_document.py
+│   │   │   ├── internship_presentation.py
+│   │   │   ├── internship_meeting.py
+│   │   │   ├── internship_task.py
+│   │   │   ├── internship_area.py
+│   │   │   ├── internship_skill.py
+│   │   │   └── internship_document_feedback.py
+│   │   ├── views/                # Vues XML
+│   │   │   ├── internship_stage_views.xml
+│   │   │   ├── internship_student_views.xml
+│   │   │   ├── internship_supervisor_views.xml
+│   │   │   ├── internship_document_views.xml
+│   │   │   ├── internship_presentation_views.xml
+│   │   │   ├── internship_meeting_views.xml
+│   │   │   ├── internship_todo_views.xml
+│   │   │   ├── internship_area_views.xml
+│   │   │   ├── internship_skill_views.xml
+│   │   │   ├── internship_security_views.xml
+│   │   │   ├── internship_document_feedback_views.xml
+│   │   │   ├── internship_dashboard_action.xml
+│   │   │   └── internship_menus.xml
+│   │   ├── reports/              # Rapports PDF
+│   │   │   ├── internship_report_templates.xml
+│   │   │   ├── internship_reports.xml
+│   │   │   └── internship_reports.py
+│   │   ├── security/             # Sécurité
+│   │   │   ├── internship_security.xml
+│   │   │   └── ir.model.access.csv
+│   │   ├── data/                 # Données initiales
+│   │   │   ├── sequences.xml
+│   │   │   ├── internship_cron.xml
+│   │   │   ├── internship_meeting_mail_templates.xml
+│   │   │   ├── mail_activity_type_data.xml
+│   │   │   └── internship_demo_data.xml
+│   │   ├── static/src/           # Assets frontend
+│   │   │   ├── dashboard/
+│   │   │   │   ├── dashboard.js
+│   │   │   │   ├── dashboard.xml
+│   │   │   │   └── dashboard.scss
+│   │   │   └── scss/
+│   │   └── wizard/               # Assistants
+│   │       └── (modules wizard)
+│   └── internship_theme/         # Module thème personnalisé
+│       ├── __manifest__.py
+│       ├── views/
+│       │   └── login_template.xml
+│       └── static/src/scss/
+│           └── login.scss
+├── docs/                         # Documentation
+│   └── images/
+│       ├── dashboard.png
+│       ├── login_page.png
+│       └── stages_kanban.png
+├── odoo-source/                  # Source Odoo 17
+├── filestore/                    # Stockage fichiers
+├── logs/                         # Logs système
+└── odoo-venv/                    # Environnement virtuel Python
+```
+---
+
+## 💻 Prérequis
+
+- **Python** : 3.11 ou supérieur
+- **PostgreSQL** : 16.x
+- **Odoo** : 17.0
+- **wkhtmltopdf** : 0.12.6 (pour génération PDF)
+- **OS** : Windows 10/11, Ubuntu 20.04+, ou macOS 12+
+
+---
+
+## 🚀 Installation
+
+Voir le guide détaillé : [INSTALLATION.md](INSTALLATION.md)
+
+### Installation rapide
+
+```bash
+# 1. Cloner le projet
+git clone https://github.com/techpal-casablanca/odoo17-internship.git
+cd odoo17-internship
+
+# 2. Créer environnement virtuel
+python -m venv odoo-venv
+odoo-venv\Scripts\activate  # Windows
+# source odoo-venv/bin/activate  # Linux/Mac
+
+# 3. Installer dépendances Odoo
+pip install -r odoo-source/requirements.txt
+
+# 4. Créer base de données PostgreSQL
+createdb -U postgres internship_management_db
+
+# 5. Configuration Odoo
+# Éditer config/odoo.conf selon votre environnement
+
+# 6. Lancer Odoo
+python odoo-source/odoo-bin -c config/odoo.conf
+
+# 7. Installer les modules
+# Interface web : Applications > Rechercher "Gestion des Stages TechPal" > Installer
 ```
 
-### **2. Advanced Features (Beyond Requirements)**
-- **Meeting Management System** - Complete calendar integration
-- **Document Feedback System** - Review and approval workflows  
-- **Alert System** - Automated monitoring and notifications
-- **Presentation Management** - Defense scheduling and evaluation
-- **LinkedIn Integration** - Modern OAuth2 implementation
-- **Professional PDF Reports** - Automated document generation
+### Configuration minimale
 
-### **3. Professional Development Practices**
-- **Modular Architecture** - 15+ specialized models
-- **Comprehensive Security** - Role-based access control (RBAC)
-- **Internationalization Ready** - Multi-language support structure
-- **API Integration** - LinkedIn OAuth2, email templates
-- **Professional UI** - Modern responsive design
+- **Python** : 3.11+
+- **PostgreSQL** : 16+
+- **RAM** : 4 GB minimum
+- **Espace disque** : 5 GB libres
 
 ---
 
-## 🔧 Current Focus: LinkedIn Integration Fix
+## 📚 Documentation
 
-### **Issue Identified**
-The LinkedIn integration has **3 technical issues** that need immediate attention:
-
-1. **OAuth Redirect Error (404)** - API endpoint misconfiguration
-2. **Obsolete API Scopes** - LinkedIn deprecated old permissions
-3. **Template Rendering Error** - Missing variable causing crashes
-
-### **Solution Prepared**
-✅ **Complete fix package ready** with:
-- Updated LinkedIn API v2 controller
-- Modern OAuth scopes (`profile`, `email`, `openid`)
-- Enhanced security features
-- Professional error handling
-- Improved user experience
-
-### **Implementation Timeline**
-- **This Week**: Deploy LinkedIn fixes
-- **Next Week**: Complete electronic signature
-- **Following Week**: Advanced search implementation
+| Type | Format | Description |
+|------|--------|-------------|
+| Guide d'installation | Markdown | Installation complète pas à pas |
+| Guide utilisateur | PDF | Manuel utilisateur complet |
+| Documentation technique | PDF | Architecture et API |
 
 ---
 
-## 💼 Business Impact & Value
+## 📸 Captures d'écran
 
-### **For TechPal**
-- **Showcases Technical Expertise** - Modern Odoo development
-- **Demonstrates Innovation** - LinkedIn integration, advanced workflows
-- **Professional Documentation** - Complete technical documentation
-- **Scalable Solution** - Ready for production deployment
+### Dashboard interactif
+![Dashboard](docs/images/dashboard.png)
 
-### **For Educational Institutions**
-- **Complete Internship Lifecycle** - From application to evaluation
-- **Automated Workflows** - Reduces administrative overhead
-- **Professional Reporting** - Automated document generation
-- **Modern Integration** - LinkedIn profile import capability
+### Gestion des stages (Vue Kanban)
+![Gestion des stages](docs/images/stages_kanban.png)
+
+### Page de connexion personnalisée
+![Login personnalisé](docs/images/login_page.png)
 
 ---
 
-## 🎯 Recommended Next Steps
+## 🛠️ Technologies
 
-### **Immediate (This Week)**
-1. **Deploy LinkedIn Integration Fix**
-   - Implement the prepared solution
-   - Test OAuth flow thoroughly
-   - Verify data import functionality
-
-2. **Code Review & Documentation**
-   - Complete technical documentation
-   - Add inline code comments
-   - Create user manual
-
-### **Short Term (Next 2 Weeks)**
-1. **Electronic Signature Implementation**
-   - Research Odoo sign module integration
-   - Implement digital signature workflow
-   - Test convention signing process
-
-2. **Advanced Search Enhancement**
-   - Implement full-text search
-   - Add filtering capabilities
-   - Create search analytics
-
-### **Medium Term (Preparation for PFE)**
-1. **Performance Optimization**
-   - Database query optimization
-   - Caching strategy implementation
-   - Load testing and optimization
-
-2. **Enterprise Features**
-   - Multi-company support
-   - API endpoints for mobile app
-   - Advanced reporting dashboard
+| Technologie | Version | Usage |
+|-------------|---------|-------|
+| Odoo | 17.0 | Framework ERP |
+| Python | 3.11+ | Backend |
+| PostgreSQL | 16+ | Base de données |
+| JavaScript (OWL) | 17.0 | Frontend components |
+| SCSS | - | Styles |
+| QWeb | 17.0 | Templates XML |
+| wkhtmltopdf | 0.12.6 | Génération PDF |
 
 ---
 
-## 📋 Tuesday Meeting Agenda
+## 👤 Auteur
 
-### **Demonstrate Current Capabilities**
-1. **Live Demo Flow**
-   - Student registration and profile management
-   - Internship creation and assignment
-   - Document upload and review workflow
-   - Meeting scheduling and management
-   - Dashboard and reporting features
+**SILUE**  
+Stagiaire - Développement logiciel  
+TechPal Casablanca - Stage d'été 2024-2025  
 
-2. **Technical Architecture Review**
-   - Show clean code structure
-   - Explain security implementation
-   - Demonstrate professional development practices
-
-### **Present LinkedIn Fix Plan**
-1. **Problem Analysis** - What went wrong and why
-2. **Solution Architecture** - How we're fixing it professionally
-3. **Implementation Timeline** - When it will be completed
-
-### **Discuss PFE Preparation**
-1. **Project Expansion Ideas** - Mobile app, API, advanced features
-2. **Technical Skills Development** - Areas for continued learning
-3. **Portfolio Presentation** - How to showcase this work
+📧 Email : silue@techpal.ma  
+🔗 LinkedIn : [Votre profil LinkedIn]
 
 ---
 
-## 🏆 Success Metrics
+## 📄 Licence
 
-### **Technical Quality Indicators**
-- **Code Quality**: Professional-grade with comprehensive documentation
-- **Security**: Complete RBAC implementation with 60+ access rules
-- **Performance**: Optimized database queries and efficient workflows
-- **Scalability**: Modular architecture supporting enterprise deployment
-
-### **Feature Completeness**
-- **Core Requirements**: 100% implemented
-- **Advanced Features**: 85% completed
-- **Professional Polish**: 90% completed
-
-### **Professional Development**
-- **Odoo Expertise**: Advanced level demonstrated
-- **Python Development**: Professional practices applied
-- **System Architecture**: Clean, scalable design
-- **Problem Solving**: Complex integrations successfully implemented
+Ce projet est sous licence LGPL-3.  
+Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
-## 🎓 Learning Outcomes & Skills Developed
+## 🙏 Remerciements
 
-### **Technical Skills**
-- **Odoo Framework Mastery** - Advanced model development, views, workflows
-- **Python Programming** - Professional code quality, OOP principles
-- **Web Development** - Modern UI/UX, responsive design
-- **API Integration** - OAuth2, REST APIs, third-party services
-- **Database Design** - Complex relationships, optimization
-- **Security Implementation** - Access controls, authentication
-
-### **Professional Skills**
-- **Project Management** - Structured development approach
-- **Documentation** - Comprehensive technical documentation
-- **Problem Solving** - Complex technical issue resolution
-- **Code Quality** - Professional development practices
-- **User Experience** - Modern interface design
+- TechPal Casablanca pour l'opportunité de stage
+- Encadrant TechPal pour l'encadrement et les retours constructifs
+- Communauté Odoo pour la documentation et les ressources
 
 ---
 
-## 🚀 Why This Project Deserves a PFE Opportunity
+## 📞 Support
 
-### **1. Technical Excellence Demonstrated**
-- Complex system architecture successfully implemented
-- Professional-grade code quality and documentation
-- Advanced integrations (LinkedIn, email, PDF generation)
-- Security-first approach with comprehensive access controls
+Pour toute question ou problème :
 
-### **2. Business Value Created**
-- Complete solution addressing real business needs
-- Modern user experience with professional interface
-- Scalable architecture ready for production deployment
-- Innovative features beyond initial requirements
-
-### **3. Professional Growth Shown**
-- Ability to work independently on complex projects
-- Problem-solving skills in challenging technical scenarios
-- Professional development practices and code quality
-- Continuous learning and adaptation to new requirements
-
-### **4. Future Potential**
-- Strong foundation for advanced PFE project
-- Technical skills ready for complex enterprise development
-- Understanding of business requirements and user needs
-- Capability to deliver production-ready solutions
+- 📧 Email : support@techpal.ma
+- 📚 Documentation : [docs/](docs/)
+- 🐛 Issues : [GitHub Issues](../../issues)
 
 ---
 
-## 📞 Conclusion
+Développé avec ❤️ par SILUE pour TechPal Casablanca
 
-The Internship Management System project has successfully demonstrated **professional-level Odoo development capabilities** and **exceeded all initial requirements**. With the LinkedIn integration fix prepared and remaining features planned, this project showcases the technical skills and professional approach expected for a **successful PFE candidacy**.
 
-**Next Tuesday's meeting will be an opportunity to demonstrate this comprehensive solution and discuss the exciting possibilities for an even more advanced PFE project.**
-
----
-
-*Prepared by: SILUE Intern - TechPal Casablanca*  
-*Date: September 23, 2025*  
-*Project Status: 90% Complete - Exceeding Expectations* 🌟
