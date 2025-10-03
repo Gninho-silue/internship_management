@@ -104,8 +104,11 @@
                 <field name="stage_id"/>
                 <field name="organizer_id"/>
                 <field name="partner_ids" string="Participant"/>
+
+                <!-- ✅ FILTRE CORRIGÉ -->
                 <filter string="Mes Réunions" name="my_meetings"
-                        domain="[('partner_ids', 'in', [self.env.user.partner_id.id])]"/>
+                        domain="[('partner_ids.user_ids', 'in', [uid])]"/>
+
                 <filter string="Organisées par Moi" name="organized_by_me"
                         domain="[('organizer_id', '=', uid)]"/>
                 <separator/>
@@ -113,7 +116,8 @@
                 <filter string="Terminées" name="completed" domain="[('state', '=', 'completed')]"/>
                 <separator/>
                 <filter string="Aujourd'hui" name="today"
-                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                             ('date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
                 <filter string="À venir" name="upcoming"
                         domain="[('date', '&gt;=', time.strftime('%Y-%m-%d %H:%M:%S'))]"/>
                 <group expand="0" string="Grouper par">
@@ -216,12 +220,12 @@
     <!-- ================================= -->
 
     <!-- Action pour "Mes Réunions" (pour les participants) -->
+    <!-- ✅ ACTION CORRIGÉE -->
     <record id="action_internship_meeting_my" model="ir.actions.act_window">
         <field name="name">Mes Réunions</field>
         <field name="res_model">internship.meeting</field>
         <field name="view_mode">calendar,kanban,tree,form</field>
-        <!-- CORRECTION: Le domaine utilise maintenant partner_ids et compare avec le partenaire de l'utilisateur -->
-        <field name="domain">[('partner_ids', 'in', [self.env.user.partner_id.id])]</field>
+        <field name="domain">[]</field>
         <field name="context">{'search_default_my_meetings': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -229,6 +233,23 @@
             </p>
             <p>
                 Les réunions auxquelles vous êtes invité(e) apparaîtront ici.
+            </p>
+        </field>
+    </record>
+
+    <!-- ✅ ACTION POUR SUPERVISEUR -->
+    <record id="action_internship_meeting_organized" model="ir.actions.act_window">
+        <field name="name">Réunions que j'organise</field>
+        <field name="res_model">internship.meeting</field>
+        <field name="view_mode">calendar,kanban,tree,form</field>
+        <field name="domain">[('organizer_id', '=', uid)]</field>
+        <field name="context">{'search_default_organized_by_me': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Vous n'avez encore organisé aucune réunion.
+            </p>
+            <p>
+                Cliquez sur "Créer" pour planifier votre première réunion de suivi ou de soutenance.
             </p>
         </field>
     </record>

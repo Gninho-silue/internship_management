@@ -237,6 +237,37 @@ log_level = info  # debug en développement
 report_url = http://localhost:8069
 ```
 
+### Exemple de configuration SMTP (envoi d'emails)
+
+```ini
+# Adresse d'expédition par défaut
+email_from = noreply@votre-domaine.com
+
+# Exemples de serveurs SMTP
+# Gmail
+# smtp_server = smtp.gmail.com
+# smtp_port = 587
+# smtp_ssl = True
+# smtp_user = votre-email@gmail.com
+# smtp_password = mot-de-passe-d'application
+
+# Office365 / Exchange
+# smtp_server = smtp.office365.com
+# smtp_port = 587
+# smtp_ssl = True
+# smtp_user = votre-email@votre-domaine.com
+# smtp_password = votre-mot-de-passe
+
+# Serveur SMTP local (exemple générique)
+smtp_server = localhost
+smtp_port = 587
+smtp_ssl = False
+# smtp_user =
+# smtp_password =
+```
+
+> Important: Pour Gmail/Office365, utilisez un mot de passe d'application si l'authentification à deux facteurs est activée. Vérifiez le port et le chiffrement exigés par votre fournisseur.
+
 ### Variables d'environnement (optionnel)
 
 ```bash

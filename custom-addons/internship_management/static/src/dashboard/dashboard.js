@@ -38,14 +38,15 @@ export class InternshipDashboard extends Component {
             totalMeetings: 0,
             upcomingMeetings: 0,
 
-            // Alertes
-            totalAlerts: 0,
-            activeAlerts: 0,
-            highPriorityAlerts: 0,
+            // Tâches (modèle internship.todo)
+            totalTasks: 0,
+            overdueTasks: 0,
+            todayTasks: 0,
+            pendingTasks: 0,
 
-            // Communications
-            totalCommunications: 0,
-            unreadCommunications: 0,
+            // Messages Chatter
+            totalMessages: 0,
+            unreadMessages: 0,
 
             // Rôles utilisateur
             isAdmin: false,
@@ -91,8 +92,7 @@ export class InternshipDashboard extends Component {
             let presentationDomain = [];
             let todoDomain = [];
             let meetingDomain = [];
-            let alertDomain = [];
-            let communicationDomain = [];
+            let messageDomain = [];
 
             if (isAdmin || isCoordinator) {
                 stageDomain = [];
@@ -102,8 +102,7 @@ export class InternshipDashboard extends Component {
                 presentationDomain = [];
                 todoDomain = [];
                 meetingDomain = [];
-                alertDomain = [];
-                communicationDomain = [];
+                messageDomain = [];
             } else if (isSupervisor) {
                 const supervisorId = await this.orm.call("internship.supervisor", "search", [
                     [["user_id", "=", this.env.services.user.userId]]
@@ -129,13 +128,8 @@ export class InternshipDashboard extends Component {
                     todoDomain = [["stage_id.supervisor_id", "=", supervisorId[0]]];
                     meetingDomain = [["organizer_id", "=", this.env.services.user.userId]];
 
-                    // CORRIGÉ: Alertes via stages
-                    const stageIds = await this.orm.call("internship.stage", "search", [
-                        [["supervisor_id", "=", supervisorId[0]]]
-                    ]);
-                    alertDomain = stageIds.length > 0 ? [["stage_id", "in", stageIds]] : [["id", "=", 0]];
-
-                    communicationDomain = [["recipient_ids", "in", [this.env.services.user.userId]]];
+                    // Messages Chatter - utilisateur mentionné ou abonné
+                    messageDomain = [["author_id", "!=", this.env.services.user.userId]];
                     supervisorDomain = [["id", "=", supervisorId[0]]];
                 }
             } else if (isStudent) {
@@ -149,8 +143,9 @@ export class InternshipDashboard extends Component {
                     presentationDomain = [["student_id", "=", studentId[0]]];
                     todoDomain = [["stage_id.student_id", "=", studentId[0]]];
                     meetingDomain = [["participant_ids", "in", [this.env.services.user.userId]]];
-                    alertDomain = [["student_id", "=", studentId[0]]];
-                    communicationDomain = [["recipient_ids", "in", [this.env.services.user.userId]]];
+                    
+                    // Messages Chatter - étudiant mentionné ou abonné
+                    messageDomain = [["author_id", "!=", this.env.services.user.userId]];
 
                     studentDomain = [["id", "=", studentId[0]]];
                     supervisorDomain = [["student_ids", "in", [studentId[0]]]];
@@ -209,29 +204,41 @@ export class InternshipDashboard extends Component {
 
             this.state.completedTasks = await this.orm.call(
                 "internship.todo", "search_count",
-                [todoDomain.concat([["state", "=", "completed"]])]
+                [todoDomain.concat([["state", "=", "done"]])]
+            );
+
+            // Tâches en retard (utilise le champ is_overdue calculé)
+            this.state.overdueTasks = await this.orm.call(
+                "internship.todo", "search_count",
+                [todoDomain.concat([["is_overdue", "=", true]])]
+            );
+
+            // Tâches en attente (à faire)
+            this.state.pendingTasks = await this.orm.call(
+                "internship.todo", "search_count",
+                [todoDomain.concat([["state", "=", "todo"]])]
+            );
+
+            // Tâches d'aujourd'hui (deadline = aujourd'hui)
+            const today = new Date().toISOString().split('T')[0];
+            this.state.todayTasks = await this.orm.call(
+                "internship.todo", "search_count",
+                [todoDomain.concat([["deadline", ">=", today], ["deadline", "<", today + " 23:59:59"], ["state", "in", ["todo", "in_progress"]]])]
             );
 
             this.state.totalMeetings = await this.orm.call(
                 "internship.meeting", "search_count", [meetingDomain]
             );
 
-            this.state.totalAlerts = await this.orm.call(
-                "internship.alert", "search_count", [alertDomain]
+            // Remplacer les communications par les messages Chatter
+            this.state.totalMessages = await this.orm.call(
+                "mail.message", "search_count", [messageDomain]
             );
 
-            this.state.activeAlerts = await this.orm.call(
-                "internship.alert", "search_count",
-                [alertDomain.concat([["state", "=", "active"]])]
-            );
-
-            this.state.highPriorityAlerts = await this.orm.call(
-                "internship.alert", "search_count",
-                [alertDomain.concat([["priority", "=", "1"]])]
-            );
-
-            this.state.totalCommunications = await this.orm.call(
-                "internship.communication", "search_count", [communicationDomain]
+            // Messages non lus
+            this.state.unreadMessages = await this.orm.call(
+                "mail.message", "search_count",
+                [messageDomain.concat([["needaction", "=", true]])]
             );
 
             this.state.loading = false;
@@ -310,40 +317,23 @@ export class InternshipDashboard extends Component {
         });
     }
 
-    async openAlerts() {
-        let domain = [["state", "=", "active"]];
-
+    openTasks() {
+        // Ouvrir les tâches selon le rôle de l'utilisateur
+        let domain = [];
         if (this.state.isStudent) {
-            const studentId = await this.orm.call("internship.student", "search", [
-                [["user_id", "=", this.env.services.user.userId]]
-            ]);
-
-            if (studentId.length > 0) {
-                domain.push(["student_id", "=", studentId[0]]);
-            }
+            domain = [["assigned_to", "=", this.env.services.user.userId]];
         } else if (this.state.isSupervisor) {
-            const supervisorId = await this.orm.call("internship.supervisor", "search", [
-                [["user_id", "=", this.env.services.user.userId]]
-            ]);
-
-            if (supervisorId.length > 0) {
-                const stages = await this.orm.call("internship.stage", "search", [
-                    [["supervisor_id", "=", supervisorId[0]]]
-                ]);
-
-                if (stages.length > 0) {
-                    domain.push(["stage_id", "in", stages]);
-                } else {
-                    domain = [["id", "=", 0]];
-                }
-            }
+            domain = [["stage_id.supervisor_id.user_id", "=", this.env.services.user.userId]];
         }
 
         this.action.doAction({
             type: "ir.actions.act_window",
-            res_model: "internship.alert",
+            res_model: "internship.todo",
             views: [[false, "list"], [false, "form"]],
             domain: domain,
+            context: {
+                'default_assigned_to': this.env.services.user.userId,
+            },
             target: "current",
         });
     }
@@ -365,22 +355,6 @@ export class InternshipDashboard extends Component {
         });
     }
 
-    async openTasks() {
-        let domain = [];
-        if (this.state.isStudent) {
-            domain = [["stage_id.student_id.user_id", "=", this.env.services.user.userId]];
-        } else if (this.state.isSupervisor) {
-            domain = [["stage_id.supervisor_id.user_id", "=", this.env.services.user.userId]];
-        }
-
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "internship.todo",
-            views: [[false, "list"], [false, "form"]],
-            domain: domain,
-            target: "current",
-        });
-    }
 
     async openMeetings() {
         let domain = [];
@@ -395,6 +369,20 @@ export class InternshipDashboard extends Component {
             res_model: "internship.meeting",
             views: [[false, "list"], [false, "form"]],
             domain: domain,
+            target: "current",
+        });
+    }
+
+    openMessages() {
+        // Ouvrir les messages Chatter (messages reçus par l'utilisateur)
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "mail.message",
+            views: [[false, "list"], [false, "form"]],
+            domain: [["author_id", "!=", this.env.services.user.userId]],
+            context: {
+                'search_default_my_messages': 1,
+            },
             target: "current",
         });
     }

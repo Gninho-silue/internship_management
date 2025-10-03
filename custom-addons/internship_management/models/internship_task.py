@@ -186,28 +186,28 @@ class InternshipTodo(models.Model):
                     delta = now - task.deadline
                     task.days_overdue = delta.days
 
-        @api.model
-        def _cron_detect_overdue_tasks(self):
-            """
-            CRON: Détecte les tâches en retard et planifie une activité pour l'encadrant.
-            """
-            overdue_tasks = self.search([
-                ('deadline', '<', fields.Date.today()),
-                ('state', 'in', ['todo', 'in_progress']),
-                ('activity_ids', '=', False)  # Pour ne pas créer de doublons
-            ])
+    @api.model
+    def _cron_detect_overdue_tasks(self):
+        """
+        CRON: Détecte les tâches en retard et planifie une activité pour l'encadrant.
+        """
+        overdue_tasks = self.search([
+            ('deadline', '<', fields.Date.today()),
+            ('state', 'in', ['todo', 'in_progress']),
+            ('activity_ids', '=', False)  # Pour ne pas créer de doublons
+        ])
 
-            for task in overdue_tasks:
-                if task.stage_id.supervisor_id.user_id:
-                    task.activity_schedule(
-                        'internship_management.activity_type_internship_alert',
-                        summary=_("Tâche en retard: %s", task.title),
-                        note=_(
-                            "La date limite du %s est dépassée. Veuillez vérifier avec l'étudiant(e).",
-                            task.deadline.strftime('%d/%m/%Y')
-                        ),
-                        user_id=task.stage_id.supervisor_id.user_id.id
-                    )
+        for task in overdue_tasks:
+            if task.stage_id.supervisor_id.user_id:
+                task.activity_schedule(
+                    'internship_management.activity_type_internship_alert',
+                    summary=_("Tâche en retard: %s", task.name),
+                    note=_(
+                        "La date limite du %s est dépassée. Veuillez vérifier avec l'étudiant(e).",
+                        task.deadline.strftime('%d/%m/%Y')
+                    ),
+                    user_id=task.stage_id.supervisor_id.user_id.id
+                )
 
     # ===================================================
     # ACTIONS DES BOUTONS (WORKFLOW)

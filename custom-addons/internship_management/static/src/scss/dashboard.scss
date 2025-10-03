@@ -121,6 +121,10 @@
     &.bg-danger {
       background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
     }
+
+    &.bg-info {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
   }
 
   // Secondary Cards
@@ -203,6 +207,11 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
 
       i {
         font-size: 24px;
@@ -213,6 +222,12 @@
         font-size: 16px;
         font-weight: 600;
         color: #2c3e50;
+      }
+
+      .badge {
+        margin-left: 8px;
+        font-size: 11px;
+        padding: 4px 8px;
       }
     }
   }

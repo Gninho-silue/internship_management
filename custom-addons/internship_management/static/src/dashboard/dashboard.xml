@@ -89,20 +89,22 @@
                         </div>
                     </div>
 
-                    <!-- Alertes -->
+                    <!-- Tâches -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="o_dashboard_card bg-danger" t-on-click="openAlerts">
+                        <div class="o_dashboard_card bg-info" t-on-click="openTasks">
                             <div class="o_card_icon">
-                                <i class="fa fa-exclamation-triangle fa-3x"/>
+                                <i class="fa fa-tasks fa-3x"/>
                             </div>
                             <div class="o_card_content">
-                                <h3 class="o_card_value" t-esc="state.activeAlerts"/>
+                                <h3 class="o_card_value" t-esc="state.totalTasks"/>
                                 <p class="o_card_label">
-                                    <t t-if="state.isStudent">Mes Alertes</t>
-                                    <t t-else="">Alertes Actives</t>
+                                    <t t-if="state.isStudent">Mes Tâches</t>
+                                    <t t-else="">Tâches</t>
                                 </p>
                                 <div class="o_card_details">
-                                    <span><i class="fa fa-warning"/> <t t-esc="state.highPriorityAlerts"/> Priorité haute</span>
+                                    <span><i class="fa fa-warning text-danger"/> <t t-esc="state.overdueTasks"/> En retard</span>
+                                    <span><i class="fa fa-check-circle text-success"/> <t t-esc="state.completedTasks"/> Terminées</span>
+                                    <span><i class="fa fa-calendar"/> <t t-esc="state.todayTasks"/> Aujourd'hui</span>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +114,7 @@
                 <!-- Secondary Statistics Row -->
                 <div class="row o_dashboard_row">
                     <!-- Documents -->
-                    <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="col-lg-6 col-md-6 mb-4">
                         <div class="o_dashboard_card_secondary" t-on-click="openDocuments">
                             <div class="o_card_header">
                                 <i class="fa fa-file-text-o fa-2x"/>
@@ -137,31 +139,8 @@
                         </div>
                     </div>
 
-                    <!-- Tâches -->
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="o_dashboard_card_secondary" t-on-click="openTasks">
-                            <div class="o_card_header">
-                                <i class="fa fa-tasks fa-2x"/>
-                                <h4>
-                                    <t t-if="state.isStudent">Mes Tâches</t>
-                                    <t t-else="">Tâches</t>
-                                </h4>
-                            </div>
-                            <div class="o_card_stats">
-                                <div class="o_stat_item">
-                                    <span class="o_stat_value" t-esc="state.totalTasks"/>
-                                    <span class="o_stat_label">Total</span>
-                                </div>
-                                <div class="o_stat_item">
-                                    <span class="o_stat_value text-success" t-esc="state.completedTasks"/>
-                                    <span class="o_stat_label">Complétées</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Réunions -->
-                    <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="col-lg-6 col-md-6 mb-4">
                         <div class="o_dashboard_card_secondary" t-on-click="openMeetings">
                             <div class="o_card_header">
                                 <i class="fa fa-calendar fa-2x"/>
@@ -204,16 +183,19 @@
                                 <span>Mon Encadrant</span>
                             </div>
 
-                            <div class="o_quick_stat">
+                            <div class="o_quick_stat" t-on-click="openMessages" style="cursor: pointer;">
                                 <i class="fa fa-comments"/>
                                 <span>
                                     <t t-if="state.isStudent">
-                                        <t t-esc="state.totalCommunications"/> Mes Communications
+                                        <t t-esc="state.totalMessages"/> Mes Messages
                                     </t>
                                     <t t-else="">
-                                        <t t-esc="state.totalCommunications"/> Communications
+                                        <t t-esc="state.totalMessages"/> Messages Chatter
                                     </t>
                                 </span>
+                                <t t-if="state.unreadMessages > 0">
+                                    <span class="badge badge-warning"><t t-esc="state.unreadMessages"/> non lus</span>
+                                </t>
                             </div>
 
                             <div class="o_quick_stat">
