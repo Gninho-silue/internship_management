@@ -180,7 +180,7 @@ CREATE DATABASE internship_management_db OWNER odoo17;
 ```bash
 # Cloner le projet
 cd /opt
-sudo git clone https://github.com/techpal-casablanca/odoo17-internship.git
+sudo git clone https://github.com/Gninho-silue/odoo17-internship.git
 sudo chown -R $USER:$USER odoo17-internship
 cd odoo17-internship
 

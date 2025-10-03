@@ -185,7 +185,7 @@ Voir le guide détaillé : [INSTALLATION.md](INSTALLATION.md)
 
 ```bash
 # 1. Cloner le projet
-git clone https://github.com/techpal-casablanca/odoo17-internship.git
+git clone https://github.com/Gninho-silue/odoo17-internship.git
 cd odoo17-internship
 
 # 2. Créer environnement virtuel
