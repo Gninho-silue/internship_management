@@ -2,7 +2,7 @@
 
 **Version** : 1.0.0  
 **Framework** : Odoo 17.0  
-**Langage** : Python 3.12 
+**Langage** : Python 3.12  
 **Date** : Janvier 2025  
 **Auteur** : SILUE - TechPal Casablanca
 
@@ -256,7 +256,7 @@ Le système comprend **10 modèles principaux** organisés autour d'un hub centr
 | `internship.area` | Domaines d'expertise hiérarchiques | Many2many avec supervisors/skills |
 | `internship.skill` | Compétences techniques et générales | Many2many avec students/areas |
 
-### 4.1 Diagramme ERD Correct
+### 4.1 Diagramme ERD
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

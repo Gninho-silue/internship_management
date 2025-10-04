@@ -5,7 +5,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org)
 [![License](https://img.shields.io/badge/License-LGPL--3-blue?style=flat-square)](LICENSE)
 
-> Plateforme complète de gestion des stages développée pour TechPal Casablanca dans le cadre d'un stage d'été 2024-2025.
+> Plateforme complète de gestion des stages développée pour TechPal Casablanca dans le cadre d'un stage PFA 2024-2025.
 
 ---
 
@@ -185,7 +185,7 @@ Voir le guide détaillé : [INSTALLATION.md](INSTALLATION.md)
 
 ```bash
 # 1. Cloner le projet
-git clone https://github.com/Gninho-silue/odoo17-internship.git
+git clone https://github.com/Gninho-silue/internship_management.git
 cd odoo17-internship
 
 # 2. Créer environnement virtuel
@@ -200,7 +200,7 @@ pip install -r odoo-source/requirements.txt
 createdb -U postgres internship_management_db
 
 # 5. Configuration Odoo
-# Éditer config/odoo.conf selon votre environnement
+# Creer un fichier de  config/odoo.conf selon votre environnement
 
 # 6. Lancer Odoo
 python odoo-source/odoo-bin -c config/odoo.conf
@@ -211,8 +211,8 @@ python odoo-source/odoo-bin -c config/odoo.conf
 
 ### Configuration minimale
 
-- **Python** : 3.11+
-- **PostgreSQL** : 16+
+- **Python** : 3.12
+- **PostgreSQL** : 15
 - **RAM** : 4 GB minimum
 - **Espace disque** : 5 GB libres
 
@@ -245,13 +245,13 @@ python odoo-source/odoo-bin -c config/odoo.conf
 
 | Technologie | Version | Usage |
 |-------------|---------|-------|
-| Odoo | 17.0 | Framework ERP |
-| Python | 3.11+ | Backend |
-| PostgreSQL | 16+ | Base de données |
-| JavaScript (OWL) | 17.0 | Frontend components |
-| SCSS | - | Styles |
-| QWeb | 17.0 | Templates XML |
-| wkhtmltopdf | 0.12.6 | Génération PDF |
+| Odoo | 17.0    | Framework ERP |
+| Python | 3.12    | Backend |
+| PostgreSQL | 15      | Base de données |
+| JavaScript (OWL) | 17.0    | Frontend components |
+| SCSS | -       | Styles |
+| QWeb | 17.0    | Templates XML |
+| wkhtmltopdf | 0.12.6  | Génération PDF |
 
 ---
 
@@ -259,10 +259,10 @@ python odoo-source/odoo-bin -c config/odoo.conf
 
 **SILUE**  
 Stagiaire - Développement logiciel  
-TechPal Casablanca - Stage d'été 2024-2025  
+TechPal Casablanca - Stage PFA 2024-2025  
 
 📧 Email : silue@techpal.ma  
-🔗 LinkedIn : [Votre profil LinkedIn]
+🔗 LinkedIn : [www.linkedin.com/in/gninema-silue]
 
 ---
 

@@ -40,13 +40,13 @@
         <menuitem id="menu_internship_task"
                   name="Tâches"
                   parent="menu_internship_root"
-                  sequence="70"/>
+                  sequence="60"/>
 
         <!-- Configuration Section -->
         <menuitem id="menu_internship_config"
                   name="Configuration"
                   parent="menu_internship_root"
-                  sequence="60"/>
+                  sequence="70"/>
 
         <!-- ================================= -->
         <!-- INTERNSHIPS SUBMENU -->

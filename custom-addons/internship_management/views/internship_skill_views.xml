@@ -53,12 +53,12 @@
                             </page>
                             <page string="Prérequis">
                                 <group>
-                                    <field name="prerequisite_skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="prerequisite_skill_ids" widget="many2many_tags"/>
                                     <field name="prerequisites" placeholder="Autres prérequis non listés..."/>
                                 </group>
                             </page>
                             <page string="Domaines Liés">
-                                <field name="related_area_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="related_area_ids" widget="many2many_tags"/>
                             </page>
                         </notebook>
                     </sheet>
