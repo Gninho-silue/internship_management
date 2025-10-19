@@ -38,15 +38,9 @@
 
                         <group>
                             <group name="contact" string="Informations de Contact">
-                                <!--
-                                    CORRECTION ODOO 17: Remplacement de 'attrs' par 'invisible'.
-                                    Le champ 'email' pour la création est visible uniquement si aucun utilisateur n'est encore lié.
-                                    Les autres champs liés à l'utilisateur sont visibles dès qu'un utilisateur est lié.
-                                -->
+                                <field name="user_id"
+                                    context="{'form_view_ref':'base.view_users_simple_form'}"/>
                                 <field name="email" placeholder="email@exemple.com" invisible="user_id != False"/>
-                                <field name="user_id" readonly="1"
-                                       context="{'form_view_ref':'base.view_users_simple_form'}"
-                                       invisible="user_id == False"/>
                                 <field name="email_from_user" widget="email" invisible="user_id == False"/>
                                 <field name="phone"/>
                                 <field name="birth_date"/>

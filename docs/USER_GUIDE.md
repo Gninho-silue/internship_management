@@ -1,7 +1,7 @@
 # 📖 Guide Utilisateur - Système de Gestion des Stages TechPal
 
-**Version** : 2.0.0  
-**Date** : Janvier 2025  
+**Version** : 1.0.0  
+**Date** : Octobre 2025  
 **Auteur** : SILUE - TechPal Casablanca
 
 ---
@@ -112,7 +112,7 @@ Certaines fonctionnalités (envoi d'emails d'invitation, notifications, réiniti
 
 | Action | Admin | Coordinateur | Encadrant | Stagiaire |
 |--------|-------|--------------|-----------|-----------|
-| Créer un stage | ✅ | ✅ | ✅ | ❌ |
+| Créer un stage | ✅ | ✅ | ❌ | ❌ |
 | Voir tous les stages | ✅ | ✅ | ❌ | ❌ |
 | Voir ses stages | ✅ | ✅ | ✅ | ✅ |
 | Valider un stage | ✅ | ✅ | ❌ | ❌ |
@@ -120,9 +120,70 @@ Certaines fonctionnalités (envoi d'emails d'invitation, notifications, réiniti
 | Approuver documents | ✅ | ✅ | ✅ | ❌ |
 | Créer utilisateurs | ✅ | ❌ | ❌ | ❌ |
 | Planifier réunions | ✅ | ✅ | ✅ | ❌ |
-| Créer tâches | ✅ | ✅ | ✅ | ❌ |
+| Créer tâches | ✅ | ✅ | ✅ | ✅ |
 | Évaluer stages | ✅ | ✅ | ✅ | ❌ |
-| Générer rapports PDF | ✅ | ✅ | ✅ | ❌ |
+| Générer rapports PDF | ✅ | ✅ | ✅ | ✅ |
+
+### 3.3 Actions par menu et par rôle
+
+Ces matrices détaillent ce que chaque rôle peut faire dans les menus visibles (basé sur la configuration des menus et groupes).
+
+#### Stages
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Tableau de Bord | ✅ | ✅ | ✅ | ✅ |
+| Tous les Stages | ✅ (voir/créer/éditer) | ✅ (voir/créer/éditer) | ❌ | ❌ |
+| Stages Encadrés | ❌ | ❌ | ✅ (voir/éditer) | ❌ |
+| Mes Stages | ❌ | ❌ | ❌ | ✅ (voir) |
+
+#### Utilisateurs
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Étudiants | ✅ (voir/créer/éditer) | ✅ (voir/créer/éditer) | ✅ (voir) | ❌ |
+| Encadrants | ✅ (voir/créer/éditer) | ✅ (voir/créer/éditer) | ❌ | ❌ |
+
+#### Planification (Réunions)
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Toutes les Réunions | ✅ | ✅ | ❌ | ❌ |
+| Réunions (mes réunions) | ❌ | ❌ | ✅ | ✅ |
+
+#### Documents
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Tous les Documents | ✅ | ✅ | ❌ | ❌ |
+| Mes Documents (encadrant) | ❌ | ❌ | ✅ | ❌ |
+| Documents à Réviser | ❌ | ❌ | ✅ | ❌ |
+| Mes Documents (stagiaire) | ❌ | ❌ | ❌ | ✅ |
+
+#### Présentations
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Toutes les Présentations | ✅ | ✅ | ❌ | ❌ |
+| Présentations à Réviser | ❌ | ❌ | ✅ | ❌ |
+| Mes Présentations | ❌ | ❌ | ❌ | ✅ |
+
+#### Commentaires (Feedback)
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Tous les Commentaires | ✅ | ✅ | ❌ | ❌ |
+| Mes Commentaires (encadrant) | ❌ | ❌ | ✅ | ❌ |
+| Mes Commentaires (stagiaire) | ❌ | ❌ | ❌ | ✅ |
+
+#### Tâches
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Toutes les Tâches | ✅ | ✅ | ❌ | ❌ |
+| Mes Tâches | ❌ | ❌ | ✅ | ✅ |
+| Tâches en Retard (encadrant) | ❌ | ❌ | ✅ | ❌ |
+| Tâches Échues Aujourd'hui (encadrant) | ❌ | ❌ | ✅ | ❌ |
+
+#### Configuration
+| Menu/Vue | Admin | Coordinateur | Encadrant | Stagiaire |
+|----------|-------|--------------|-----------|-----------|
+| Compétences | ✅ (voir/créer/éditer) | ✅ (voir/créer/éditer) | ❌ | ❌ |
+| Domaines d'Expertise | ✅ (voir/créer/éditer) | ✅ (voir/créer/éditer) | ❌ | ❌ |
+| Paramètres de Sécurité | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
@@ -143,6 +204,16 @@ Le dashboard administrateur affiche :
 ![Dashboard Administrateur](images/dashboard_admin.png)
 
 > **📊 Note** : Le dashboard utilise le composant OWL personnalisé défini dans `static/src/dashboard/dashboard.js`
+
+#### Exemples de vues clés
+- Liste des stages (tous les stages) — vue Liste et Kanban
+  
+  ![Vue Kanban des Stages](images/stages_kanban.png)
+   ![Vue Liste des Stages](images/internship_list_admin.png)
+
+- Création d'un stage
+  
+  ![Créer un stage](images/new_internhsip.png)
 
 ### 4.1.2 Gérer les utilisateurs
 
@@ -166,15 +237,67 @@ Le dashboard administrateur affiche :
 
 > **⚠️ Important** : Ne jamais supprimer un utilisateur, toujours le désactiver.
 
+
+#### Créer un nouvel stagiaire ou un encore Encrandrant
+
+**Menu** : `Gestion des Stages >Utilisateur > Etudiants > Créer`
+Renseigner les information du stagiaire puis sauvegarder
+![Créer un nouveau stagiaire](images/new_student.png)
+
+![Vue Kanban des stagiaires](images/intern_view.png)
+
+De meme pour un  encadrant:
+**Menu** : `Gestion des Stages >Utilisateur > Encadrants > Créer`
+![Créer un nouveau encadrant](images/new_supervisor.png)
+
+![Vue Listes des encadrant](images/supervisor_list.png)
+
 ### 4.1.3 Configuration du système
 
 **Menu** : `Paramètres > Configuration`
 
 **Paramètres disponibles** :
-- Durée par défaut des stages
-- Modèles d'emails de notification
-- Règles de validation automatique
+- Competences des stagiares
+![Competences Liste](images/skills_list.png)
+- Les domaines d'expertise des encadrants ou  des stages
+![es domaines d'expertise](images/areas_list.png)
 - Paramètres de sécurité
+
+
+### 4.1.4 Créer un stage
+
+**Menu** : `Gestion des Stages >Tous les Stages  > Créer` 
+
+
+#### Étapes de création
+
+**1. Informations de base**  
+Titre du stage : [Développement d'une plateforme web]  
+Type : [Stage d'été / PFE / Stage professionnel]  
+Domaine : [Développement logiciel]  
+
+**2. Sélection du stagiaire et de l'encadrant**  
+Étudiant(e) : [Sélectionner dans la liste]  
+Encadrant : [Sélectionner dans la liste]  
+
+**3. Dates**  
+Date de début : [01/07/2024]  
+Date de fin : [30/09/2024]  
+Durée : [Calculée automatiquement]
+
+**4. Description du projet**  
+Description : [Saisir une description détaillée]  
+Objectifs pédagogiques : [Lister les objectifs]  
+Proposition de Sujet: Rediger un propose du sujet et envoyer. Le stagiare recevra un message dans le chatter.Puis
+il peut accepter ou demander des modification
+
+**5. Compétences requises**  
+[Sélectionner les compétences] : Python, JavaScript, etc.
+
+**6. Enregistrer**  
+- Cliquer sur **"Enregistrer"** (statut = Brouillon)  
+- Cliquer sur **"Soumettre"** pour lors que le stagiare accpete la proposition.
+![Creer un nouveau stage](images/new_internhsip.png)
 
 ---
 
@@ -189,6 +312,11 @@ Le dashboard coordinateur affiche :
 - Stages en attente de validation
 - Statistiques par encadrant
 - Taux de complétion global
+
+#### Actions typiques (scénario rapide)
+1. Ouvrir Tous les Stages > filtrer sur « Soumis »
+2. Ouvrir un stage > vérifier les informations > Approuver/Rejeter
+3. Affecter un encadrant si nécessaire
 
 ### 4.2.2 Gérer les stages
 
@@ -244,37 +372,6 @@ Le dashboard encadrant affiche :
 
 > **📊 Note** : Le dashboard s'adapte automatiquement selon votre rôle et vos permissions
 
-### 4.3.2 Créer un stage
-
-**Menu** : `Gestion des Stages > Stages Encadrés > Créer`
-
-#### Étapes de création
-
-**1. Informations de base**
-Titre du stage : [Développement d'une plateforme web]
-Type : [Stage d'été / PFE / Stage professionnel]
-Domaine : [Développement logiciel]
-
-**2. Sélection du stagiaire**
-Étudiant(e) : [Sélectionner dans la liste]
-Institution : [Automatiquement rempli]
-
-**3. Dates**
-Date de début : [01/07/2024]
-Date de fin : [30/09/2024]
-Durée : [Calculée automatiquement]
-
-**4. Description du projet**
-Description : [Saisir une description détaillée]
-Objectifs pédagogiques : [Lister les objectifs]
-
-**5. Compétences requises**
-[Sélectionner les compétences] : Python, JavaScript, etc.
-
-**6. Enregistrer**
-- Cliquer sur **"Enregistrer"** (statut = Brouillon)
-- Cliquer sur **"Soumettre"** pour validation coordinateur
-
 ### 4.3.3 Suivre un stage
 
 #### Vue Kanban
@@ -287,6 +384,12 @@ La vue Kanban organise les stages par statut :
 
 **Glisser-déposer** une carte pour changer son statut.
 
+#### Actions typiques (scénario rapide)
+1. Créer des tâches pour le stagiaire (onglet Tâches et Livrables)
+2. Planifier les réunions de suivi
+3. Réviser les documents soumis et poster du feedback
+4. Évaluer le stage en fin de cycle
+
 #### Ajouter une tâche
 
 1. Ouvrir le stage
@@ -297,6 +400,8 @@ La vue Kanban organise les stages par statut :
    - **Description**
    - **Date limite**
    - **Priorité**
+
+![Nouvelle Tache](images/new_task.png)
 5. Enregistrer
 
 La tâche est automatiquement assignée au stagiaire.
@@ -316,6 +421,7 @@ La tâche est automatiquement assignée au stagiaire.
 Cliquer sur "Approuver"
 Ajouter un commentaire positif dans le Chatter (optionnel)
 Le statut passe à "Approuvé"
+![document Liste](images/document_list.png)
 
 
 **Option B : Demander des modifications**
@@ -361,7 +467,12 @@ Le stagiaire reçoit une notification
    - Cliquer sur **"Planifier & Envoyer l'Invitation"**
    - Les participants reçoivent un email automatiquement si la messagerie est configurée
 
+![Planifier un reunion](images/new_meeting.png)
+
+![Vue des reunions](images/meeting_view_calendar.png)
+
 #### Après la réunion
+
 
 1. Ouvrir la réunion
 2. Onglet **"Compte-Rendu"**
@@ -404,6 +515,12 @@ Le dashboard stagiaire affiche :
 ![Dashboard Stagiaire](images/dashboard_student.png)
 
 > **📊 Note** : Le dashboard stagiaire se concentre sur vos informations personnelles et votre progression
+
+#### Actions typiques (scénario rapide)
+1. Consulter « Mes Stages » et vérifier la progression
+2. Gérer « Mes Tâches » (Démarrer, mettre à jour, Terminer)
+3. Déposer mes documents et suivre le statut
+4. Déposer ma présentation de soutenance
 
 ### 4.4.2 Consulter mon stage
 
@@ -451,6 +568,7 @@ Le dashboard stagiaire affiche :
 Titre : [Rapport de mi-stage]
 Type : [Rapport d'avancement]
 Stage : [Automatiquement sélectionné]
+![Document feedback](images/document_feedback.png)
 
 **2. Upload du fichier**
 
@@ -466,6 +584,7 @@ Ajouter des informations sur le contenu du document
 
 Cliquer sur "Enregistrer" (brouillon)
 Cliquer sur "Soumettre pour Révision"
+![Soumettre un document](images/new_document.png)
 
 
 #### Suivre le statut d'un document
@@ -504,14 +623,16 @@ Stage : [Automatiquement sélectionné]
 Version : [1.0]
 
 **2. Upload**
-Fichier : [Sélectionner PowerPoint ou PDF]
+Fichier : [Sélectionner PowerPoint ou PDF]  
 Taille max : 50 MB
 
 **3. Date limite (si définie par l'encadrant)**
 Affichée automatiquement
 
-**4. Soumettre**
-Cliquer sur "Soumettre pour Révision"
+**4. Soumettre**  
+Cliquer sur "Soumettre pour Révision"   
+![Soumettre une presentation](images/new_presentation.png)
+
 
 #### Processus de validation
 
