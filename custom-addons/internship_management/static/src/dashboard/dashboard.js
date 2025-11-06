@@ -141,27 +141,52 @@ export class InternshipDashboard extends Component {
                     supervisorDomain = [["id", "=", supervisorId[0]]];
                 }
             } else if (isStudent) {
-                const studentId = await this.orm.call("internship.student", "search", [
-                    [["user_id", "=", this.env.services.user.userId]]
+                // Tâches: basé sur l'utilisateur assigné (même domaine que dans openTasks)
+                todoDomain = [["assigned_to", "=", this.env.services.user.userId]];
+
+                // Meetings: basé sur le partner de l'utilisateur (même domaine que dans openMeetings)
+                const studentPartnerId = await this.orm.call("res.users", "read", [
+                    [this.env.services.user.userId],
+                    ["partner_id"]
                 ]);
+                const partnerId = studentPartnerId[0].partner_id[0];
+                meetingDomain = [["partner_ids", "in", [partnerId]]];
 
+                // Documents: basé sur student_id.user_id (même domaine que dans openDocuments)
+                documentDomain = [["student_id.user_id", "=", this.env.services.user.userId]];
+
+                // Présentations: basé sur student_id.user_id (même domaine que dans openPendingPresentations)
+                presentationDomain = [["student_id.user_id", "=", this.env.services.user.userId]];
+
+                // Stages: basé sur student_id.user_id (même logique)
+                stageDomain = [["student_id.user_id", "=", this.env.services.user.userId]];
+
+                // Autres domaines pour cohérence
+                messageDomain = [["author_id", "!=", this.env.services.user.userId]];
+
+                // Récupérer la fiche student si elle existe pour les domaines spécifiques
+                const studentId = await this.orm.call("internship.student", "search", [[
+                    ["user_id", "=", this.env.services.user.userId]
+                ]]);
                 if (studentId.length > 0) {
-                    stageDomain = [["student_id", "=", studentId[0]]];
-                    documentDomain = [["student_id", "=", studentId[0]]];
-                    presentationDomain = [["student_id", "=", studentId[0]]];
-                    todoDomain = [["stage_id.student_id", "=", studentId[0]]];
-                    const studentPartnerId = await this.orm.call("res.users", "read", [
-                        [this.env.services.user.userId],
-                        ["partner_id"]
-                    ]);
-                    const partnerId = studentPartnerId[0].partner_id[0];
-
-                    meetingDomain = [["partner_ids", "in", [partnerId]]];
-                    // Messages Chatter - étudiant mentionné ou abonné
-                    messageDomain = [["author_id", "!=", this.env.services.user.userId]];
-
                     studentDomain = [["id", "=", studentId[0]]];
-                    supervisorDomain = [["student_ids", "in", [studentId[0]]]];
+                    // Pour les superviseurs: filtrer via les stages (supervisor n'a pas de student_ids direct)
+                    // On compte les superviseurs qui encadrent des stages avec cet étudiant
+                    const stagesWithSupervisor = await this.orm.call("internship.stage", "search_read", [
+                        [["student_id", "=", studentId[0]]],
+                        ["supervisor_id"]
+                    ]);
+                    const supervisorIds = stagesWithSupervisor
+                        .map(stage => stage.supervisor_id ? stage.supervisor_id[0] : null)
+                        .filter(id => id !== null);
+                    if (supervisorIds.length > 0) {
+                        supervisorDomain = [["id", "in", supervisorIds]];
+                    } else {
+                        supervisorDomain = [["id", "=", 0]];
+                    }
+                } else {
+                    studentDomain = [["id", "=", 0]];
+                    supervisorDomain = [["id", "=", 0]];
                 }
             }
 
@@ -215,15 +240,20 @@ export class InternshipDashboard extends Component {
                 "internship.todo", "search_count", [todoDomain]
             );
 
+            // Tâches terminées
             this.state.completedTasks = await this.orm.call(
                 "internship.todo", "search_count",
                 [todoDomain.concat([["state", "=", "done"]])]
             );
 
-            // Tâches en retard (utilise le champ is_overdue calculé)
+            // Tâches en retard : deadline < maintenant et state in ['todo', 'in_progress']
+            const now = new Date().toISOString();
             this.state.overdueTasks = await this.orm.call(
                 "internship.todo", "search_count",
-                [todoDomain.concat([["is_overdue", "=", true]])]
+                [todoDomain.concat([
+                    ["deadline", "<", now],
+                    ["state", "in", ["todo", "in_progress"]]
+                ])]
             );
 
             // Tâches en attente (à faire)
@@ -232,15 +262,30 @@ export class InternshipDashboard extends Component {
                 [todoDomain.concat([["state", "=", "todo"]])]
             );
 
-            // Tâches d'aujourd'hui (deadline = aujourd'hui)
-            const today = new Date().toISOString().split('T')[0];
+            // Tâches d'aujourd'hui : deadline entre début et fin de la journée d'aujourd'hui
+            const todayStart = new Date().toISOString().split('T')[0] + " 00:00:00";
+            const todayEnd = new Date().toISOString().split('T')[0] + " 23:59:59";
             this.state.todayTasks = await this.orm.call(
                 "internship.todo", "search_count",
-                [todoDomain.concat([["deadline", ">=", today], ["deadline", "<", today + " 23:59:59"], ["state", "in", ["todo", "in_progress"]]])]
+                [todoDomain.concat([
+                    ["deadline", ">=", todayStart],
+                    ["deadline", "<=", todayEnd],
+                    ["state", "in", ["todo", "in_progress"]]
+                ])]
             );
 
             this.state.totalMeetings = await this.orm.call(
                 "internship.meeting", "search_count", [meetingDomain]
+            );
+
+            // Réunions à venir : date > maintenant et state = 'scheduled'
+            const now_meet = new Date().toISOString();
+            this.state.upcomingMeetings = await this.orm.call(
+                "internship.meeting", "search_count",
+                [meetingDomain.concat([
+                    ["date", ">", now_meet],
+                    ["state", "=", "scheduled"]
+                ])]
             );
 
             this.state.loading = false;

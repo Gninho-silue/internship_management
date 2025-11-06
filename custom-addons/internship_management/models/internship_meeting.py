@@ -246,7 +246,7 @@ class InternshipMeeting(models.Model):
 
         self.write({'state': 'scheduled'})
         # OPTIMISATION: Utilise un modèle d'e-mail pour l'invitation
-        template = self.env.ref('votre_nom_de_module.mail_template_meeting_invitation', raise_if_not_found=False)
+        template = self.env.ref('internship_management.mail_template_meeting_invitation', raise_if_not_found=False)
         if template:
             template.send_mail(self.id, force_send=True)
 
@@ -258,7 +258,7 @@ class InternshipMeeting(models.Model):
         """Passe la réunion à l'état 'Annulée' et envoie une notification."""
         self.write({'state': 'cancelled'})
         # OPTIMISATION: Utilise un modèle d'e-mail pour l'annulation
-        template = self.env.ref('votre_nom_de_module.mail_template_meeting_cancellation', raise_if_not_found=False)
+        template = self.env.ref('internship_management.mail_template_meeting_cancellation', raise_if_not_found=False)
         if template:
             template.send_mail(self.id, force_send=True)
 

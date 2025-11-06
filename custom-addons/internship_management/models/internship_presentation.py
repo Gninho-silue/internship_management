@@ -106,7 +106,7 @@ class InternshipPresentation(models.Model):
         if self.supervisor_id.user_id:
             self.activity_schedule(
                 'mail.activity_data_todo',
-                summary=_("Réviser la présentation de %s", self.student_id.name),
+                summary=_("Réviser la présentation de %s", self.student_id.full_name),
                 note=_("Veuillez réviser la présentation '%s' et l'approuver ou demander des modifications.",
                        self.name),
                 user_id=self.supervisor_id.user_id.id

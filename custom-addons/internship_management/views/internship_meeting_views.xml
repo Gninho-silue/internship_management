@@ -119,7 +119,7 @@
                         domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
                              ('date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
                 <filter string="À venir" name="upcoming"
-                        domain="[('date', '&gt;=', time.strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                        domain="[('date', '&gt;=', context_today())]"/>
                 <group expand="0" string="Grouper par">
                     <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Type" name="group_meeting_type" context="{'group_by': 'meeting_type'}"/>
@@ -138,14 +138,18 @@
             <form string="Gestion de Réunion">
                 <header>
                     <button name="action_schedule" string="Planifier &amp; Envoyer l'Invitation" type="object"
-                            class="btn-primary" invisible="state != 'draft'"/>
+                            class="btn-primary" invisible="state != 'draft'"
+                             groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                     <button name="action_complete" string="Marquer comme Terminée" type="object"
-                            class="btn-primary" invisible="state != 'scheduled'"/>
+                            class="btn-primary" invisible="state != 'scheduled'"
+                             groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                     <button name="action_cancel" string="Annuler la Réunion" type="object"
                             invisible="state not in ['draft', 'scheduled']"
-                            confirm="Êtes-vous sûr de vouloir annuler cette réunion ? Une notification sera envoyée."/>
+                            confirm="Êtes-vous sûr de vouloir annuler cette réunion ? Une notification sera envoyée."
+                             groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                     <button name="action_reset_to_draft" string="Réinitialiser en Brouillon" type="object"
-                            invisible="state not in ['cancelled', 'completed']"/>
+                            invisible="state not in ['cancelled', 'completed']"
+                             groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,scheduled,completed"/>
                 </header>
@@ -254,20 +258,5 @@
         </field>
     </record>
 
-    <!-- Action pour "Réunions que j'organise" -->
-    <record id="action_internship_meeting_organized" model="ir.actions.act_window">
-        <field name="name">Réunions que j'organise</field>
-        <field name="res_model">internship.meeting</field>
-        <field name="view_mode">calendar,kanban,tree,form</field>
-        <field name="domain">[('organizer_id', '=', uid)]</field>
-        <field name="context">{'search_default_organized_by_me': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Vous n'avez encore organisé aucune réunion.
-            </p>
-            <p>
-                Cliquez sur "Créer" pour planifier votre première réunion de suivi ou de soutenance.
-            </p>
-        </field>
-    </record>
+    <!-- doublon d'action supprimé -->
 </odoo>

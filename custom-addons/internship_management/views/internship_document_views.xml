@@ -35,11 +35,17 @@
                         <button name="action_submit_for_review" string="Soumettre pour Révision" type="object"
                                 class="btn-primary" invisible="state != 'draft'"/>
                         <button name="action_start_review" string="Démarrer la Révision" type="object"
-                                class="btn-secondary" invisible="state != 'submitted'"/>
+                                class="btn-secondary" invisible="state != 'submitted'"
+                                groups="internship_management.group_internship_supervisor,
+                         internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_approve" string="Approuver" type="object"
-                                class="btn-success" invisible="state != 'under_review'"/>
+                                class="btn-success" invisible="state != 'under_review'"
+                                groups="internship_management.group_internship_supervisor,
+                         internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_reject" string="Rejeter" type="object"
-                                class="btn-danger" invisible="state != 'under_review'"/>
+                                class="btn-danger" invisible="state != 'under_review'"
+                                groups="internship_management.group_internship_supervisor,
+                         internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="toggle_active" string="Archiver" type="object"
                                 invisible="active == False"/>
                         <button name="toggle_active" string="Désarchiver" type="object"

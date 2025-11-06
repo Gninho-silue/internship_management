@@ -58,20 +58,25 @@
             <field name="arch" type="xml">
                 <form string="Stage">
                     <header>
-                        <!-- Boutons d'action principaux du workflow -->
+                        <!-- Boutons d'action principaux du workflow (interdits aux étudiants) -->
+                        <button name="action_submit" string="Soumettre" type="object"
+                                class="btn-primary" invisible="state != 'draft'"
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_complete" string="Terminer" type="object"
-                                class="oe_highlight" invisible="state != 'in_progress'"/>
+                                class="oe_highlight" invisible="state != 'in_progress'"
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_schedule_defense" string="Planifier Soutenance" type="object"
                                 class="oe_highlight" invisible="state != 'completed'"
-                                groups="internship_management.group_internship_supervisor"/>
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_evaluate" string="Évaluer" type="object"
                                 class="oe_highlight" invisible="state != 'completed'"
-                                groups="internship_management.group_internship_supervisor"/>
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_cancel" string="Annuler" type="object"
-                                invisible="state in ['cancelled', 'evaluated']"/>
+                                invisible="state in ['cancelled', 'evaluated']"
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_reset_to_draft" string="Réinitialiser en Brouillon" type="object"
                                 invisible="state in ['draft', 'evaluated']"
-                                groups="internship_management.group_internship_admin"/>
+                                groups="internship_management.group_internship_admin,internship_management.group_internship_coordinator"/>
 
                         <!-- La barre de statut (statusbar) gère le cycle de vie du stage -->
                         <field name="state" widget="statusbar"
@@ -119,15 +124,19 @@
                                 <header>
                                     <button name="action_propose_subject" string="Proposer le Sujet" type="object"
                                             class="btn-primary"
-                                            invisible="proposal_status != 'draft' or not subject_proposal"/>
+                                            invisible="proposal_status != 'draft' or not subject_proposal"
+                                            groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                                     <button name="action_accept_proposal" string="Accepter la Proposition" type="object"
-                                            class="btn-success" invisible="proposal_status != 'proposed'"/>
+                                            class="btn-success" invisible="proposal_status != 'proposed'"
+                                            groups="internship_management.group_internship_student"/>
                                     <button name="action_request_modifications" string="Demander des Modifications"
                                             type="object"
-                                            class="btn-warning" invisible="proposal_status != 'proposed'"/>
+                                            class="btn-warning" invisible="proposal_status != 'proposed'"
+                                            groups="internship_management.group_internship_student"/>
                                     <button name="action_reject_proposal" string="Rejeter la Proposition" type="object"
                                             class="btn-danger"
-                                            invisible="proposal_status not in ['proposed', 'modifications_requested']"/>
+                                            invisible="proposal_status not in ['proposed', 'modifications_requested']"
+                                            groups="internship_management.group_internship_student"/>
                                     <field name="proposal_status" widget="statusbar"
                                            statusbar_visible="draft,proposed,accepted,modifications_requested,rejected"/>
                                 </header>

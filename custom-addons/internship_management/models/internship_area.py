@@ -62,6 +62,7 @@ class InternshipArea(models.Model):
         string='Niveau',
         compute='_compute_level',
         store=True,
+        recursive=True,
         help="Niveau dans la hiérarchie (0 pour les domaines racines)."
     )
 

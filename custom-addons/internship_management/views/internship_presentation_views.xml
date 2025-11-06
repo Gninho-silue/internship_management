@@ -70,8 +70,6 @@
                             <field name="is_overdue" readonly="1"/>
                         </group>
                     </group>
-                    <!-- OPTIMISATION: Le bloc de notes de révision est supprimé.
-                         Toute la communication se fait dans le Chatter ci-dessous. -->
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

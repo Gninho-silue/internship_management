@@ -45,8 +45,7 @@
             <field name="name">Administrateur de la Gestion des Stages</field>
             <field name="category_id" ref="module_category_internship"/>
             <field name="comment">Accès complet à tous les modules de gestion des stages.</field>
-            <!-- OPTIMISATION: Un administrateur devrait aussi être coordinateur pour hériter de ses droits -->
-            <field name="implied_ids" eval="[(4, ref('group_internship_coordinator'))]"/>
+            <!-- Retrait des implied_ids pour que chaque utilisateur ait un seul groupe explicite -->
         </record>
 
         <!-- =============================================== -->
@@ -57,14 +56,14 @@
         <record id="internship_student_rule_own" model="ir.rule">
             <field name="name">Étudiants: Données personnelles uniquement</field>
             <field name="model_id" ref="model_internship_student"/>
-            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="domain_force">[("user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
         </record>
 
         <record id="internship_student_rule_supervisor" model="ir.rule">
             <field name="name">Étudiants: L'encadrant voit ses étudiants assignés</field>
             <field name="model_id" ref="model_internship_student"/>
-            <field name="domain_force">[('internship_ids.supervisor_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("internship_ids.supervisor_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
         </record>
 
@@ -72,14 +71,14 @@
         <record id="internship_stage_rule_student" model="ir.rule">
             <field name="name">Stages: L'étudiant voit ses propres stages</field>
             <field name="model_id" ref="model_internship_stage"/>
-            <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("student_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
         </record>
 
         <record id="internship_stage_rule_supervisor" model="ir.rule">
             <field name="name">Stages: L'encadrant voit les stages qui lui sont assignés</field>
             <field name="model_id" ref="model_internship_stage"/>
-            <field name="domain_force">[('supervisor_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("supervisor_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
         </record>
 
@@ -87,14 +86,14 @@
         <record id="internship_document_rule_student" model="ir.rule">
             <field name="name">Documents: L'étudiant voit ses propres documents</field>
             <field name="model_id" ref="model_internship_document"/>
-            <field name="domain_force">[('stage_id.student_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("stage_id.student_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
         </record>
 
         <record id="internship_document_rule_supervisor" model="ir.rule">
             <field name="name">Documents: L'encadrant voit les documents de ses stages</field>
             <field name="model_id" ref="model_internship_document"/>
-            <field name="domain_force">[('stage_id.supervisor_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("stage_id.supervisor_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
         </record>
 
@@ -115,17 +114,13 @@
             </field>
             <field name="groups"
                    eval="[(4, ref('group_internship_student')), (4, ref('group_internship_supervisor'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="False"/>
         </record>
 
         <!-- Règles pour le modèle Encadrant (internship.supervisor) -->
         <record id="internship_supervisor_rule_own" model="ir.rule">
             <field name="name">Encadrants: Accès à leur propre profil</field>
             <field name="model_id" ref="model_internship_supervisor"/>
-            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="domain_force">[("user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
         </record>
 
@@ -139,10 +134,6 @@
             <field name="model_id" ref="model_internship_stage"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
         </record>
 
         <record id="internship_student_rule_coordinator" model="ir.rule">
@@ -150,10 +141,6 @@
             <field name="model_id" ref="model_internship_student"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
         </record>
 
         <record id="internship_supervisor_rule_coordinator" model="ir.rule">
@@ -161,10 +148,6 @@
             <field name="model_id" ref="model_internship_supervisor"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
         </record>
 
         <record id="internship_document_rule_coordinator" model="ir.rule">
@@ -172,10 +155,6 @@
             <field name="model_id" ref="model_internship_document"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
         </record>
 
         <record id="internship_meeting_rule_coordinator" model="ir.rule">
@@ -183,10 +162,6 @@
             <field name="model_id" ref="model_internship_meeting"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_internship_coordinator'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
         </record>
 
         <!-- Règles pour les Tâches (internship.todo) -->
@@ -195,7 +170,7 @@
             <field name="model_id" ref="model_internship_todo"/>
             <field name="domain_force">[
                 '|',
-                ('assigned_to.user_id', '=', user.id),
+                ('assigned_to', '=', user.id),
                 '|',
                 ('stage_id.student_id.user_id', '=', user.id),
                 ('stage_id.supervisor_id.user_id', '=', user.id)
@@ -216,7 +191,7 @@
         <record id="internship_presentation_rule_student" model="ir.rule">
             <field name="name">Présentations: L'étudiant voit ses propres présentations</field>
             <field name="model_id" ref="model_internship_presentation"/>
-            <field name="domain_force">[('student_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("student_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_student'))]"/>
         </record>
 
@@ -224,7 +199,7 @@
             <field name="name">Présentations: L'encadrant voit les présentations de ses étudiants</field>
             <field name="model_id" ref="model_internship_presentation"/>
             <!-- OPTIMISATION: Le domaine peut être plus direct -->
-            <field name="domain_force">[('stage_id.supervisor_id.user_id', '=', user.id)]</field>
+            <field name="domain_force">[("stage_id.supervisor_id.user_id", "=", user.id)]</field>
             <field name="groups" eval="[(4, ref('group_internship_supervisor'))]"/>
         </record>
 

@@ -78,7 +78,7 @@ Plateforme complète de gestion des stages incluant :
 
     # Données de démonstration
     'demo': [
-        'data/internship_demo_data.xml',
+        # 'data/internship_demo_data.xml',
     ],
 
     # Paramètres techniques
