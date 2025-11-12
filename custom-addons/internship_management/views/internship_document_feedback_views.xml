@@ -97,7 +97,10 @@
                             domain="[('feedback_type', '=', 'revision_required')]"/>
                     <filter string="Approbation" name="approval" domain="[('feedback_type', '=', 'approval')]"/>
                     <separator/>
-                    <filter string="Mes Retours" name="my_feedback" domain="[('reviewer_id', '=', uid)]"/>
+                    <filter string="Mes Retours Émis" name="my_feedback" domain="[('reviewer_id', '=', uid)]"/>
+                    <filter string="Feedbacks sur Mes Documents" name="feedback_on_my_documents" 
+                            domain="[('document_id.student_id.user_id', '=', uid)]"
+                            groups="internship_management.group_internship_student"/>
                     <group expand="0" string="Regrouper par">
                         <filter string="Statut" name="group_status" context="{'group_by': 'status'}"/>
                         <filter string="Type" name="group_type" context="{'group_by': 'feedback_type'}"/>
@@ -127,7 +130,7 @@
             </field>
         </record>
 
-        <!-- Action pour "Mes Retours" -->
+        <!-- Action pour "Mes Retours Émis" (pour superviseurs) -->
         <record id="action_internship_document_feedback_my" model="ir.actions.act_window">
             <field name="name">Mes Retours Émis</field>
             <field name="res_model">internship.document.feedback</field>
@@ -135,6 +138,24 @@
             <field name="search_view_id" ref="view_internship_document_feedback_search"/>
             <field name="domain">[('reviewer_id', '=', uid)]</field>
             <field name="context">{'search_default_my_feedback': 1}</field>
+        </record>
+
+        <!-- Action pour "Feedbacks sur Mes Documents" (pour étudiants) -->
+        <record id="action_internship_document_feedback_received" model="ir.actions.act_window">
+            <field name="name">Feedbacks sur Mes Documents</field>
+            <field name="res_model">internship.document.feedback</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_internship_document_feedback_search"/>
+            <field name="domain">[('document_id.student_id.user_id', '=', uid)]</field>
+            <field name="context">{'search_default_feedback_on_my_documents': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Aucun feedback reçu pour l'instant !
+                </p>
+                <p>
+                    Les commentaires et retours de vos encadrants sur vos documents apparaîtront ici.
+                </p>
+            </field>
         </record>
 
         <!-- Action pour les retours en attente -->

@@ -108,17 +108,23 @@ export class InternshipDashboard extends Component {
                 if (supervisorId.length > 0) {
                     stageDomain = [["supervisor_id", "=", supervisorId[0]]];
 
-                    // CORRIGÉ: Récupérer étudiants via stages
+                    // CORRIGÉ: Récupérer étudiants via stages (Many2many)
                     const stages = await this.orm.call("internship.stage", "search_read", [
                         [["supervisor_id", "=", supervisorId[0]]],
-                        ["student_id"]
+                        ["student_ids"]
                     ]);
 
-                    const studentIds = stages
-                        .map(stage => stage.student_id ? stage.student_id[0] : null)
-                        .filter(id => id !== null);
+                    // Extraire tous les IDs d'étudiants de tous les stages
+                    const studentIds = [];
+                    stages.forEach(stage => {
+                        if (stage.student_ids && stage.student_ids.length > 0) {
+                            studentIds.push(...stage.student_ids);
+                        }
+                    });
+                    // Supprimer les doublons
+                    const uniqueStudentIds = [...new Set(studentIds)];
 
-                    studentDomain = studentIds.length > 0 ? [["id", "in", studentIds]] : [["id", "=", 0]];
+                    studentDomain = uniqueStudentIds.length > 0 ? [["id", "in", uniqueStudentIds]] : [["id", "=", 0]];
 
                     documentDomain = [["supervisor_id", "=", supervisorId[0]]];
                     presentationDomain = [["supervisor_id", "=", supervisorId[0]]];
@@ -141,8 +147,8 @@ export class InternshipDashboard extends Component {
                     supervisorDomain = [["id", "=", supervisorId[0]]];
                 }
             } else if (isStudent) {
-                // Tâches: basé sur l'utilisateur assigné (même domaine que dans openTasks)
-                todoDomain = [["assigned_to", "=", this.env.services.user.userId]];
+                // Tâches: basé sur l'utilisateur assigné via assigned_to_ids (Many2many)
+                todoDomain = [["assigned_to_ids.user_id", "=", this.env.services.user.userId]];
 
                 // Meetings: basé sur le partner de l'utilisateur (même domaine que dans openMeetings)
                 const studentPartnerId = await this.orm.call("res.users", "read", [
@@ -152,14 +158,14 @@ export class InternshipDashboard extends Component {
                 const partnerId = studentPartnerId[0].partner_id[0];
                 meetingDomain = [["partner_ids", "in", [partnerId]]];
 
-                // Documents: basé sur student_id.user_id (même domaine que dans openDocuments)
+                // Documents: basé sur student_id.user_id (un document = un étudiant)
                 documentDomain = [["student_id.user_id", "=", this.env.services.user.userId]];
 
-                // Présentations: basé sur student_id.user_id (même domaine que dans openPendingPresentations)
+                // Présentations: basé sur student_id.user_id (une présentation = un étudiant)
                 presentationDomain = [["student_id.user_id", "=", this.env.services.user.userId]];
 
-                // Stages: basé sur student_id.user_id (même logique)
-                stageDomain = [["student_id.user_id", "=", this.env.services.user.userId]];
+                // Stages: basé sur student_ids.user_id (Many2many)
+                stageDomain = [["student_ids.user_id", "=", this.env.services.user.userId]];
 
                 // Autres domaines pour cohérence
                 messageDomain = [["author_id", "!=", this.env.services.user.userId]];
@@ -173,7 +179,7 @@ export class InternshipDashboard extends Component {
                     // Pour les superviseurs: filtrer via les stages (supervisor n'a pas de student_ids direct)
                     // On compte les superviseurs qui encadrent des stages avec cet étudiant
                     const stagesWithSupervisor = await this.orm.call("internship.stage", "search_read", [
-                        [["student_id", "=", studentId[0]]],
+                        [["student_ids", "in", [studentId[0]]]],
                         ["supervisor_id"]
                     ]);
                     const supervisorIds = stagesWithSupervisor
@@ -278,14 +284,17 @@ export class InternshipDashboard extends Component {
                 "internship.meeting", "search_count", [meetingDomain]
             );
 
-            // Réunions à venir : date > maintenant et state = 'scheduled'
+            // Réunions à venir : date > maintenant et état approprié
+            // Note: Odoo compare les dates Datetime en UTC, donc toISOString() est correct
             const now_meet = new Date().toISOString();
+            // Créer le domaine pour les réunions à venir
+            const upcomingMeetingDomain = meetingDomain.concat([
+                ["date", ">", now_meet],
+                ["state", "!=", "completed"],
+                ["state", "!=", "cancelled"]
+            ]);
             this.state.upcomingMeetings = await this.orm.call(
-                "internship.meeting", "search_count",
-                [meetingDomain.concat([
-                    ["date", ">", now_meet],
-                    ["state", "=", "scheduled"]
-                ])]
+                "internship.meeting", "search_count", [upcomingMeetingDomain]
             );
 
             this.state.loading = false;
@@ -298,7 +307,7 @@ export class InternshipDashboard extends Component {
     openInternships() {
         let domain = [];
         if (this.state.isStudent) {
-            domain = [["student_id.user_id", "=", this.env.services.user.userId]];
+            domain = [["student_ids.user_id", "=", this.env.services.user.userId]];
         } else if (this.state.isSupervisor) {
             domain = [["supervisor_id.user_id", "=", this.env.services.user.userId]];
         }
@@ -323,15 +332,21 @@ export class InternshipDashboard extends Component {
             if (supervisorId.length > 0) {
                 const stages = await this.orm.call("internship.stage", "search_read", [
                     [["supervisor_id", "=", supervisorId[0]]],
-                    ["student_id"]
+                    ["student_ids"]
                 ]);
 
-                const studentIds = stages
-                    .map(stage => stage.student_id ? stage.student_id[0] : null)
-                    .filter(id => id !== null);
+                // Extraire tous les IDs d'étudiants de tous les stages
+                const studentIds = [];
+                stages.forEach(stage => {
+                    if (stage.student_ids && stage.student_ids.length > 0) {
+                        studentIds.push(...stage.student_ids);
+                    }
+                });
+                // Supprimer les doublons
+                const uniqueStudentIds = [...new Set(studentIds)];
 
-                if (studentIds.length > 0) {
-                    domain = [["id", "in", studentIds]];
+                if (uniqueStudentIds.length > 0) {
+                    domain = [["id", "in", uniqueStudentIds]];
                 } else {
                     domain = [["id", "=", 0]];
                 }
@@ -368,7 +383,7 @@ export class InternshipDashboard extends Component {
         // Ouvrir les tâches selon le rôle de l'utilisateur
         let domain = [];
         if (this.state.isStudent) {
-            domain = [["assigned_to", "=", this.env.services.user.userId]];
+            domain = [["assigned_to_ids.user_id", "=", this.env.services.user.userId]];
         } else if (this.state.isSupervisor) {
             domain = [["stage_id.supervisor_id.user_id", "=", this.env.services.user.userId]];
         }
@@ -378,9 +393,7 @@ export class InternshipDashboard extends Component {
             res_model: "internship.todo",
             views: [[false, "list"], [false, "form"]],
             domain: domain,
-            context: {
-                'default_assigned_to': this.env.services.user.userId,
-            },
+            context: {},
             target: "current",
         });
     }

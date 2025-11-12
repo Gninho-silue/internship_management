@@ -89,6 +89,9 @@ class InternshipSupervisor(models.Model):
 
     expertise_area_ids = fields.Many2many(
         'internship.area',
+        'supervisor_area_rel',  # relation (table intermédiaire) - même que dans internship_area.py
+        'supervisor_id',        # column1
+        'area_id',              # column2
         string="Domaines d'expertise",
         help="Domaines professionnels où l'encadrant peut offrir son expertise."
     )
@@ -117,14 +120,25 @@ class InternshipSupervisor(models.Model):
         help="Nombre d'étudiants actuellement en cours d'encadrement."
     )
 
-    @api.depends('stage_ids.state')
+    @api.depends('stage_ids.state', 'stage_ids.student_ids')
     def _compute_current_students_count(self):
-        """Calcule le nombre d'étudiants activement supervisés."""
+        """Calcule le nombre d'étudiants activement supervisés.
+        
+        Cette méthode compte tous les étudiants uniques dans les stages actifs
+        (état 'approved' ou 'in_progress'). Un étudiant qui est dans plusieurs
+        stages actifs n'est compté qu'une seule fois.
+        """
         for supervisor in self:
+            # Récupérer tous les stages actifs (approuvés ou en cours)
             active_stages = supervisor.stage_ids.filtered(
                 lambda s: s.state in ['approved', 'in_progress']
             )
-            supervisor.current_students_count = len(active_stages)
+            # Récupérer tous les étudiants de tous les stages actifs
+            # Utiliser un set pour garantir l'unicité (au cas où un étudiant serait dans plusieurs stages)
+            all_student_ids = set()
+            for stage in active_stages:
+                all_student_ids.update(stage.student_ids.ids)
+            supervisor.current_students_count = len(all_student_ids)
 
     # BONNE PRATIQUE: Remplacer l'@api.onchange par un champ calculé pour la robustesse.
     # L'inverse permet de modifier manuellement la valeur si nécessaire.

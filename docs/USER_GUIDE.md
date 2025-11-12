@@ -785,12 +785,12 @@ Les **Activités** sont des tâches/rappels associés à une fiche.
 
 **Coordinateur des stages** :
 - 👤 Nom : [À définir par l'organisation]
-- 📧 Email : coordinator@techpal.ma
+- 📧 Email : [À définir]
 
 **Développeur du système** :
-- 👤 Nom : SILUE
-- 📧 Email : silue@techpal.ma
-- 🐙 GitHub : [https://github.com/Gninho-silue/internship_management](https://github.com/Gninho-silue/internship_management)
+- 👤 Nom : SILUE GNINNINMGUIGNON
+- 📧 Email : gninhosilue@gmail.com 
+- 🐙 GitHub : [https://github.com/Gninho-silue](https://github.com/Gninho-silue)
 
 ### 7.2 Signaler un bug
 
@@ -831,7 +831,7 @@ Pour une formation personnalisée ou en groupe :
 - **Validation technique** avec le code source réel
 - **FAQ mise à jour** avec les bonnes informations
 
-### Version 1.0.0 (Octobre 2024)
+### Version 1.0.0 (Octobre 2025)
 - Version initiale du guide utilisateur
 - Couverture complète des 4 rôles
 - FAQ complète

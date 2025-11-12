@@ -136,21 +136,30 @@ class InternshipStudent(models.Model):
     # CHAMPS RELATIONNELS
     # ===============================
 
-    internship_ids = fields.One2many(
+    internship_ids = fields.Many2many(
         'internship.stage',
+        'internship_student_stage_rel',  # relation (table intermédiaire)
         'student_id',
+        'stage_id',
+
         string='Stages',
         help="Tous les stages associés à cet étudiant."
     )
 
     skill_ids = fields.Many2many(
         'internship.skill',
+        'internship_student_skill_rel',  # relation (table intermédiaire)
+        'student_id',                    # column1
+        'skill_id',                      # column2
         string='Compétences',
         help="Compétences techniques et générales de l'étudiant."
     )
 
     interest_area_ids = fields.Many2many(
         'internship.area',
+        'internship_student_area_rel',  # relation (table intermédiaire)
+        'student_id',                   # column1
+        'area_id',                      # column2
         string='Centres d\'intérêt',
         help="Domaines dans lesquels l'étudiant souhaite effectuer un stage."
     )
@@ -162,6 +171,12 @@ class InternshipStudent(models.Model):
         help="Tous les documents téléversés par ou pour cet étudiant."
     )
 
+    presentation_ids = fields.One2many(
+        'internship.presentation',
+        'student_id',
+        string='Présentations',
+        help="Toutes les présentations soumises par cet étudiant."
+    )
     # ===============================
     # CHAMPS CALCULÉS
     # ===============================
@@ -171,6 +186,13 @@ class InternshipStudent(models.Model):
         compute='_compute_internship_count',
         store=True,
         help="Nombre total de stages pour cet étudiant."
+    )
+
+    presentation_count = fields.Integer(
+        string='Nombre de présentations',
+        compute='_compute_presentation_count',
+        store=True,
+        help="Nombre total de présentations soumises."
     )
 
     average_grade = fields.Float(
@@ -213,6 +235,12 @@ class InternshipStudent(models.Model):
                 student.completion_rate = total_progress / len(active_internships)
             else:
                 student.completion_rate = 0.0
+
+    @api.depends('presentation_ids')
+    def _compute_presentation_count(self):
+        """Calcule le nombre total de présentations soumises par l'étudiant."""
+        for student in self:
+            student.presentation_count = len(student.presentation_ids)
 
     # ===============================
     # CHAMPS TECHNIQUES
@@ -291,8 +319,8 @@ class InternshipStudent(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'internship.stage',
             'view_mode': 'tree,form,kanban',
-            'domain': [('student_id', '=', self.id)],
-            'context': {'default_student_id': self.id},
+            'domain': [('student_ids', 'in', [self.id])],
+            'context': {},
         }
 
     # ===============================

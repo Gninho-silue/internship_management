@@ -65,8 +65,10 @@
 
                         <group>
                             <group string="Informations Principales">
-                                <field name="stage_id"/>
-                                <field name="student_id" readonly="1"/>
+                                <field name="stage_id" options="{'no_create': True}"/>
+                                <field name="student_id" options="{'no_create': True}"
+                                       invisible="not stage_id"
+                                       required="stage_id"/>
                                 <field name="supervisor_id" readonly="1"/>
                                 <field name="document_type"/>
                                 <field name="meeting_id" string="Réunion Associée"/>
@@ -129,7 +131,7 @@
                     <field name="supervisor_id"/>
                     <separator/>
                     <filter string="Mes Documents" name="my_documents"
-                            domain="[('uploaded_by', '=', uid)]"/>
+                            domain="[('student_id.user_id', '=', uid)]"/>
                     <filter string="À Réviser" name="to_review"
                             domain="[('state', 'in', ['submitted', 'under_review'])]"/>
                     <filter string="Approuvés" name="approved" domain="[('state', '=', 'approved')]"/>

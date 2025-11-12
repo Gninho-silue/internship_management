@@ -121,13 +121,13 @@ class InternshipDocumentFeedback(models.Model):
         """
         feedbacks = super().create(vals_list)
         for feedback in feedbacks:
-            # Notifier l'étudiant via le chatter du document
-            student_user = feedback.stage_id.student_id.user_id
-            if student_user:
+            # Notifier tous les étudiants du stage via le chatter du document
+            student_partners = feedback.stage_id.student_ids.mapped('user_id.partner_id')
+            if student_partners:
                 feedback.document_id.message_post(
                     body=_("Nouveau retour de <strong>%s</strong> : <em>%s</em>",
                            feedback.reviewer_id.name, feedback.feedback_summary),
-                    partner_ids=[student_user.partner_id.id],
+                    partner_ids=student_partners.ids,
                     subtype_xmlid='mail.mt_comment'
                 )
 

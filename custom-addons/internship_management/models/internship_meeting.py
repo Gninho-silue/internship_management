@@ -79,11 +79,11 @@ class InternshipMeeting(models.Model):
         help="Stage auquel cette réunion est liée."
     )
 
-    student_id = fields.Many2one(
-        related='stage_id.student_id',
-        store=True,
+    student_ids = fields.Many2many(
+        'internship.student',
+        related='stage_id.student_ids',
         readonly=True,
-        string="Étudiant(e)"
+        string="ÉtudiantS"
     )
 
     supervisor_id = fields.Many2one(
@@ -106,6 +106,9 @@ class InternshipMeeting(models.Model):
     # pointant vers 'res.partner' pour une intégration parfaite avec le calendrier et les e-mails d'Odoo.
     partner_ids = fields.Many2many(
         'res.partner',
+        'internship_meeting_partner_rel',  # relation (table intermédiaire)
+        'meeting_id',                      # column1
+        'partner_id',                      # column2
         string='Participants',
         tracking=True,
         help="Personnes qui doivent assister à cette réunion."
@@ -211,6 +214,12 @@ class InternshipMeeting(models.Model):
             if meeting.duration <= 0:
                 raise ValidationError(_("La durée de la réunion doit être positive."))
 
+    @api.constrains('student_ids')
+    def _check_students(self):
+        for meeting in self:
+            if not meeting.student_ids:
+                raise ValidationError("Une réunion doit avoir au moins un étudiant participant.")
+
     # ===============================
     # ONCHANGE
     # ===============================
@@ -221,18 +230,27 @@ class InternshipMeeting(models.Model):
         OPTIMISATION: Suggère automatiquement les participants (étudiant, encadrant)
         et l'organisateur lors de la sélection d'un stage.
         """
-        if self.stage_id:
-            partners = self.env['res.partner']
-            if self.stage_id.student_id and self.stage_id.student_id.user_id.partner_id:
-                partners |= self.stage_id.student_id.user_id.partner_id
-            if self.stage_id.supervisor_id and self.stage_id.supervisor_id.user_id.partner_id:
-                partners |= self.stage_id.supervisor_id.user_id.partner_id
-            if self.organizer_id and self.organizer_id.partner_id:
-                partners |= self.organizer_id.partner_id
-
-            self.partner_ids = partners
-        else:
+        if not self.stage_id:
             self.partner_ids = False
+            return
+
+        partners = self.env['res.partner']
+
+        # Récupération des partenaires des étudiants
+        student_partners = self.stage_id.student_ids.mapped('user_id.partner_id')
+        if student_partners:
+            partners |= student_partners
+
+        # Récupération du partenaire de l'encadrant
+        supervisor_partner = self.stage_id.supervisor_id.user_id.partner_id
+        if supervisor_partner:
+            partners |= supervisor_partner
+
+        # Ajout de l'organisateur s'il existe déjà
+        if self.organizer_id.partner_id:
+            partners |= self.organizer_id.partner_id
+
+        self.partner_ids = partners
 
     # ===============================
     # MÉTHODES D'ACTION (WORKFLOW)
@@ -271,12 +289,13 @@ class InternshipMeeting(models.Model):
     # ===============================
 
     def name_get(self):
-        """Affichage personnalisé du nom : Titre (Date)."""
         result = []
-        for meeting in self:
-            name = meeting.name
-            if meeting.date:
-                date_str = fields.Datetime.context_timestamp(self, meeting.date).strftime('%d/%m/%Y %H:%M')
-                name = f"{name} ({date_str})"
-            result.append((meeting.id, name))
+        for record in self:
+            date_str = fields.Date.to_string(record.date)
+            students = ', '.join(record.student_ids.mapped('name'))
+            name = f"{date_str} - {students}"
+            if record.name:
+                name = f"{name} ({record.name})"
+            result.append((record.id, name))
         return result
+

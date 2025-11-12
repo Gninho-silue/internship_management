@@ -62,7 +62,7 @@ class InternshipDocument(models.Model):
         help="Stage auquel ce document est rattaché."
     )
 
-    # CHAMP RESTAURÉ POUR CORRIGER L'ERREUR
+
     meeting_id = fields.Many2one(
         'internship.meeting',
         string='Réunion Associée',
@@ -72,9 +72,10 @@ class InternshipDocument(models.Model):
     student_id = fields.Many2one(
         'internship.student',
         string='Étudiant',
-        related='stage_id.student_id',
-        store=True,
-        readonly=True
+        domain="[('id', 'in', stage_id.student_ids)]",
+        required=True,
+        tracking=True,
+        help="Étudiant propriétaire de ce document."
     )
 
     supervisor_id = fields.Many2one(
@@ -216,6 +217,41 @@ class InternshipDocument(models.Model):
                     "La taille du fichier ne peut pas dépasser %s MB.", max_size_mb
                 ))
 
+    @api.onchange('stage_id')
+    def _onchange_stage_id(self):
+        """Mettre à jour le domaine de student_id et auto-remplir si l'utilisateur est un étudiant"""
+        if self.stage_id:
+            # Si l'utilisateur est un étudiant et appartient au stage, l'auto-remplir
+            student = self.env['internship.student'].search([
+                ('user_id', '=', self.env.user.id)
+            ], limit=1)
+            if student and student in self.stage_id.student_ids:
+                self.student_id = student
+            elif self.student_id and self.student_id not in self.stage_id.student_ids:
+                # Si l'étudiant sélectionné n'appartient pas au nouveau stage, le vider
+                self.student_id = False
+            return {
+                'domain': {
+                    'student_id': [('id', 'in', self.stage_id.student_ids.ids)]
+                }
+            }
+        else:
+            self.student_id = False
+            return {
+                'domain': {
+                    'student_id': [('id', '=', False)]
+                }
+            }
+
+    @api.constrains('student_id', 'stage_id')
+    def _check_student_in_stage(self):
+        for record in self:
+            if record.student_id and record.stage_id:
+                if record.student_id not in record.stage_id.student_ids:
+                    raise ValidationError(
+                        "L'étudiant sélectionné doit être assigné au stage correspondant."
+                    )
+
     # ===================================================
     # MÉTHODES DE CALCUL (COMPUTE)
     # ===================================================
@@ -242,7 +278,28 @@ class InternshipDocument(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Surcharge de la méthode de création."""
+        """Surcharge de la méthode de création pour remplir automatiquement student_id."""
+        # Remplir automatiquement student_id si l'utilisateur est un étudiant
+        for vals in vals_list:
+            if not vals.get('student_id') and vals.get('stage_id'):
+                # Vérifier si l'utilisateur actuel est un étudiant
+                student = self.env['internship.student'].search([
+                    ('user_id', '=', self.env.user.id)
+                ], limit=1)
+                if student:
+                    # Vérifier que l'étudiant appartient au stage
+                    stage = self.env['internship.stage'].browse(vals['stage_id'])
+                    if student in stage.student_ids:
+                        vals['student_id'] = student.id
+            # Vérifier que si student_id est fourni, il appartient bien au stage
+            elif vals.get('student_id') and vals.get('stage_id'):
+                stage = self.env['internship.stage'].browse(vals['stage_id'])
+                student = self.env['internship.student'].browse(vals['student_id'])
+                if student not in stage.student_ids:
+                    raise ValidationError(_(
+                        "L'étudiant sélectionné doit être assigné au stage correspondant."
+                    ))
+        
         docs = super().create(vals_list)
         for doc in docs:
             doc.message_post(body=_("Document '%s' créé.", doc.name))
@@ -256,17 +313,19 @@ class InternshipDocument(models.Model):
         """Soumet le document pour révision."""
         for doc in self:
             doc.state = 'submitted'
-            if doc.supervisor_id.user_id:
-                doc.message_post(
-                    body=_("Le document '%s' a été soumis pour votre révision.", doc.name),
-                    partner_ids=[doc.supervisor_id.user_id.partner_id.id],
-                    subtype_xmlid='mail.mt_comment',
-                )
-                self.activity_schedule(
-                    'mail.activity_data_todo',
-                    user_id=doc.supervisor_id.user_id.id,
-                    summary=_("Réviser le document : %s", doc.name)
-                )
+            if doc.supervisor_id and doc.supervisor_id.user_id:
+                supervisor_partner = doc.supervisor_id.user_id.partner_id
+                if supervisor_partner:
+                    doc.message_post(
+                        body=_("Le document '%s' a été soumis pour votre révision.", doc.name),
+                        partner_ids=[supervisor_partner.id],
+                        subtype_xmlid='mail.mt_comment',
+                    )
+                    self.activity_schedule(
+                        'mail.activity_data_todo',
+                        user_id=doc.supervisor_id.user_id.id,
+                        summary=_("Réviser le document : %s", doc.name)
+                    )
 
     def action_start_review(self):
         """Démarre la révision du document."""

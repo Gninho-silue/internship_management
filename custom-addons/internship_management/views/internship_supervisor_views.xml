@@ -88,7 +88,7 @@
                                           decoration-primary="state=='in_progress'"
                                           decoration-success="state in ['completed','evaluated']">
                                         <field name="title"/>
-                                        <field name="student_id"/>
+                                        <field name="student_ids"/>
                                         <field name="start_date"/>
                                         <field name="end_date"/>
                                         <field name="completion_percentage" widget="progressbar"/>

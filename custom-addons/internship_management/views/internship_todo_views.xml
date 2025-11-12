@@ -12,18 +12,20 @@
                 <tree string="Tâches"
                       decoration-info="state=='todo'"
                       decoration-warning="state=='in_progress'"
+                      decoration-primary="state=='completed'"
                       decoration-success="state=='done'"
                       decoration-muted="state=='cancelled'"
                       decoration-danger="is_overdue == True">
                     <field name="sequence" widget="handle"/>
                     <field name="name" string="Nom de la Tâche"/>
                     <field name="stage_id" string="Stage"/>
-                    <field name="assigned_to" string="Assignée à"/>
+                    <field name="assigned_to_ids" string="Assignée à"/>
                     <field name="deadline" string="Date Limite"/>
                     <field name="priority" widget="priority" string="Priorité"/>
                     <field name="state" widget="badge"
                            decoration-info="state == 'todo'"
                            decoration-warning="state == 'in_progress'"
+                           decoration-primary="state == 'completed'"
                            decoration-success="state == 'done'"/>
                     <field name="progress_percentage" widget="progressbar" string="Progression"/>
                     <field name="is_overdue" invisible="1"/>
@@ -41,17 +43,35 @@
                 <form string="Tâche">
                     <header>
                         <button name="action_start" string="Démarrer" type="object"
-                                class="btn-primary" invisible="state != 'todo'"/>
-                        <button name="action_complete" string="Terminer" type="object"
-                                class="btn-primary" invisible="state != 'in_progress'"/>
+                                class="btn-primary" invisible="state != 'todo'"
+                                groups="internship_management.group_internship_student"/>
+                        <button name="action_complete" string="Marquer comme Terminé" type="object"
+                                class="btn-primary" invisible="state != 'in_progress'"
+                                groups="internship_management.group_internship_student"/>
+
+                         <!-- Boutons pour l'encadrant -->
+                        <button name="action_validate"
+                                string="Valider"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'completed'"
+                                groups="internship_management.group_internship_supervisor"/>
+
+                        <button name="action_reject"
+                                string="Renvoyer en Cours"
+                                type="object"
+                                class="btn-warning"
+                                invisible="state != 'completed'"
+                                groups="internship_management.group_internship_supervisor"/>
                         <button name="action_cancel" string="Annuler" type="object"
-                                invisible="state in ['done', 'cancelled']"/>
+                                invisible="state in ['done', 'cancelled']"
+                                 groups="internship_management.group_internship_supervisor"/>
                         <button name="action_reset_to_todo" string="Réinitialiser" type="object"
                                 invisible="state == 'todo'"
                                 groups="internship_management.group_internship_supervisor"
                                 confirm="Êtes-vous sûr de vouloir réinitialiser cette tâche à 'À Faire' ?"/>
                         <field name="state" widget="statusbar"
-                               statusbar_visible="todo,in_progress,done"/>
+                               statusbar_visible="todo,in_progress,completed,done"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -64,8 +84,16 @@
                             <group name="basic_info">
                                 <field name="stage_id" options="{'no_create': True}"
                                        readonly="state in ['done', 'cancelled']"/>
-                                <field name="assigned_to" options="{'no_create': True}"
-                                       readonly="state in ['done', 'cancelled']"/>
+                                <field name="assigned_to_ids" widget="many2many_tags" options="{'no_create': True}"
+                                       readonly="state in ['done', 'cancelled']"
+                                       invisible="not stage_id"
+                                       required="stage_id"/>
+                                <field name="has_assigned_students" invisible="1"/>
+                                <field name="responsible_id" options="{'no_create': True}"
+                                       readonly="state in ['done', 'cancelled']"
+                                       invisible="not has_assigned_students"
+                                       required="has_assigned_students"/>
+
                                 <field name="priority" widget="priority" readonly="state in ['done', 'cancelled']"/>
                                 <field name="deadline" readonly="state in ['done', 'cancelled']"/>
                             </group>
@@ -106,7 +134,7 @@
                 <kanban default_group_by="state">
                     <field name="name"/>
                     <field name="stage_id"/>
-                    <field name="assigned_to"/>
+                    <field name="assigned_to_ids"/>
                     <field name="deadline"/>
                     <field name="priority"/>
                     <field name="state"/>
@@ -130,7 +158,7 @@
                                     </div>
                                     <div>
                                         <i class="fa fa-user me-2" title="Assignée à"/>
-                                        <field name="assigned_to"/>
+                                        <field name="assigned_to_ids"/>
                                     </div>
                                     <div t-if="record.deadline.raw_value">
                                         <i class="fa fa-calendar me-2" title="Date limite"/>
@@ -163,7 +191,7 @@
                 <search string="Rechercher des Tâches">
                     <field name="name" string="Nom ou Description"/>
                     <field name="stage_id"/>
-                    <field name="assigned_to"/>
+                    <field name="assigned_to_ids"/>
                     <separator/>
                     <filter string="À Faire" name="todo" domain="[('state', '=', 'todo')]"/>
                     <filter string="En Cours" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
@@ -176,11 +204,11 @@
                                 ('deadline', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
                             ]"/>
                     <separator/>
-                    <filter string="Mes Tâches" name="my_tasks" domain="[('assigned_to', '=', uid)]"/>
+                    <filter string="Mes Tâches" name="my_tasks" domain="[('assigned_to_ids.user_id', '=', uid)]"/>
                     <group expand="0" string="Regrouper par">
                         <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
                         <filter string="Priorité" name="group_priority" context="{'group_by': 'priority'}"/>
-                        <filter string="Assignée à" name="group_assigned_to" context="{'group_by': 'assigned_to'}"/>
+                        <filter string="Assignée à" name="group_assigned_to" context="{'group_by': 'assigned_to_ids'}"/>
                         <filter string="Stage" name="group_stage" context="{'group_by': 'stage_id'}"/>
                         <filter string="Date Limite" name="group_deadline" context="{'group_by': 'deadline:day'}"/>
                     </group>
@@ -212,8 +240,8 @@
             <field name="name">Mes Tâches</field>
             <field name="res_model">internship.todo</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="domain">[('assigned_to', '=', uid)]</field>
-            <field name="context">{'default_assigned_to': uid}</field>
+            <field name="domain">[('assigned_to_ids.user_id', '=', uid)]</field>
+            <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Aucune tâche ne vous est assignée pour le moment.

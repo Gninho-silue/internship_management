@@ -6,7 +6,7 @@ aux encadrants de les réviser, et de suivre le cycle de vie
 d'approbation via le Chatter et les Activités Odoo.
 """
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class InternshipPresentation(models.Model):
@@ -36,7 +36,21 @@ class InternshipPresentation(models.Model):
         # OPTIMISATION: Une présentation doit obligatoirement être liée à un stage.
         required=True, ondelete='cascade', tracking=True
     )
-    student_id = fields.Many2one(related='stage_id.student_id', store=True, string='Étudiant(e)')
+    student_id = fields.Many2one('internship.student',
+                                 store=True,
+                                 tracking=True,
+                                 string='Étudiant(e)')
+
+    # On ajoute une contrainte pour s'assurer que l'étudiant fait partie du stage
+    @api.constrains('student_id', 'stage_id')
+    def _check_student_in_stage(self):
+        for record in self:
+            if record.student_id not in record.stage_id.student_ids:
+                raise ValidationError(_(
+                    "L'étudiant(e) %s doit être associé(e) au stage pour pouvoir créer une présentation.",
+                    record.student_id.full_name
+                ))
+
     supervisor_id = fields.Many2one(related='stage_id.supervisor_id', store=True, string='Encadrant(e)')
 
     # ===============================

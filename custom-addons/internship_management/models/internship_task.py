@@ -37,7 +37,7 @@ class InternshipTodo(models.Model):
 
     name = fields.Char(
         string='Nom de la Tâche',
-        required=True,  # Bonne pratique : une tâche doit toujours avoir un nom.
+        required=True,
         tracking=True,
         help="Titre ou nom de la tâche à réaliser."
     )
@@ -54,17 +54,42 @@ class InternshipTodo(models.Model):
     stage_id = fields.Many2one(
         'internship.stage',
         string='Stage Associé',
-        required=True,  # Une tâche devrait toujours être liée à un stage pour le contexte.
+        required=True,
         ondelete='cascade',
         help="Stage auquel cette tâche est rattachée."
     )
 
-    assigned_to = fields.Many2one(
-        'res.users',
+    assigned_to_ids = fields.Many2many(
+        'internship.student',
+        'internship_todo_student_rel',  # relation (table intermédiaire)
+        'todo_id',                      # column1
+        'student_id',                   # column2
         string='Assignée à',
         tracking=True,
-        help="Utilisateur responsable de la réalisation de cette tâche (généralement l'étudiant)."
+        help="Stagiaires susceptible de faire de cette tâche."
     )
+
+    # Ajouter le champ responsible_id
+    responsible_id = fields.Many2one(
+        'internship.student',
+        string='Responsable',
+        tracking=True,
+        help="Etudiant responsable pour marquer une tâche comme termine."
+    )
+    
+    # Champ computed pour gérer la visibilité
+    has_assigned_students = fields.Boolean(
+        string='A des étudiants assignés',
+        compute='_compute_has_assigned_students',
+        store=False,
+        help="Champ technique pour gérer la visibilité du champ responsable."
+    )
+    
+    @api.depends('assigned_to_ids')
+    def _compute_has_assigned_students(self):
+        """Calcule si des étudiants sont assignés à la tâche"""
+        for task in self:
+            task.has_assigned_students = bool(task.assigned_to_ids)
 
     # ===================================================
     # CHAMPS DE GESTION DE LA TÂCHE
@@ -73,6 +98,7 @@ class InternshipTodo(models.Model):
     state = fields.Selection([
         ('todo', 'À Faire'),
         ('in_progress', 'En Cours'),
+        ('completed', 'Terminé par Étudiant'),
         ('done', 'Terminée'),
         ('cancelled', 'Annulée')
     ], string='Statut', default='todo', tracking=True, required=True,
@@ -168,6 +194,63 @@ class InternshipTodo(models.Model):
                 raise ValidationError(
                     _("La date limite ne peut pas être antérieure à la date de création de la tâche."))
 
+    @api.onchange('stage_id')
+    def _onchange_stage_id(self):
+        """Vider les champs assignés quand le stage change et mettre à jour le domaine"""
+        self.assigned_to_ids = False
+        self.responsible_id = False
+        # Forcer la mise à jour du domaine du champ assigned_to_ids
+        if self.stage_id and self.stage_id.student_ids:
+            student_ids = self.stage_id.student_ids.ids
+            return {
+                'domain': {
+                    'assigned_to_ids': [('id', 'in', student_ids)],
+                    'responsible_id': [('id', '=', False)]
+                }
+            }
+        else:
+            return {
+                'domain': {
+                    'assigned_to_ids': [('id', '=', False)],
+                    'responsible_id': [('id', '=', False)]
+                }
+            }
+
+    @api.onchange('assigned_to_ids')
+    def _onchange_assigned_to_ids(self):
+        """Vider le responsable si non présent dans les assignés et mettre à jour le domaine"""
+        if self.responsible_id and self.responsible_id not in self.assigned_to_ids:
+            self.responsible_id = False
+        # Mettre à jour le domaine du champ responsible_id
+        if self.assigned_to_ids:
+            assigned_ids = self.assigned_to_ids.ids
+            return {
+                'domain': {
+                    'responsible_id': [('id', 'in', assigned_ids)]
+                }
+            }
+        else:
+            return {
+                'domain': {
+                    'responsible_id': [('id', '=', False)]
+                }
+            }
+
+    @api.constrains('assigned_to_ids', 'responsible_id', 'stage_id')
+    def _check_responsible(self):
+        """Vérifier que le responsable fait partie des assignés et que les assignés appartiennent au stage"""
+        for task in self:
+            if task.responsible_id and task.responsible_id not in task.assigned_to_ids:
+                raise ValidationError(_("Le responsable doit faire partie des étudiants assignés."))
+            if task.stage_id and task.assigned_to_ids:
+                # Vérifier que tous les étudiants assignés appartiennent au stage
+                invalid_students = task.assigned_to_ids - task.stage_id.student_ids
+                if invalid_students:
+                    raise ValidationError(_(
+                        "Les étudiants suivants n'appartiennent pas au stage sélectionné : %s",
+                        ', '.join(invalid_students.mapped('name'))
+                    ))
+
     # ===================================================
     # MÉTHODES DE CALCUL (COMPUTE)
     # ===================================================
@@ -219,13 +302,18 @@ class InternshipTodo(models.Model):
         self.write({'state': 'in_progress'})
 
     def action_complete(self):
-        """Marque la tâche comme 'Terminée'."""
+        """Action pour les étudiants pour marquer comme terminé"""
         self.ensure_one()
         self.write({
-            'state': 'done',
+            'state': 'completed',
             'completion_date': fields.Datetime.now(),
             'progress_percentage': 100.0
         })
+
+    def action_reject(self):
+        """Action pour l'encadrant pour renvoyer en cours"""
+        self.ensure_one()
+        self.write({'state': 'in_progress'})
 
     def action_cancel(self):
         """Passe la tâche au statut 'Annulée'."""
@@ -241,6 +329,11 @@ class InternshipTodo(models.Model):
             'completion_date': False
         })
 
+    def action_validate(self):
+        """Action pour l'encadrant pour valider la tâche"""
+        self.ensure_one()
+        self.write({'state': 'done'})
+
     # ===================================================
     # LOGIQUE MÉTIER (OVERRIDE)
     # ===================================================
@@ -248,21 +341,24 @@ class InternshipTodo(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         """
-        Surcharge de la méthode de création pour assigner automatiquement
-        la tâche à l'étudiant du stage si elle est créée par un encadrant.
+        Surcharge de la méthode de création pour :
+        1. Assigner automatiquement la tâche à l'étudiant du stage si créée par un encadrant
+        2. Ajouter l'encadrant comme follower
         """
         for vals in vals_list:
             # Si un stage est défini et que personne n'est assigné manuellement
-            if vals.get('stage_id') and not vals.get('assigned_to'):
+            if vals.get('stage_id') and not vals.get('assigned_to_ids'):
                 # On vérifie si le créateur est un encadrant
                 is_supervisor = self.env.user.has_group('internship_management.group_internship_supervisor')
 
                 if is_supervisor:
                     stage = self.env['internship.stage'].browse(vals['stage_id'])
-                    if stage.student_id and stage.student_id.user_id:
-                        vals['assigned_to'] = stage.student_id.user_id.id
+                    if stage.student_ids:
+                        # Utiliser les IDs des étudiants directement (pas user_id.id)
+                        student_ids = stage.student_ids.ids
+                        vals['assigned_to_ids'] = [(6, 0, student_ids)]
                         _logger.info(
-                            f"Tâche auto-assignée à l'étudiant {stage.student_id.user_id.name} "
+                            f"Tâche auto-assignée aux étudiants {', '.join(stage.student_ids.mapped('name'))} "
                             f"par l'encadrant {self.env.user.name}."
                         )
                     else:
@@ -271,7 +367,16 @@ class InternshipTodo(models.Model):
                             f"'{stage.title}', mais aucun étudiant (ou utilisateur lié) n'a été trouvé."
                         )
 
-        return super().create(vals_list)
+        records = super().create(vals_list)
+
+        # Ajouter l'encadrant comme follower pour chaque enregistrement
+        for record in records:
+            if record.stage_id and record.stage_id.supervisor_id and record.stage_id.supervisor_id.user_id:
+                supervisor_partner = record.stage_id.supervisor_id.user_id.partner_id
+                if supervisor_partner:
+                    record.message_subscribe(partner_ids=[supervisor_partner.id])
+
+        return records
 
     # ===================================================
     # Méthodes pour l'affichage (non modifiées, déjà bonnes)

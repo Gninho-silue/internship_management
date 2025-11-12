@@ -15,6 +15,7 @@
                     <field name="education_level"/>
                     <field name="field_of_study"/>
                     <field name="internship_count" string="Nb Stages"/>
+                    <field name="presentation_count" string="Nb presentation"/>
                     <field name="average_grade" string="Note Moy."/>
                     <field name="active" widget="boolean_toggle"/>
                 </tree>
@@ -72,6 +73,7 @@
 
                                 <group class="oe_subtotal_footer oe_right">
                                     <field name="internship_count" string="Nombre total de stages"/>
+                                     <field name="internship_count" string="Nombre total de presentations"/>
                                     <field name="average_grade" string="Note moyenne"/>
                                     <field name="completion_rate" string="Taux de complétion" widget="progressbar"/>
                                 </group>

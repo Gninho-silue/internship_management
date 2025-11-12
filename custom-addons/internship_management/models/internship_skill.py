@@ -122,6 +122,9 @@ class InternshipSkill(models.Model):
 
     related_area_ids = fields.Many2many(
         'internship.area',
+        'internship_skill_area_rel',  # relation (table intermédiaire)
+        'skill_id',                   # column1
+        'area_id',                    # column2
         string='Domaines liés',
         help="Domaines d'expertise où cette compétence est couramment utilisée."
     )

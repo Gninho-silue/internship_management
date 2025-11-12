@@ -209,9 +209,9 @@
 
         <!-- My Feedback - Student -->
         <menuitem id="menu_internship_document_feedback_my_student"
-                  name="Mes Commentaires"
+                  name="Feedbacks Reçus"
                   parent="menu_internship_documents"
-                  action="action_internship_document_feedback_my"
+                  action="action_internship_document_feedback_received"
                   sequence="55"
                   groups="group_internship_student"/>
 

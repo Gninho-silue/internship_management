@@ -87,6 +87,9 @@ class InternshipArea(models.Model):
 
     skill_ids = fields.Many2many(
         'internship.skill',
+        'internship_area_skill_rel',  # relation (table intermédiaire)
+        'area_id',                    # column1
+        'skill_id',                   # column2
         string='Compétences requises',
         help="Compétences généralement nécessaires dans ce domaine."
     )

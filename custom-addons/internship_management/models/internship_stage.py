@@ -62,12 +62,15 @@ class InternshipStage(models.Model):
     # CHAMPS RELATIONNELS
     # ===============================
 
-    student_id = fields.Many2one(
+    student_ids = fields.Many2many(
         'internship.student',
-        string='Étudiant(e)',
+        'internship_student_stage_rel',  # relation (table intermédiaire)
+        'stage_id',                      # column1
+        'student_id',                    # column2
+        string='Étudiants',
+        domain=[('active', '=', True)],
         tracking=True,
-        ondelete='restrict',
-        help="Étudiant(e) assigné(e) à ce stage."
+        help="Étudiants assigné(e)s à ce stage."
     )
 
     supervisor_id = fields.Many2one(
@@ -129,36 +132,12 @@ class InternshipStage(models.Model):
     )
 
     # ===============================
-    # PROPOSITION DE SUJET
+    # DESCRIPTION DÉTAILLÉE DU SUJET
     # ===============================
 
     subject_proposal = fields.Html(
-        string='Proposition de Sujet',
-        help="Proposition de l'entreprise pour le sujet de stage (format HTML)."
-    )
-
-    proposal_status = fields.Selection([
-        ('draft', 'Brouillon'),
-        ('proposed', 'Proposé'),
-        ('accepted', 'Accepté'),
-        ('modifications_requested', 'Modifications Demandées'),
-        ('rejected', 'Rejeté')
-    ], string='Statut de la Proposition', default='draft', tracking=True,
-        help="Statut de la proposition de sujet.")
-
-    proposal_feedback = fields.Html(
-        string='Feedback sur la Proposition',
-        help="Feedback sur la proposition de sujet."
-    )
-
-    proposal_date = fields.Datetime(
-        string='Date de Proposition',
-        help="Date à laquelle le sujet a été proposé."
-    )
-
-    proposal_accepted_date = fields.Datetime(
-        string='Date d\'Acceptation',
-        help="Date à laquelle la proposition a été acceptée."
+        string='Description Détaillée du Sujet',
+        help="Description détaillée du sujet de stage. Ce champ peut être utilisé pour fournir des informations supplémentaires sur le projet, les objectifs, les technologies utilisées, etc."
     )
 
     # ===============================
@@ -334,8 +313,14 @@ class InternshipStage(models.Model):
         ('completed', 'Terminée'),
         ('cancelled', 'Annulée')
     ], string='Statut Soutenance', default='scheduled', tracking=True)
-    jury_member_ids = fields.Many2many('internship.supervisor', string='Membres du Jury',
-                                       help="Encadrants assignés comme membres du jury.")
+    jury_member_ids = fields.Many2many(
+        'internship.supervisor',
+        'internship_stage_jury_rel',  # relation (table intermédiaire)
+        'stage_id',                   # column1
+        'supervisor_id',              # column2
+        string='Membres du Jury',
+        help="Encadrants assignés comme membres du jury."
+    )
 
     # ===============================
     # SIGNATURES
@@ -387,18 +372,19 @@ class InternshipStage(models.Model):
 
         for stage in stages:
             _logger.info(f"Stage créé : {stage.reference_number} - {stage.title}")
-            # Notifier l'étudiant via le Chatter
-            if stage.student_id.user_id:
-                stage.message_post(
-                    body=_(
-                        "Bienvenue ! Vous avez été assigné(e) au stage "
-                        "\"<strong>%s</strong>\". Veuillez consulter les détails.",
-                        stage.title
-                    ),
-                    partner_ids=[stage.student_id.user_id.partner_id.id],
-                    message_type='comment',
-                    subtype_xmlid='mail.mt_comment',
-                )
+            # Notifier tous les étudiants via le Chatter
+            for student in stage.student_ids:
+                if student.user_id and student.user_id.partner_id:
+                    stage.message_post(
+                        body=_(
+                            "Bienvenue ! Vous avez été assigné(e) au stage "
+                            "\"<strong>%s</strong>\". Veuillez consulter les détails.",
+                            stage.title
+                        ),
+                        partner_ids=[student.user_id.partner_id.id],
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_comment',
+                    )
         return stages
 
     # ===============================
@@ -464,8 +450,10 @@ class InternshipStage(models.Model):
 
         # Notifier les parties prenantes via le Chatter
         partner_ids = []
-        if self.student_id.user_id:
-            partner_ids.append(self.student_id.user_id.partner_id.id)
+        # Notifier tous les étudiants du stage
+        for student in self.student_ids:
+            if student.user_id and student.user_id.partner_id:
+                partner_ids.append(student.user_id.partner_id.id)
         if self.supervisor_id.user_id:
             partner_ids.append(self.supervisor_id.user_id.partner_id.id)
 
@@ -493,77 +481,6 @@ class InternshipStage(models.Model):
             raise ValidationError(_("Un stage évalué ne peut pas être réinitialisé."))
         self.write({'state': 'draft'})
 
-    # ===============================
-    # PROPOSITION DE SUJET
-    # ===============================
-
-    def action_propose_subject(self):
-        """Propose le sujet à l'étudiant."""
-        self.ensure_one()
-        if not self.subject_proposal:
-            raise ValidationError(_("Veuillez renseigner une proposition de sujet avant de soumettre."))
-
-        self.write({
-            'proposal_status': 'proposed',
-            'proposal_date': fields.Datetime.now(),
-            'state': 'submitted'
-        })
-
-        if self.student_id.user_id:
-            self.message_post(
-                body=_(
-                    "<strong>Nouvelle Proposition de Sujet</strong><br/>"
-                    "Veuillez examiner la proposition dans l'onglet 'Proposition de Sujet' et y répondre."
-                ),
-                partner_ids=[self.student_id.user_id.partner_id.id],
-                message_type='comment',
-                subtype_xmlid='mail.mt_comment'
-            )
-
-    def action_accept_proposal(self):
-        """Accepte la proposition de sujet."""
-        self.ensure_one()
-        self.write({
-            'proposal_status': 'accepted',
-            'proposal_accepted_date': fields.Datetime.now(),
-            'state': 'approved'
-        })
-        self.action_start()  # Démarre automatiquement le stage
-
-        if self.supervisor_id.user_id:
-            self.message_post(
-                body=_("La proposition de sujet a été <strong>acceptée</strong> par l'étudiant(e)."),
-                partner_ids=[self.supervisor_id.user_id.partner_id.id]
-            )
-
-    def action_request_modifications(self):
-        """Demande des modifications sur la proposition."""
-        self.ensure_one()
-        if not self.proposal_feedback:
-            raise ValidationError(_("Veuillez fournir un feedback expliquant les modifications demandées."))
-
-        self.write({'proposal_status': 'modifications_requested', 'state': 'draft'})
-
-        if self.supervisor_id.user_id:
-            self.message_post(
-                body=_(
-                    "<strong>Modifications Demandées</strong><br/>"
-                    "L'étudiant(e) a demandé des modifications sur la proposition de sujet. "
-                    "Veuillez consulter son feedback dans l'onglet dédié."
-                ),
-                partner_ids=[self.supervisor_id.user_id.partner_id.id]
-            )
-
-    def action_reject_proposal(self):
-        """Rejette la proposition de sujet."""
-        self.ensure_one()
-        self.write({'proposal_status': 'rejected'})
-
-        if self.supervisor_id.user_id:
-            self.message_post(
-                body=_("La proposition de sujet a été <strong>rejetée</strong>."),
-                partner_ids=[self.supervisor_id.user_id.partner_id.id]
-            )
 
     # ===============================
     # ACTIONS D'OUVERTURE DE VUES
@@ -579,7 +496,6 @@ class InternshipStage(models.Model):
             'view_mode': 'form',
             'context': {
                 'default_stage_id': self.id,
-                'default_student_id': self.student_id.id,
                 'default_supervisor_id': self.supervisor_id.id,
             },
             'target': 'new',
@@ -596,7 +512,7 @@ class InternshipStage(models.Model):
             'view_id': self.env.ref('internship_management.view_internship_todo_form').id,
             'context': {
                 'default_stage_id': self.id,
-                'default_assigned_to': self.student_id.id,
+                'default_assigned_to_ids': [(6, 0, self.student_ids.ids)],
             },
             'target': 'new',
         }
@@ -623,7 +539,6 @@ class InternshipStage(models.Model):
             'view_mode': 'form',
             'context': {
                 'default_stage_id': self.id,
-                'default_student_id': self.student_id.id,
                 'default_supervisor_id': self.supervisor_id.id,
             },
             'target': 'new',
@@ -687,5 +602,5 @@ class InternshipStage(models.Model):
             domain = ['|', '|',
                       ('title', operator, name),
                       ('reference_number', operator, name),
-                      ('student_id.full_name', operator, name)]
+                      ('student_ids.full_name', operator, name)]
         return self._search(domain + args, limit=limit, access_rights_uid=name_get_uid, order=order)

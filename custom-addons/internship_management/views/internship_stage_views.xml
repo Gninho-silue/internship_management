@@ -14,34 +14,26 @@
                 <tree string="Stages"
                       decoration-info="state=='draft'"
                       decoration-warning="state=='submitted'"
-                      decoration-bf="state=='approved'"
+                      decoration-success="state in ['approved', 'completed']"
                       decoration-primary="state=='in_progress'"
-                      decoration-success="state=='completed'"
                       decoration-muted="state=='evaluated'"
                       decoration-danger="state=='cancelled'">
 
                     <field name="reference_number"/>
                     <field name="title"/>
                     <field name="internship_type"/>
-                    <field name="student_id"/>
+                    <field name="student_ids"/>
                     <field name="supervisor_id"/>
                     <field name="company_id"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
                     <field name="duration_days"/>
                     <field name="completion_percentage" widget="progressbar"/>
-                    <field name="proposal_status" widget="badge"
-                           decoration-info="proposal_status=='draft'"
-                           decoration-warning="proposal_status=='proposed'"
-                           decoration-success="proposal_status=='accepted'"
-                           decoration-danger="proposal_status=='modifications_requested'"
-                           decoration-muted="proposal_status=='rejected'"/>
                     <field name="state" widget="badge"
                            decoration-info="state=='draft'"
                            decoration-warning="state=='submitted'"
-                           decoration-bf="state=='approved'"
+                           decoration-success="state in ['approved', 'completed']"
                            decoration-primary="state=='in_progress'"
-                           decoration-success="state=='completed'"
                            decoration-muted="state=='evaluated'"
                            decoration-danger="state=='cancelled'"/>
                 </tree>
@@ -97,7 +89,7 @@
                         <group>
                             <group name="basic_info" string="Informations de Base">
                                 <field name="internship_type" widget="radio" options="{'horizontal': true}"/>
-                                <field name="student_id" options="{'no_create': True}"/>
+                                <field name="student_ids" options="{'no_create': True}"/>
                                 <field name="supervisor_id" options="{'no_create': True}"/>
                                 <field name="company_id" invisible="1"/>
                             </group>
@@ -120,40 +112,16 @@
                                        placeholder="Lister les objectifs pédagogiques et professionnels..."/>
                             </page>
 
-                            <page name="subject_proposal" string="Proposition de Sujet">
-                                <header>
-                                    <button name="action_propose_subject" string="Proposer le Sujet" type="object"
-                                            class="btn-primary"
-                                            invisible="proposal_status != 'draft' or not subject_proposal"
-                                            groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
-                                    <button name="action_accept_proposal" string="Accepter la Proposition" type="object"
-                                            class="btn-success" invisible="proposal_status != 'proposed'"
-                                            groups="internship_management.group_internship_student"/>
-                                    <button name="action_request_modifications" string="Demander des Modifications"
-                                            type="object"
-                                            class="btn-warning" invisible="proposal_status != 'proposed'"
-                                            groups="internship_management.group_internship_student"/>
-                                    <button name="action_reject_proposal" string="Rejeter la Proposition" type="object"
-                                            class="btn-danger"
-                                            invisible="proposal_status not in ['proposed', 'modifications_requested']"
-                                            groups="internship_management.group_internship_student"/>
-                                    <field name="proposal_status" widget="statusbar"
-                                           statusbar_visible="draft,proposed,accepted,modifications_requested,rejected"/>
-                                </header>
-                                <group>
-                                    <group string="Informations sur la Proposition">
-                                        <field name="proposal_date"/>
-                                        <field name="proposal_accepted_date"/>
-                                    </group>
-                                </group>
-                                <separator string="Proposition de Sujet"/>
+                            <page name="subject_proposal" string="Description du Sujet">
+                                <div class="alert alert-info" role="alert">
+                                    <strong>Description du Sujet de Stage</strong><br/>
+                                    Utilisez ce champ pour fournir une description détaillée du sujet, des objectifs,
+                                    des technologies utilisées, ou toute autre information pertinente sur le projet de stage.
+                                    Cette description est visible par tous les étudiants assignés au stage.
+                                </div>
+                                <separator string="Description Détaillée du Sujet"/>
                                 <field name="subject_proposal" nolabel="1"
-                                       placeholder="Entrez la proposition de sujet ici..."/>
-                                <separator string="Feedback"
-                                           invisible="proposal_status not in ['modifications_requested', 'rejected']"/>
-                                <field name="proposal_feedback" nolabel="1"
-                                       placeholder="Entrez le feedback sur la proposition..."
-                                       invisible="proposal_status not in ['modifications_requested', 'rejected']"/>
+                                       placeholder="Entrez une description détaillée du sujet de stage ici..."/>
                             </page>
 
                             <page name="tasks" string="Tâches et Livrables">
@@ -178,7 +146,7 @@
                                         <field name="sequence" widget="handle"/>
                                         <field name="name"/>
                                         <field name="deadline"/>
-                                        <field name="assigned_to"/>
+                                        <field name="assigned_to_ids"/>
                                         <field name="state" widget="badge"/>
                                         <field name="priority" widget="priority"/>
                                     </tree>
@@ -324,7 +292,7 @@
             <field name="arch" type="xml">
                 <kanban default_group_by="state" class="o_kanban_small_column">
                     <field name="title"/>
-                    <field name="student_id"/>
+                    <field name="student_ids"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
                     <field name="completion_percentage"/>
@@ -338,7 +306,7 @@
                                     </strong>
                                     <div>
                                         <i class="fa fa-user" title="Étudiant"/>
-                                        <field name="student_id"/>
+                                        <field name="student_ids"/>
                                     </div>
                                     <div>
                                         <i class="fa fa-calendar" title="Période"/>
@@ -385,7 +353,7 @@
             <field name="name">Mes Stages</field>
             <field name="res_model">internship.stage</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="domain">[('student_id.user_id', '=', uid)]</field>
+            <field name="domain">[('student_ids.user_id', '=', uid)]</field>
         </record>
 
         <record id="action_internship_stage_supervise" model="ir.actions.act_window">
