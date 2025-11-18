@@ -43,6 +43,7 @@ Plateforme complète de gestion des stages incluant :
         'data/sequences.xml',
         'data/internship_cron.xml',
         'data/internship_meeting_mail_templates.xml',
+        'data/internship_stage_mail_templates.xml',
         'data/mail_activity_type_data.xml',
 
         # Reports
@@ -53,6 +54,7 @@ Plateforme complète de gestion des stages incluant :
         'views/internship_presentation_views.xml',
         'views/internship_meeting_views.xml',
         'views/internship_stage_views.xml',  # ← AJOUTÉ
+        'views/internship_account_views.xml',
         'views/internship_student_views.xml',
         'views/internship_supervisor_views.xml',
         'views/internship_area_views.xml',

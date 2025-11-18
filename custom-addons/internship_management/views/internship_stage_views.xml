@@ -54,18 +54,31 @@
                         <button name="action_submit" string="Soumettre" type="object"
                                 class="btn-primary" invisible="state != 'draft'"
                                 groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+
+                         <button name="action_approve" string="Approuver" type="object"
+                                class="btn-primary" invisible="state != 'submitted'"
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+
+                        <button name="action_start" string="Commencer" type="object"
+                                class="btn-primary" invisible="state != 'approved'"
+                                groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+
+
                         <button name="action_complete" string="Terminer" type="object"
                                 class="oe_highlight" invisible="state != 'in_progress'"
                                 groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+
                         <button name="action_schedule_defense" string="Planifier Soutenance" type="object"
                                 class="oe_highlight" invisible="state != 'completed'"
                                 groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+
                         <button name="action_evaluate" string="Évaluer" type="object"
                                 class="oe_highlight" invisible="state != 'completed'"
                                 groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                         <button name="action_cancel" string="Annuler" type="object"
                                 invisible="state in ['cancelled', 'evaluated']"
                                 groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+
                         <button name="action_reset_to_draft" string="Réinitialiser en Brouillon" type="object"
                                 invisible="state in ['draft', 'evaluated']"
                                 groups="internship_management.group_internship_admin,internship_management.group_internship_coordinator"/>
@@ -153,7 +166,7 @@
                                 </field>
                             </page>
 
-                            <page name="meetings" string="Réunions">
+                            <page name="meetings" string="Réunions &amp; Plannings">
                                 <div class="oe_button_box" name="button_box">
                                     <button name="action_schedule_meeting" type="object" class="oe_stat_button"
                                             icon="fa-calendar-plus-o" string="Planifier une Réunion"/>
@@ -162,11 +175,22 @@
                                             icon="fa-calendar" string="Toutes les Réunions"/>
                                 </div>
                                 <group>
-                                    <group string="Statistiques des Réunions">
+                                    <group string="Statistiques">
                                         <field name="meeting_count" widget="statinfo" string="Réunions Totales"/>
                                         <field name="upcoming_meeting_count" widget="statinfo" string="À Venir"/>
+                                        <field name="planning_ids" widget="statinfo" string="Plannings" column_invisible="1"/>
                                     </group>
                                 </group>
+                                <separator string="Plannings Automatiques"/>
+                                <field name="planning_ids" readonly="1" column_invisible="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="week_number"/>
+                                        <field name="planning_start_date"/>
+                                        <field name="planning_end_date"/>
+                                        <field name="state" widget="badge"/>
+                                    </tree>
+                                </field>
                                 <separator string="Réunions Récentes"/>
                                 <field name="meeting_ids" readonly="1">
                                     <tree>
@@ -268,6 +292,43 @@
                                             help="Générer le rapport d'évaluation"
                                             invisible="state != 'evaluated'"/>
                                 </div>
+                            </page>
+
+                            <!-- Onglet Informations Supplémentaires -->
+                            <page name="supplementary_info" string="Informations Supplémentaires">
+                                <group>
+                                    <group string="Dépôt de Code">
+                                        <field name="repository_url" placeholder="https://github.com/username/repo"/>
+                                    </group>
+                                </group>
+                                <separator string="Comptes Externes"/>
+                                <field name="account_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="account_type" widget="badge"/>
+                                        <field name="address"/>
+                                        <field name="description"/>
+                                        <field name="active" invisible="1"/>
+                                    </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name="name"/>
+                                                    <field name="account_type"/>
+                                                    <field name="address"/>
+                                                </group>
+                                                <group>
+                                                    <field name="stage_id" invisible="1"/>
+                                                    <field name="active"/>
+                                                </group>
+                                            </group>
+                                            <group>
+                                                <field name="description" nolabel="1" placeholder="Description ou notes supplémentaires..."/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
                             </page>
 
                         </notebook>

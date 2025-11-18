@@ -7,6 +7,7 @@ les évaluations et la gestion documentaire.
 """
 
 import logging
+import re
 from datetime import timedelta
 
 from odoo import models, fields, api, _
@@ -140,6 +141,11 @@ class InternshipStage(models.Model):
         help="Description détaillée du sujet de stage. Ce champ peut être utilisé pour fournir des informations supplémentaires sur le projet, les objectifs, les technologies utilisées, etc."
     )
 
+    repository_url = fields.Char(
+        string='URL du Dépôt (GitHub/GitLab)',
+        help="URL du dépôt GitHub, GitLab ou autre service de gestion de code source."
+    )
+
     # ===============================
     # CONTENU DU STAGE
     # ===============================
@@ -238,6 +244,17 @@ class InternshipStage(models.Model):
     presentation_ids = fields.One2many(
         'internship.presentation', 'stage_id', string='Présentations',
         help="Présentations de l'étudiant pour la soutenance."
+    )
+
+    planning_ids = fields.One2many(
+        'internship.meeting', 'stage_id', string='Plannings',
+        domain=[('meeting_type', '=', 'planning')],
+        help="Plannings automatiques créés pour ce stage."
+    )
+
+    account_ids = fields.One2many(
+        'internship.account', 'stage_id', string='Comptes Externes',
+        help="Comptes externes associés à ce stage (GitHub, GitLab, etc.)."
     )
 
     # ===============================
@@ -363,7 +380,12 @@ class InternshipStage(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Surcharge de la méthode create pour générer les numéros de référence."""
+        """
+        Surcharge de la méthode create pour :
+        - Générer les numéros de référence
+        - Envoyer les notifications email à tous les responsables
+        - Créer automatiquement les plannings pour les 2 premières semaines
+        """
         for vals in vals_list:
             if vals.get('reference_number', 'Nouveau') == 'Nouveau':
                 vals['reference_number'] = self.env['ir.sequence'].next_by_code('internship.stage') or 'STG-N/A'
@@ -372,7 +394,15 @@ class InternshipStage(models.Model):
 
         for stage in stages:
             _logger.info(f"Stage créé : {stage.reference_number} - {stage.title}")
-            # Notifier tous les étudiants via le Chatter
+            
+            # 1. Envoyer les notifications email à tous les responsables
+            stage._send_creation_notifications()
+            
+            # 2. Créer automatiquement les plannings pour les 2 premières semaines
+            if stage.start_date:
+                stage._create_automatic_plannings()
+            
+            # 3. Notifier tous les étudiants via le Chatter (garder pour compatibilité)
             for student in stage.student_ids:
                 if student.user_id and student.user_id.partner_id:
                     stage.message_post(
@@ -386,6 +416,327 @@ class InternshipStage(models.Model):
                         subtype_xmlid='mail.mt_comment',
                     )
         return stages
+
+    def _prepare_email_data(self):
+        """
+        Prépare toutes les données pour l'email en Python.
+        Retourne un dictionnaire avec toutes les valeurs formatées.
+        """
+        self.ensure_one()
+        
+        # Préparer les données du stage
+        # Récupérer le libellé du type de stage au lieu de la valeur technique
+        internship_type_label = 'Non spécifié'
+        if self.internship_type:
+            # Récupérer la sélection du champ
+            selection = dict(self._fields['internship_type'].selection)
+            internship_type_label = selection.get(self.internship_type, self.internship_type)
+        
+        data = {
+            'title': self.title or 'Sans titre',
+            'reference_number': self.reference_number or 'N/A',
+            'internship_type': internship_type_label,
+            'start_date': self.start_date.strftime('%d/%m/%Y') if self.start_date else 'Non spécifiée',
+            'end_date': self.end_date.strftime('%d/%m/%Y') if self.end_date else 'Non spécifiée',
+            'supervisor_name': self.supervisor_id.name if self.supervisor_id else 'Non spécifié',
+            'students': [],
+            'base_url': self.get_base_url(),
+            'stage_id': self.id,
+        }
+        
+        # Préparer la liste des étudiants
+        for student in self.student_ids:
+            data['students'].append({
+                'full_name': student.full_name,
+            })
+        
+        return data
+    
+    def _render_email_template(self, template, data):
+        """
+        Rend le template email avec les données préparées.
+        Remplace les variables {{ }} par les valeurs réelles.
+        Utilise des regex flexibles pour gérer les variations d'espaces.
+        """
+        # Rendre le sujet avec regex pour gérer les variations d'espaces
+        subject = re.sub(r'\{\{\s*object\.title\s*\}\}', data['title'], template.subject)
+        # Nettoyer le sujet : supprimer les retours à la ligne et les espaces en début/fin
+        subject = re.sub(r'[\r\n]+', ' ', subject)  # Remplacer les retours à la ligne par des espaces
+        subject = subject.strip()  # Supprimer les espaces en début/fin
+        
+        # Rendre le corps HTML
+        body_html = template.body_html
+        
+        # Remplacer les variables simples avec regex pour gérer les espaces
+        body_html = re.sub(r'\{\{\s*object\.title\s*\}\}', data['title'], body_html)
+        body_html = re.sub(r'\{\{\s*object\.reference_number\s*\}\}', data['reference_number'], body_html)
+        body_html = re.sub(r'\{\{\s*object\.supervisor_id\.name\s*\}\}', data['supervisor_name'], body_html)
+        
+        # Remplacer object.internship_type or 'Non spécifié' (expression complexe)
+        body_html = re.sub(
+            r'\{\{\s*object\.internship_type\s+or\s+[\'"]Non spécifié[\'"]\s*\}\}',
+            data['internship_type'],
+            body_html
+        )
+        
+        # Remplacer les dates (avec gestion des conditions t-if)
+        if data['start_date'] != 'Non spécifiée':
+            # Remplacer la variable de date avec regex
+            body_html = re.sub(
+                r'\{\{\s*object\.start_date\.strftime\([\'"]%d/%m/%Y[\'"]\)\s*\}\}',
+                data['start_date'],
+                body_html
+            )
+            # Supprimer les balises t-if pour start_date si la date existe
+            body_html = re.sub(r't-if="object\.start_date"\s+', '', body_html)
+        else:
+            # Supprimer toute la ligne li si la date n'existe pas
+            body_html = re.sub(
+                r'<li t-if="object\.start_date"[^>]*>.*?</li>',
+                '',
+                body_html,
+                flags=re.DOTALL
+            )
+        
+        if data['end_date'] != 'Non spécifiée':
+            # Remplacer la variable de date avec regex
+            body_html = re.sub(
+                r'\{\{\s*object\.end_date\.strftime\([\'"]%d/%m/%Y[\'"]\)\s*\}\}',
+                data['end_date'],
+                body_html
+            )
+            body_html = re.sub(r't-if="object\.end_date"\s+', '', body_html)
+        else:
+            body_html = re.sub(
+                r'<li t-if="object\.end_date"[^>]*>.*?</li>',
+                '',
+                body_html,
+                flags=re.DOTALL
+            )
+        
+        # Remplacer la liste des étudiants
+        if data['students']:
+            students_html = ''
+            for student in data['students']:
+                # Le modèle student n'a que full_name, pas name, donc on affiche juste full_name
+                students_html += f'<li style="margin: 5px 0;">{student["full_name"]}</li>'
+            
+            # Remplacer toute la boucle t-foreach avec regex
+            # Le pattern doit capturer le <li> complet avec t-foreach, en gérant les retours à la ligne
+            # Pattern plus flexible pour gérer les variations d'espaces et retours à la ligne
+            # Note: le template utilise student.name mais le modèle n'a que full_name, donc on remplace les deux
+            pattern = r'<li\s+t-foreach="object\.student_ids"\s+t-as="student"[^>]*>[\s\S]*?\{\{\s*student\.name\s*\}\}[\s\S]*?\(\{\{\s*student\.full_name\s*\}\}\)[\s\S]*?</li>'
+            body_html = re.sub(pattern, students_html, body_html)
+            
+            # Supprimer l'attribut t-if de la div parente
+            body_html = re.sub(
+                r'<div\s+t-if="object\.student_ids"\s+',
+                '<div ',
+                body_html
+            )
+        else:
+            # Supprimer toute la section étudiants si vide (div avec t-if)
+            body_html = re.sub(
+                r'<div\s+t-if="object\.student_ids"[^>]*>.*?</div>',
+                '',
+                body_html,
+                flags=re.DOTALL
+            )
+        
+        # Remplacer l'URL du bouton avec regex
+        url = f"{data['base_url']}/web#id={data['stage_id']}&amp;model=internship.stage&amp;view_type=form"
+        body_html = re.sub(
+            r't-att-href="[^"]*object\.get_base_url\(\)[^"]*"',
+            f'href="{url}"',
+            body_html
+        )
+        
+        return subject, body_html
+    
+    def _send_creation_notifications(self):
+        """
+        Envoie les notifications email à tous les responsables lors de la création d'un stage.
+        Notifie : encadrant, étudiants, coordinateur si défini.
+        """
+        self.ensure_one()
+        
+        # Récupérer le template email
+        template = self.env.ref(
+            'internship_management.mail_template_stage_creation',
+            raise_if_not_found=False
+        )
+        
+        if not template:
+            _logger.warning("Template email pour la création de stage non trouvé.")
+            return
+        
+        # Collecter tous les partenaires à notifier
+        partner_ids = []
+        
+        # Ajouter l'encadrant
+        if self.supervisor_id and self.supervisor_id.user_id and self.supervisor_id.user_id.partner_id:
+            partner_ids.append(self.supervisor_id.user_id.partner_id.id)
+        
+        # Ajouter tous les étudiants
+        for student in self.student_ids:
+            if student.user_id and student.user_id.partner_id:
+                partner_ids.append(student.user_id.partner_id.id)
+        
+        # Ajouter le coordinateur si défini (à adapter selon votre modèle)
+        # Exemple si vous avez un champ coordinator_id :
+        # if self.coordinator_id and self.coordinator_id.user_id and self.coordinator_id.user_id.partner_id:
+        #     partner_ids.append(self.coordinator_id.user_id.partner_id.id)
+        
+        # Envoyer l'email à tous les partenaires
+        if partner_ids:
+            try:
+                # Préparer toutes les données en Python
+                email_data = self._prepare_email_data()
+                
+                # Rendre le template avec les données préparées
+                subject, body_html = self._render_email_template(template, email_data)
+                
+                # Récupérer l'email_from du template ou utiliser celui de l'utilisateur
+                email_from = self.env.user.email_formatted
+                if template.email_from:
+                    # Essayer de rendre email_from si nécessaire
+                    email_from = template.email_from.replace('{{ user.email_formatted }}', self.env.user.email_formatted)
+                    # Nettoyer email_from : supprimer les retours à la ligne et les espaces en début/fin
+                    email_from = re.sub(r'[\r\n]+', ' ', email_from)  # Remplacer les retours à la ligne par des espaces
+                    email_from = email_from.strip()  # Supprimer les espaces en début/fin
+                
+                # Pour chaque partenaire, créer et envoyer un email
+                for partner_id in partner_ids:
+                    partner = self.env['res.partner'].browse(partner_id)
+                    if not partner.email:
+                        _logger.warning(f"Le partenaire {partner.name} (ID: {partner_id}) n'a pas d'email configuré.")
+                        continue
+                    
+                    # Créer le mail avec le contenu rendu
+                    mail = self.env['mail.mail'].create({
+                        'subject': subject,
+                        'body_html': body_html,
+                        'email_from': email_from,
+                        'email_to': partner.email,
+                        'model': self._name,
+                        'res_id': self.id,
+                        'auto_delete': False,
+                    })
+                    
+                    # Envoyer immédiatement
+                    mail.send()
+                    
+                _logger.info(f"Notifications email envoyées à {len(partner_ids)} partenaire(s) pour le stage {self.reference_number}")
+            except Exception as e:
+                _logger.error(f"Erreur lors de l'envoi des emails pour le stage {self.reference_number}: {str(e)}")
+                import traceback
+                _logger.error(traceback.format_exc())
+                # Ne pas bloquer la création du stage si l'envoi d'email échoue
+
+    def _create_automatic_plannings(self):
+        """
+        Crée automatiquement deux plannings (meetings de type 'planning') lors de la création d'un stage :
+        - Semaine 1 : Apprendre sur l'entreprise
+        - Semaine 2 : Apprendre sur le travail
+        """
+        self.ensure_one()
+        
+        if not self.start_date:
+            _logger.warning(f"Impossible de créer les plannings : pas de date de début pour le stage {self.reference_number}")
+            return
+        
+        # Collecter tous les partenaires à assigner
+        partner_ids = []
+        
+        # Ajouter l'encadrant
+        if self.supervisor_id and self.supervisor_id.user_id and self.supervisor_id.user_id.partner_id:
+            partner_ids.append(self.supervisor_id.user_id.partner_id.id)
+        
+        # Ajouter tous les étudiants
+        for student in self.student_ids:
+            if student.user_id and student.user_id.partner_id:
+                partner_ids.append(student.user_id.partner_id.id)
+        
+        if not partner_ids:
+            _logger.warning(f"Aucun partenaire à assigner aux plannings pour le stage {self.reference_number}")
+            return
+        
+        # Calculer les dates pour les 2 semaines
+        week1_start = self.start_date
+        week1_end = week1_start + timedelta(days=6)  # 7 jours (0-6)
+        week2_start = week1_end + timedelta(days=1)
+        week2_end = week2_start + timedelta(days=6)  # 7 jours
+        
+        # Convertir les dates de début en datetime pour le champ date du meeting
+        week1_datetime = fields.Datetime.to_datetime(week1_start)
+        week2_datetime = fields.Datetime.to_datetime(week2_start)
+        
+        # Créer le planning de la semaine 1 (comme meeting de type 'planning')
+        planning1 = self.env['internship.meeting'].create({
+            'name': _('Apprendre sur l\'entreprise'),
+            'stage_id': self.id,
+            'meeting_type': 'planning',
+            'date': week1_datetime,
+            'duration': 168.0,  # 7 jours * 24 heures = 168 heures
+            'planning_start_date': week1_start,
+            'planning_end_date': week1_end,
+            'week_number': 1,
+            'partner_ids': [(6, 0, partner_ids)],
+            'agenda': _(
+                '<p><strong>Semaine 1 : Apprendre sur l\'entreprise</strong></p>'
+                '<p>Cette première semaine est dédiée à la découverte de l\'entreprise :</p>'
+                '<ul>'
+                '<li>Présentation de l\'entreprise et de son histoire</li>'
+                '<li>Organisation et structure</li>'
+                '<li>Culture d\'entreprise et valeurs</li>'
+                '<li>Processus et méthodologies utilisées</li>'
+                '<li>Rencontre avec les équipes</li>'
+                '</ul>'
+            ),
+            'state': 'scheduled'  # Créer directement en scheduled pour envoyer les emails
+        })
+        
+        # Envoyer les notifications email pour le planning 1
+        try:
+            planning1._send_meeting_notification('internship_management.mail_template_meeting_invitation')
+        except Exception as e:
+            _logger.error(f"Erreur lors de l'envoi de l'email pour le planning 1 : {str(e)}")
+        
+        # Créer le planning de la semaine 2 (comme meeting de type 'planning')
+        planning2 = self.env['internship.meeting'].create({
+            'name': _('Apprendre sur le travail'),
+            'stage_id': self.id,
+            'meeting_type': 'planning',
+            'date': week2_datetime,
+            'duration': 168.0,  # 7 jours * 24 heures = 168 heures
+            'planning_start_date': week2_start,
+            'planning_end_date': week2_end,
+            'week_number': 2,
+            'partner_ids': [(6, 0, partner_ids)],
+            'agenda': _(
+                '<p><strong>Semaine 2 : Apprendre sur le travail</strong></p>'
+                '<p>Cette deuxième semaine est dédiée à l\'apprentissage du travail :</p>'
+                '<ul>'
+                '<li>Découverte des outils et technologies utilisés</li>'
+                '<li>Formation sur les processus de travail</li>'
+                '<li>Prise en main des projets en cours</li>'
+                '<li>Intégration dans l\'équipe</li>'
+                '<li>Début des premières tâches</li>'
+                '</ul>'
+            ),
+            'state': 'scheduled'  # Créer directement en scheduled pour envoyer les emails
+        })
+        
+        # Envoyer les notifications email pour le planning 2
+        try:
+            planning2._send_meeting_notification('internship_management.mail_template_meeting_invitation')
+        except Exception as e:
+            _logger.error(f"Erreur lors de l'envoi de l'email pour le planning 2 : {str(e)}")
+        
+        _logger.info(
+            f"Plannings automatiques créés pour le stage {self.reference_number} : "
+            f"Semaine 1 ({week1_start} - {week1_end}) et Semaine 2 ({week2_start} - {week2_end})"
+        )
 
     # ===============================
     # MÉTHODES MÉTIER (ACTIONS DES BOUTONS)

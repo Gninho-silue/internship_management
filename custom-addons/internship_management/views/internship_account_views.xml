@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================= -->
+        <!-- VUE LISTE (TREE) -->
+        <!-- ================================= -->
+
+        <record id="view_internship_account_tree" model="ir.ui.view">
+            <field name="name">internship.account.tree</field>
+            <field name="model">internship.account</field>
+            <field name="arch" type="xml">
+                <tree string="Comptes Externes">
+                    <field name="name"/>
+                    <field name="account_type" widget="badge"/>
+                    <field name="address"/>
+                    <field name="stage_id"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUE FORMULAIRE (FORM) -->
+        <!-- ================================= -->
+
+        <record id="view_internship_account_form" model="ir.ui.view">
+            <field name="name">internship.account.form</field>
+            <field name="model">internship.account</field>
+            <field name="arch" type="xml">
+                <form string="Compte Externe">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="account_type"/>
+                                <field name="address"/>
+                            </group>
+                            <group>
+                                <field name="stage_id" options="{'no_create': True}"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description" nolabel="1" placeholder="Description ou notes supplémentaires..."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- VUE RECHERCHE (SEARCH) -->
+        <!-- ================================= -->
+
+        <record id="view_internship_account_search" model="ir.ui.view">
+            <field name="name">internship.account.search</field>
+            <field name="model">internship.account</field>
+            <field name="arch" type="xml">
+                <search string="Recherche de Comptes Externes">
+                    <field name="name"/>
+                    <field name="address"/>
+                    <field name="stage_id"/>
+                    <filter string="GitHub" name="github" domain="[('account_type', '=', 'github')]"/>
+                    <filter string="GitLab" name="gitlab" domain="[('account_type', '=', 'gitlab')]"/>
+                    <filter string="Actifs" name="active" domain="[('active', '=', True)]"/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Type" name="group_type" context="{'group_by': 'account_type'}"/>
+                        <filter string="Stage" name="group_stage" context="{'group_by': 'stage_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================= -->
+
+        <record id="action_internship_account" model="ir.actions.act_window">
+            <field name="name">Comptes Externes</field>
+            <field name="res_model">internship.account</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_internship_account_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer un nouveau compte externe
+                </p>
+                <p>
+                    Les comptes externes permettent de référencer les dépôts GitHub, GitLab
+                    ou autres services liés au stage.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+
