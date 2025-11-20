@@ -263,9 +263,12 @@
                                         <field name="final_grade"/>
                                     </group>
                                     <group string="Signatures Numériques">
-                                        <field name="student_signature" widget="signature"/>
-                                        <field name="supervisor_signature" widget="signature"/>
-                                        <field name="jury_signature" widget="signature"/>
+                                        <field name="student_signature" widget="signature"
+                                               groups="internship_management.group_internship_student,internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+                                        <field name="supervisor_signature" widget="signature"
+                                               groups="internship_management.group_internship_supervisor,internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
+                                        <field name="jury_signature" widget="signature"
+                                               groups="internship_management.group_internship_coordinator,internship_management.group_internship_admin"/>
                                     </group>
                                 </group>
                                 <separator string="Feedback d'Évaluation"/>

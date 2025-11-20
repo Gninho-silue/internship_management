@@ -60,4 +60,56 @@
         <field name="binding_model_id" ref="model_internship_stage"/>
         <field name="binding_type">report</field>
     </record>
+
+    <!-- =================================================== -->
+    <!-- RAPPORTS INDIVIDUELS PAR ÉTUDIANT                  -->
+    <!-- =================================================== -->
+
+    <!-- Attestation Individuelle -->
+    <record id="action_attestation_report_student" model="ir.actions.report">
+        <field name="name">Attestation de Stage (Individuelle)</field>
+        <field name="model">internship.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.attestation_student</field>
+        <field name="report_file">internship_management.attestation_student</field>
+        <field name="print_report_name">'Attestation - %s' % (object.full_name or object.name)</field>
+        <field name="binding_model_id" ref="model_internship_student"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Convention Individuelle -->
+    <record id="action_convention_report_student" model="ir.actions.report">
+        <field name="name">Convention de Stage (Individuelle)</field>
+        <field name="model">internship.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.convention_student</field>
+        <field name="report_file">internship_management.convention_student</field>
+        <field name="print_report_name">'Convention - %s' % (object.full_name or object.name)</field>
+        <field name="binding_model_id" ref="model_internship_student"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Procès-Verbal Individuel -->
+    <record id="action_defense_report_student" model="ir.actions.report">
+        <field name="name">Procès-Verbal de Soutenance (Individuel)</field>
+        <field name="model">internship.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.defense_student</field>
+        <field name="report_file">internship_management.defense_student</field>
+        <field name="print_report_name">'Procès-Verbal - %s' % (object.full_name or object.name)</field>
+        <field name="binding_model_id" ref="model_internship_student"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Rapport d'Évaluation Individuel -->
+    <record id="action_evaluation_report_student" model="ir.actions.report">
+        <field name="name">Rapport d'Évaluation (Individuel)</field>
+        <field name="model">internship.student</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_management.evaluation_student</field>
+        <field name="report_file">internship_management.evaluation_student</field>
+        <field name="print_report_name">'Évaluation - %s' % (object.full_name or object.name)</field>
+        <field name="binding_model_id" ref="model_internship_student"/>
+        <field name="binding_type">report</field>
+    </record>
 </odoo>

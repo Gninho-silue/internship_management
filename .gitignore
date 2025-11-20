@@ -29,3 +29,12 @@ Thumbs.db
 # Database
 *.sql
 *.dump
+
+# Exclure les autres modules (ils auront leurs propres repos)
+/custom-addons/inventaire/
+/custom-addons/gestion_patrimoine/
+/custom-addons/contact_management/
+/custom-addons/biblio/
+
+# Garder seulement internship_management
+!custom-addons/internship_management/
